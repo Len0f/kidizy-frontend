@@ -1,11 +1,18 @@
 import { Button, StyleSheet, Text, View } from 'react-native';
 
-export default function DashboardBabyScreen({ navigation }) {
+export default function PreviewParentScreen({ navigation }) {
     return (
         <View style={styles.container}>
-            <Text>Dashboard Baby Screen</Text>
+            <Text>Preview Parent Screen</Text>
             <Button
-                title="Messages non lus"
+                title="Accepter"
+                onPress={() => navigation.navigate('Chat', {profil: 'babysitter'})}
+            />
+            <Button
+                title="Refuser"
+            />
+            <Button
+                title="Retour"
                 onPress={() => navigation.navigate('Contacts', {profil: 'babysitter'})}
             />
         </View>

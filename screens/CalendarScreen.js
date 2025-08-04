@@ -1,16 +1,22 @@
 import { Button, StyleSheet, Text, View } from 'react-native';
 
-export default function CalendarScreen({ navigation }) {
+export default function CalendarScreen({ route }) {
+    const profil = route.params?.profil || 'babysitter';
     return (
         <View style={styles.container}>
             <Text>Calendar Screen</Text>
-            {/* <Button
-                title="Soumettre"
-                onPress={() => navigation.navigate('DashboardBaby')}
-            /> */}
+
+            {profil === 'babysitter' && (
+                <View>
+                    <Text>Zone de scroll pour Babysitter</Text>
+                </View>
+                
+            )}
         </View>
     );
 }
+
+
 
 const styles = StyleSheet.create({
     container: {

@@ -1,8 +1,12 @@
-import { Button, StyleSheet, Text, View } from 'react-native';
+import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
+import React, { useState } from 'react';
 
 export default function ChatScreen({ navigation, route }) {
 
-    const { from } = route.params || {};
+    const { from, profil } = route.params || {};
+    const isParent = profil === 'parent';
+
+    const [deadlineMessage, setDeadlineMessage] = useState('');
 
     const handleBack = () => {
         if (from === 'Contacts') {
@@ -20,14 +24,38 @@ export default function ChatScreen({ navigation, route }) {
     return (
         <View style={styles.container}>
             <Text>Chat Screen</Text>
-            <Text>Validation de la garde</Text>
-            <Button
-                title="Valider"
-                onPress={() => navigation.navigate('Pay')}
-            />
-            <Button
-                title="Refuser"
-            />
+
+            {!isParent && (
+                <>
+                    <Text>Envoyer une modification de garde</Text>
+                    <TextInput
+                        placeholder='Texte'
+                        onChangeText={setDeadlineMessage}
+                        value={deadlineMessage}
+                    />
+                    <Button
+                        title="Envoyer la demande"
+                        onPress={() => {
+                            console.log('Demande envoyée', deadlineMessage);
+                        }}
+                    />
+
+                </>
+            )}
+
+
+            {isParent && (
+                <>
+                <Text>Validation de la garde</Text>
+                <Button
+                    title="Valider"
+                    onPress={() => navigation.navigate('Pay')}
+                />
+                <Button
+                        title="Refuser"
+                />
+                </>
+            )}
             <Button
                 title="Retour"
                 onPress={() => handleBack()}

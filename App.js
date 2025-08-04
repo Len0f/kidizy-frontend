@@ -31,6 +31,7 @@ import SearchScreen from './screens/SearchScreen';
 
 // Screens Baby.
 import ProfilBabyScreen from './screens/ProfilBabyScreen';
+import PreviewParentScreen from './screens/PreviewParentScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -48,13 +49,22 @@ const ParentStackScreen = () => {
   );
 };
 
+// Permet de garder le même screen mais mettre des conditions selon les profils.
+const CalendarScreenParent = (props) => (
+  <CalendarScreen {...props} route={{ ...props.route, params: { profil: 'parent' } }} />
+);
+const CalendarScreenBaby = (props) => (
+  <CalendarScreen {...props} route={{ ...props.route, params: { profil: 'babysitter' } }} />
+);
+
+
 
 // Tab Parent.
 const TabNavigatorParent = () => {
   return (
   <Tab.Navigator screenOptions={{headerShown: false}}>
     <Tab.Screen name="DashboardParent" component={ParentStackScreen}/>
-    <Tab.Screen name="Calendar" component={CalendarScreen}/>
+    <Tab.Screen name="Calendar" component={CalendarScreenParent}/>
     <Tab.Screen name="Search" component={SearchScreen}/>
     <Tab.Screen name="Contacts" component={ContactsScreen}/>
   </Tab.Navigator>
@@ -66,7 +76,7 @@ const TabNavigatorBaby = () => {
   return (
   <Tab.Navigator screenOptions={{headerShown: false}}>
     <Tab.Screen name="DashboardBaby" component={DashboardBabyScreen}/>
-    <Tab.Screen name="Calendar" component={CalendarScreen}/>
+    <Tab.Screen name="Calendar" component={CalendarScreenBaby}/>
     <Tab.Screen name="ProfilBaby" component={ProfilBabyScreen}/>
     <Tab.Screen name="Contacts" component={ContactsScreen}/>
   </Tab.Navigator>
@@ -97,6 +107,9 @@ export default function App() {
         {/* Screen Parents */}
         <Stack.Screen name="Pay" component={PayScreen}/>
         <Stack.Screen name="ProfilParent" component={ProfilParentScreen}/>
+
+        {/* Screen Baby */}
+        <Stack.Screen name="PreviewParent" component={PreviewParentScreen}/>
 
 
       </Stack.Navigator>

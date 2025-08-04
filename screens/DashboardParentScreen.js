@@ -10,7 +10,7 @@ export default function DashboardParentScreen({ navigation }) {
             />
             <Button
                 title="Messages non lus"
-                onPress={() => navigation.navigate('Contacts')}
+                onPress={() => navigation.navigate('Contacts', {profil: 'parent'})}
             />
             <Button
                 title="ProfilParent"
