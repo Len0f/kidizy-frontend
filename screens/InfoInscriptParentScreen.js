@@ -1,13 +1,13 @@
 import { Button, StyleSheet, Text, View } from 'react-native';
 
-export default function CalendarScreen({ navigation }) {
+export default function InfoInscriptParentScreen({ navigation }) {
     return (
         <View style={styles.container}>
-            <Text>Calendar Screen</Text>
-            {/* <Button
+            <Text>Info Inscription Parent Screen</Text>
+            <Button
                 title="Soumettre"
-                onPress={() => navigation.navigate('DashboardBaby')}
-            /> */}
+                onPress={() => navigation.navigate('TabNavigatorParent')}
+            />
         </View>
     );
 }

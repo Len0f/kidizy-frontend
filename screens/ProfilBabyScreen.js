@@ -1,13 +1,13 @@
 import { Button, StyleSheet, Text, View } from 'react-native';
 
-export default function InfoPersoParentScreen({ navigation }) {
+export default function ProfilBabyScreen({ navigation }) {
     return (
         <View style={styles.container}>
-            <Text>Info Personnelles Parent Screen</Text>
-            <Button
+            <Text>Profil Baby Screen</Text>
+            {/* <Button
                 title="Soumettre"
-                onPress={() => navigation.navigate('DashboardParent')}
-            />
+                onPress={() => navigation.navigate('DashboardBaby')}
+            /> */}
         </View>
     );
 }

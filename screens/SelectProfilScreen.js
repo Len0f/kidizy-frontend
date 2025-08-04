@@ -6,11 +6,11 @@ export default function SelectProfilScreen({ navigation }) {
             <Text>Selection de profil Screen</Text>
             <Button
                 title="Inscription Parent"
-                onPress={() => navigation.navigate('InfoPersoParent')}
+                onPress={() => navigation.navigate('InfoInscriptParent')}
             />
             <Button
                 title="Inscription Babysitter"
-                onPress={() => navigation.navigate('InfoPersoBaby')}
+                onPress={() => navigation.navigate('InfoInscriptBaby')}
             />
         </View>
     );

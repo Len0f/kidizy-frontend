@@ -6,11 +6,11 @@ export default function ConnectionScreen({ navigation }) {
             <Text>Connection Screen</Text>
             <Button
                 title="Connection Parent"
-                onPress={() => navigation.navigate('DashboardParent')}
+                onPress={() => navigation.navigate('TabNavigatorParent')} //Direct Dashboard Parent
             />
             <Button
                 title="Connection Babysitter"
-                onPress={() => navigation.navigate('DashboardBaby')}
+                onPress={() => navigation.navigate('TabNavigatorBaby')} //Direct Dashboard Babysitter
             />
             <Button
                 title="Pas encore inscrit ?"

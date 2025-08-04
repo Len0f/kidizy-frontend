@@ -1,9 +1,9 @@
 import { Button, StyleSheet, Text, View } from 'react-native';
 
-export default function CalendarScreen({ navigation }) {
+export default function ContactsScreen({ navigation }) {
     return (
         <View style={styles.container}>
-            <Text>Calendar Screen</Text>
+            <Text>Contacts Screen</Text>
             {/* <Button
                 title="Soumettre"
                 onPress={() => navigation.navigate('DashboardBaby')}

@@ -4,10 +4,18 @@ export default function DashboardParentScreen({ navigation }) {
     return (
         <View style={styles.container}>
             <Text>Dashboard Parent Screen</Text>
-            {/* <Button
-                title="Soumettre"
-                onPress={() => navigation.navigate('DashboardParent')}
-            /> */}
+            <Button
+                title="Gardes"
+                onPress={() => navigation.navigate('Gardes')}
+            />
+             <Button
+                title="Messages non lus"
+                onPress={() => navigation.navigate('Messages')}
+            />
+             <Button
+                title="ProfilParent"
+                onPress={() => navigation.navigate('ProfilParent')}
+            />
         </View>
     );
 }
