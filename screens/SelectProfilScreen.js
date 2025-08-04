@@ -12,6 +12,10 @@ export default function SelectProfilScreen({ navigation }) {
                 title="Inscription Babysitter"
                 onPress={() => navigation.navigate('InfoInscriptBaby')}
             />
+            <Button
+                title="Retour"
+                onPress={() => navigation.navigate('Inscription')}
+            />
         </View>
     );
 }

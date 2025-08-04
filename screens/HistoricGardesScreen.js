@@ -1,12 +1,16 @@
 import { Button, StyleSheet, Text, View } from 'react-native';
 
-export default function ProfilParentScreen({ navigation }) {
+export default function HistoricGardesScreen({ navigation }) {
     return (
         <View style={styles.container}>
-            <Text>Profil Parent Screen</Text>
+            <Text>Historic Gardes Screen</Text>
             <Button
-                title="Retour"
-                onPress={() => navigation.navigate('TabNavigatorParent')}
+                title="Voir Garde"
+                onPress={() => navigation.navigate('Garde')}
+            />
+            <Button
+                title="Voir Garde"
+                onPress={() => navigation.navigate('Garde')}
             />
         </View>
     );

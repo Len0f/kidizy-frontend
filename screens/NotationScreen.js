@@ -1,12 +1,12 @@
 import { Button, StyleSheet, Text, View } from 'react-native';
 
-export default function ProfilParentScreen({ navigation }) {
+export default function NotationScreen({ navigation }) {
     return (
         <View style={styles.container}>
-            <Text>Profil Parent Screen</Text>
+            <Text>Notation Screen</Text>
             <Button
                 title="Retour"
-                onPress={() => navigation.navigate('TabNavigatorParent')}
+                onPress={() => navigation.navigate('Garde')}
             />
         </View>
     );

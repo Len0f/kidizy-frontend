@@ -1,12 +1,16 @@
 import { Button, StyleSheet, Text, View } from 'react-native';
 
-export default function ProfilParentScreen({ navigation }) {
+export default function ProfilBabyBookScreen({ navigation }) {
     return (
         <View style={styles.container}>
-            <Text>Profil Parent Screen</Text>
+            <Text>Profil Baby Book Screen</Text>
+            <Button
+                title="Contacter"
+                onPress={() => navigation.navigate('Chat')}
+            />
             <Button
                 title="Retour"
-                onPress={() => navigation.navigate('TabNavigatorParent')}
+                onPress={() => navigation.navigate('Search')}
             />
         </View>
     );

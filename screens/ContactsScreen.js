@@ -4,10 +4,10 @@ export default function ContactsScreen({ navigation }) {
     return (
         <View style={styles.container}>
             <Text>Contacts Screen</Text>
-            {/* <Button
-                title="Soumettre"
-                onPress={() => navigation.navigate('DashboardBaby')}
-            /> */}
+            <Button
+                title="Voir le chat"
+                onPress={() => navigation.navigate('Chat')}
+            />
         </View>
     );
 }

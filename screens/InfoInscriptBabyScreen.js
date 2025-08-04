@@ -8,6 +8,10 @@ export default function InfoInscriptBabyScreen({ navigation }) {
                 title="Soumettre"
                 onPress={() => navigation.navigate('TabNavigatorBaby')}
             />
+            <Button
+                title="Retour"
+                onPress={() => navigation.navigate('SelectProfil')}
+            />
         </View>
     );
 }

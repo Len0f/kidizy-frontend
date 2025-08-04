@@ -8,6 +8,10 @@ export default function InscriptionScreen({ navigation }) {
                 title="Inscription"
                 onPress={() => navigation.navigate('SelectProfil')}
             />
+            <Button
+                title="Déjà inscrit inscrit ?"
+                onPress={() => navigation.navigate('Connexion')}
+            />
         </View>
     );
 }

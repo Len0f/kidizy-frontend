@@ -6,13 +6,13 @@ export default function DashboardParentScreen({ navigation }) {
             <Text>Dashboard Parent Screen</Text>
             <Button
                 title="Gardes"
-                onPress={() => navigation.navigate('Gardes')}
+                onPress={() => navigation.navigate('HistoricGardes')}
             />
-             <Button
+            <Button
                 title="Messages non lus"
-                onPress={() => navigation.navigate('Messages')}
+                onPress={() => navigation.navigate('Contacts')}
             />
-             <Button
+            <Button
                 title="ProfilParent"
                 onPress={() => navigation.navigate('ProfilParent')}
             />
