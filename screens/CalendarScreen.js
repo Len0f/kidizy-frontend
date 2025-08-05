@@ -1,12 +1,15 @@
-import { Button, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import { useUser } from '../contexts/UserContext';
 
 export default function CalendarScreen({ route }) {
-    const profil = route.params?.profil || 'babysitter';
+    const {profil} = useUser();
+    const isBabysitter = profil === 'babysitter';
+
     return (
         <View style={styles.container}>
             <Text>Calendar Screen</Text>
 
-            {profil === 'babysitter' && (
+            {isBabysitter && (
                 <View>
                     <Text>Zone de scroll pour Babysitter</Text>
                 </View>

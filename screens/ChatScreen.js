@@ -1,10 +1,11 @@
 import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { useUser } from '../contexts/UserContext';
 
 export default function ChatScreen({ navigation, route }) {
-
-    const { from, profil } = route.params || {};
+    const { profil } = useUser();
     const isParent = profil === 'parent';
+    const { from } = route.params || {};
 
     const [deadlineMessage, setDeadlineMessage] = useState('');
 
@@ -25,6 +26,7 @@ export default function ChatScreen({ navigation, route }) {
         <View style={styles.container}>
             <Text>Chat Screen</Text>
 
+            {/* Partie babysitter */}
             {!isParent && (
                 <>
                     <Text>Envoyer une modification de garde</Text>
@@ -43,7 +45,7 @@ export default function ChatScreen({ navigation, route }) {
                 </>
             )}
 
-
+            {/* Partie Parent */}
             {isParent && (
                 <>
                 <Text>Validation de la garde</Text>

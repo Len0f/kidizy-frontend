@@ -1,7 +1,8 @@
 import { Button, StyleSheet, Text, View } from 'react-native';
+import { useUser } from '../contexts/UserContext';
 
 export default function ContactsScreen({ navigation, route }) {
-    const profil = route.params?.profil || 'babysitter';
+    const {profil} = useUser();
 
     return (
         <View style={styles.container}>

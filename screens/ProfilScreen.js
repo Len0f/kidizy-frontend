@@ -1,12 +1,14 @@
 import { Button, StyleSheet, Text, View } from 'react-native';
+import { useUser } from '../contexts/UserContext';
 
-export default function ProfilParentScreen({ navigation }) {
+export default function ProfilScreen({ navigation }) {
+    const { profil } = useUser();
     return (
         <View style={styles.container}>
-            <Text>Profil Parent Screen</Text>
+            <Text>Profil {profil === 'parent' ? 'Parent' : 'Babysitter'}</Text>
             <Button
                 title="Retour"
-                onPress={() => navigation.navigate('TabNavigatorParent')}
+                onPress={() => navigation.navigate('TabNavigator')}
             />
         </View>
     );

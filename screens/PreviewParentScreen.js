@@ -4,16 +4,22 @@ export default function PreviewParentScreen({ navigation }) {
     return (
         <View style={styles.container}>
             <Text>Preview Parent Screen</Text>
+
+            <Button
+                title="Profil ParentBook"
+                onPress={() => navigation.navigate('ProfilBook')}
+            />
+
             <Button
                 title="Accepter"
-                onPress={() => navigation.navigate('Chat', {profil: 'babysitter'})}
+                onPress={() => navigation.navigate('Chat')}
             />
             <Button
                 title="Refuser"
             />
             <Button
                 title="Retour"
-                onPress={() => navigation.navigate('Contacts', {profil: 'babysitter'})}
+                onPress={() => navigation.navigate('Contacts')}
             />
         </View>
     );

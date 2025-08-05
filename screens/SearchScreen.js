@@ -6,7 +6,7 @@ export default function SearchScreen({ navigation }) {
             <Text>Search Screen</Text>
             <Button
                 title="Réserver"
-                onPress={() => navigation.navigate('ProfilBabyBook')}
+                onPress={() => navigation.navigate('ProfilBook')}
             />
         </View>
     );

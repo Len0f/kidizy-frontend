@@ -1,17 +1,31 @@
 import { Button, StyleSheet, Text, View } from 'react-native';
+import { useUser } from '../contexts/UserContext';
 
 export default function ConnectionScreen({ navigation }) {
+    const { setProfil } = useUser();
     return (
         <View style={styles.container}>
-            <Text>Connection Screen</Text>
+            <Text>Kidizy connection</Text>
+            <Text>Input Email</Text>
+            <Text>Input mdp</Text>
             <Button
                 title="Connection Parent"
-                onPress={() => navigation.navigate('TabNavigatorParent')} //Direct Dashboard Parent
+                onPress={() => {
+                    setProfil('parent');
+                    navigation.navigate('TabNavigator');
+                }} //Direct Dashboard Parent
             />
             <Button
                 title="Connection Babysitter"
-                onPress={() => navigation.navigate('TabNavigatorBaby')} //Direct Dashboard Babysitter
+                onPress={() => {
+                    setProfil('babysitter');
+                    navigation.navigate('TabNavigator');
+                }} //Direct Dashboard Babysitter
             />
+
+            <Text>Bouton Google</Text>
+            <Text>Bouton LinkedIn</Text>
+
             <Button
                 title="Pas encore inscrit ?"
                 onPress={() => navigation.navigate('Inscription')}
