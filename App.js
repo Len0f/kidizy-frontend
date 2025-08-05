@@ -5,6 +5,13 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { UserProvider, useUser } from './contexts/UserContext';
 
+import { useFonts } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
+import {useEffect} from 'react';
+
+SplashScreen.preventAutoHideAsync();
+
+
 // Écrans de connexion / inscription
 import ConnexionScreen from './screens/ConnexionScreen';
 import InscriptionScreen from './screens/InscriptionScreen';
@@ -71,6 +78,19 @@ const TabsRouter = () => {
 }
 
 export default function App() {
+
+  const [loaded, error] = useFonts({
+    'Montserrat': require('./assets/fonts/Montserrat-VariableFont_wght.ttf'),
+  });
+  useEffect(() => {
+    if (loaded || error) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded, error]);
+
+  if (!loaded && !error) {
+    return null;
+  }
   return (
     <UserProvider>
 

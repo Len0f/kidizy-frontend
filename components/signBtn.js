@@ -1,18 +1,22 @@
 import {Text, TouchableOpacity, StyleSheet} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
-export default function SignBtn(){
+export default function SignBtn(props){
+
+  const handleConnection = ()=>{
+    props.connection()
+  }
 
     return (
             
-          <TouchableOpacity style={styles.btnContainer}>
+          <TouchableOpacity onPress={()=>handleConnection()}>
             <LinearGradient
             // Button Linear Gradient
             colors={['#88E19D','#98C2E6']}
             style={styles.button}
             start={{ x: 0, y: 0 }}
             end={{ x: 0.8, y: 0.8 }}>
-            <Text style={styles.text}>Sign Up/In Button</Text>
+            <Text style={styles.text}>Connexion</Text>
             </LinearGradient>
           </TouchableOpacity>
         
@@ -23,18 +27,11 @@ export default function SignBtn(){
 }
 
 const styles = StyleSheet.create({
- container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  btnContainer:{
-    width:'80%'
-  },
   button: {
     padding: 15,
     alignItems: 'center',
     borderRadius: 8,
+    height:60
   },
   text: {
     backgroundColor: 'transparent',
