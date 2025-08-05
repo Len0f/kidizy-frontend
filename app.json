@@ -24,6 +24,27 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+       "plugins": [
+      [
+        "expo-font",
+        {
+          "fonts": ["./assets/fonts/Montserrat-VariableFont_wght.ttf"],
+          "android": {
+            "fonts": [
+              {
+                "fontFamily": "Source Serif 4",
+                "fontDefinitions": [
+                  {
+                    "path": "./assets/fonts/Montserrat-VariableFont_wght.ttf",
+                    "weight": 800
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    ]
   }
 }
