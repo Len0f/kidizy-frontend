@@ -1,13 +1,13 @@
 import { Button, StyleSheet, Text, View } from 'react-native';
 
-export default function DashboardBabyScreen({ navigation }) {
+export default function NotationScreen({ navigation }) {
     return (
         <View style={styles.container}>
-            <Text>Dashboard Baby Screen</Text>
-            {/* <Button
-                title="Soumettre"
-                onPress={() => navigation.navigate('DashboardParent')}
-            /> */}
+            <Text>Notation Screen</Text>
+            <Button
+                title="Retour"
+                onPress={() => navigation.navigate('Garde')}
+            />
         </View>
     );
 }

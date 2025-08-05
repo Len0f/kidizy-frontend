@@ -1,16 +1,31 @@
 import { Button, StyleSheet, Text, View } from 'react-native';
+import { useUser } from '../contexts/UserContext';
 
 export default function SelectProfilScreen({ navigation }) {
+    const { setProfil } = useUser();
+
     return (
         <View style={styles.container}>
-            <Text>Selection de profil Screen</Text>
+            <Text>Kidizy Selection de profil</Text> 
+            <Text>Êtes-vous ?</Text>
             <Button
                 title="Inscription Parent"
-                onPress={() => navigation.navigate('InfoPersoParent')}
+                onPress={() => {
+                    setProfil('parent');
+                    navigation.navigate('InfoInscript');
+                }}
             />
+            <Text>ou</Text>
             <Button
                 title="Inscription Babysitter"
-                onPress={() => navigation.navigate('InfoPersoBaby')}
+                onPress={() => {
+                    setProfil('babysitter');
+                    navigation.navigate('InfoInscript');
+                }}
+            />
+            <Button
+                title="Retour"
+                onPress={() => navigation.navigate('Inscription')}
             />
         </View>
     );

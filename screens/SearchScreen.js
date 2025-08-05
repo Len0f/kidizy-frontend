@@ -1,13 +1,13 @@
 import { Button, StyleSheet, Text, View } from 'react-native';
 
-export default function DashboardParentScreen({ navigation }) {
+export default function SearchScreen({ navigation }) {
     return (
         <View style={styles.container}>
-            <Text>Dashboard Parent Screen</Text>
-            {/* <Button
-                title="Soumettre"
-                onPress={() => navigation.navigate('DashboardParent')}
-            /> */}
+            <Text>Search Screen</Text>
+            <Button
+                title="Réserver"
+                onPress={() => navigation.navigate('ProfilBook')}
+            />
         </View>
     );
 }
