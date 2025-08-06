@@ -1,24 +1,34 @@
-import { Button, StyleSheet, Text, View } from 'react-native';
+import { Button, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { useUser } from '../contexts/UserContext';
+import ReturnBtn from '../components/returnBtn'
 
 export default function ProfilScreen({ navigation }) {
     const { profil } = useUser();
+
+    const returnScreen = ()=>{
+        navigation.navigate('TabNavigator')
+    }
+
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
+            <ReturnBtn style={styles.returnBtn} returnScreen={returnScreen}/>
             <Text>Profil {profil === 'parent' ? 'Parent' : 'Babysitter'}</Text>
+
+            
+
             <Button
                 title="Retour"
                 onPress={() => navigation.navigate('TabNavigator')}
             />
-        </View>
+        </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        flex:1,
         backgroundColor: '#FFFBF0',
-        alignItems: 'center',
-        justifyContent: 'center',
-    }
+      
+    },
+
 })

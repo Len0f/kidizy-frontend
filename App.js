@@ -131,6 +131,7 @@ export default function App() {
 
         </Stack.Navigator>
       </NavigationContainer>
+      
     </UserProvider>
     </Provider>
   );
