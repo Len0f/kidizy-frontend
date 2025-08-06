@@ -5,10 +5,9 @@ import { useState } from 'react';
 export default function Input(props) {
   
   const [actif, setActif] = useState(false);
-  const [text, setText] = useState('');
 
   const handleClick= ()=> {
-    if (text != '') {
+    if (props.text != '') {
       return
     }
     setActif(!actif)
@@ -26,8 +25,8 @@ export default function Input(props) {
           maxLength={280}
           placeholder={props.name}
           placeholderTextColor={"#979797"}
-          onChangeText={(value) => setText(value)}
-          value={text}
+          onChangeText={(value) => props.setText(value)}
+          value={props.text}
         />
       </View>
     )

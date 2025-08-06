@@ -8,6 +8,10 @@ export default function SearchScreen({ navigation }) {
                 title="Réserver"
                 onPress={() => navigation.navigate('ProfilBook')}
             />
+            <Button
+                title="voir profil"
+                onPress={() => navigation.navigate('ProfilUser')}
+            />
         </View>
     );
 }
