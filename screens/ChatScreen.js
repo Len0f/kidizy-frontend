@@ -1,8 +1,9 @@
-import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Button, StyleSheet, Text, TextInput, View, TouchableOpacity } from 'react-native';
 import { useState, useEffect } from 'react';
 import { useUser } from '../contexts/UserContext';
 import { useSelector } from 'react-redux';
 import Pusher from 'pusher-js/react-native';
+import Message from '../components/Message';
 //pusher
  const pusher = new Pusher('92055fe186a81018cec0', { cluster: 'eu' });
  const BACKEND_ADDRESS = 'http://192.33.0.108:3000';
@@ -76,8 +77,28 @@ export default function ChatScreen({ navigation, route }) {
 
     return (
         <View style={styles.container}>
+            
             <Text>Chat Screen</Text>
-
+             
+          {
+            messages.map((message, i) => (console.log("message",message),
+            //   <View key={i} style={[styles.messageWrapper, { ...(message.username === user.firstName ? styles.messageSent : styles.messageRecieved) }]}>
+            //     <View style={[styles.message, { ...(message.username === user.firstName ? styles.messageSentBg : styles.messageRecievedBg) }]}>
+            //       <Text style={styles.messageText}>{message.message}</Text>
+            //     </View>
+            //     <Text style={styles.timeText}>{new Date(message.createdAt).getHours()}:{String(new Date(message.createdAt).getMinutes()).padStart(2, '0')}</Text>
+            //   </View>
+            <Message createdAt={message.createdAt} text={message.message} username={message.username} colorBG={'#9FC6E7'}/>
+            ))
+          }
+        
+        <TextInput onChangeText={(value)=>setMessageText(value)}value={messageText} placeholder='Message'/>
+           <Button
+                        title="send"
+                        onPress={() => {
+                            handleSendMessage()
+                        }}
+                    /> 
             {/* Partie babysitter */}
             {!isParent && (
                 <>
