@@ -44,7 +44,6 @@ import SearchScreen from './screens/SearchScreen';
 
 // Screens Baby.
 import PreviewParentScreen from './screens/PreviewParentScreen';
-import { Provider } from 'react-redux';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
