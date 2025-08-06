@@ -1,10 +1,14 @@
 import { Button, StyleSheet, Text, View, Image, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
 import { useState } from 'react';
+
+import { useDispatch } from 'react-redux';
+import { updateInfo } from '../reducers/user';
 import Input from '../components/Input';
 import SignBtn from '../components/signBtn';
 
 export default function InscriptionScreen({ navigation }) {
 
+    const dispatch=useDispatch()
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [samePassword, setSamePassword] = useState('');
@@ -18,7 +22,9 @@ export default function InscriptionScreen({ navigation }) {
             return;
         }
 
+
         fetch('http://192.33.0.8:3000/users/signup', {
+
             method: 'POST',
             headers: {
                 'Content-Type' : 'application/json'
@@ -31,6 +37,9 @@ export default function InscriptionScreen({ navigation }) {
         .then ((response) => response.json())
         .then ((dataUser) => {
             if(dataUser.result) {
+                dispatch(updateInfo({
+                    token:dataUser.token
+                }))
                 navigation.navigate('SelectProfil');
             } else {
                 setErrorMessage(dataUser.error || `Erreur inconnue lors de l'inscription`);

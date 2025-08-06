@@ -21,6 +21,7 @@ export default function ConnectionScreen({ navigation }) {
 
     //     headers: { 'Content-Type': 'application/json' },
 
+
     //     body: JSON.stringify({email, password:mdp})
     // }).then(response=>response.json()).then(data=>{console.log(data)
     //     if(data.data==="BABYSITTER"){
@@ -34,6 +35,7 @@ export default function ConnectionScreen({ navigation }) {
     //     }
     // })
     // }
+
 
     return (
      <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>  
