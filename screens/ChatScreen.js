@@ -2,9 +2,9 @@ import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useState } from 'react';
 import { useUser } from '../contexts/UserContext';
 import Pusher from 'pusher-js/react-native';
-pusher
-const pusher = new Pusher('92055fe186a81018cec0', { cluster: 'eu' });
-const BACKEND_ADDRESS = 'http://192.33.0.8:3000';
+//pusher
+ const pusher = new Pusher('92055fe186a81018cec0', { cluster: 'eu' });
+ const BACKEND_ADDRESS = 'http://192.33.0.108:3000';
 
 export default function ChatScreen({ navigation, route }) {
     const { profil } = useUser();
@@ -15,7 +15,7 @@ export default function ChatScreen({ navigation, route }) {
 
     const user=useSelector((state)=>state.user.value)
 
-    //pusher
+//     //pusher
      const [messages, setMessages] = useState([]);
      const [messageText, setMessageText] = useState('');
     //connexion pusher
@@ -36,7 +36,7 @@ export default function ChatScreen({ navigation, route }) {
     setMessages(messages => [...messages, data]);
   };
 
-    //pusher send message
+//     //pusher send message
     const handleSendMessage = () => {
     if (!messageText) {
       return;
