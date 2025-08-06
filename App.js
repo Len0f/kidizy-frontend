@@ -10,11 +10,12 @@ import * as SplashScreen from 'expo-splash-screen';
 import {useEffect} from 'react';
 
 //redux
-import { persistStore, persistReducer } from 'redux-persist';
-import { PersistGate } from 'redux-persist/integration/react';
-import storage from 'redux-persist/lib/storage';
-import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import user from './reducers/user'
+import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
+import user from './reducers/user';
+const store = configureStore({
+  reducer: { user },
+});
 
 SplashScreen.preventAutoHideAsync();
 
@@ -87,16 +88,6 @@ const TabsRouter = () => {
 
 export default function App() {
 
-  //redux
-  const reducers = combineReducers({ user });
-  const persistConfig = { key: 'kidizy', storage };
-  
-   const store = configureStore({
-   reducer: persistReducer(persistConfig, reducers),
-   middleware: (getDefaultMiddleware) => getDefaultMiddleware({ serializableCheck: false }),
-  });
-   const persistor = persistStore(store);
-
   const [loaded, error] = useFonts({
     'Montserrat': require('./assets/fonts/Montserrat-VariableFont_wght.ttf'),
   });
@@ -111,7 +102,6 @@ export default function App() {
   }
   return (
     <Provider store={store}>
-    <PersistGate persistor={persistor}>
     <UserProvider>
 
       <NavigationContainer>
@@ -142,7 +132,6 @@ export default function App() {
         </Stack.Navigator>
       </NavigationContainer>
     </UserProvider>
-    </PersistGate>
     </Provider>
   );
 }
