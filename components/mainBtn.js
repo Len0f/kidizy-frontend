@@ -5,7 +5,7 @@ export default function MainBtn(props){
 
 const handleClick = () => {
   props.clickNav()
-};  
+}; 
 
     return (
             
