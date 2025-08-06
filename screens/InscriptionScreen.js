@@ -1,5 +1,7 @@
-import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Button, StyleSheet, Text, View, Image, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
 import { useState } from 'react';
+import Input from '../components/Input';
+import SignBtn from '../components/signBtn';
 
 export default function InscriptionScreen({ navigation }) {
 
@@ -16,7 +18,7 @@ export default function InscriptionScreen({ navigation }) {
             return;
         }
 
-        fetch('http://192.33.0.35:3000/users/signup', {
+        fetch('http://192.33.0.8:3000/users/signup', {
             method: 'POST',
             headers: {
                 'Content-Type' : 'application/json'
@@ -37,9 +39,23 @@ export default function InscriptionScreen({ navigation }) {
     };
 
     return (
-        <View style={styles.container}>
-            <Text>Kidizy Inscription</Text>
-            <TextInput
+        <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+            <Image style={styles.logo}source={require('../assets/KidizyLogo.png')} />
+            <View style={styles.inputContainer}>
+                <Input name="E.mail" setText={setEmail} text={email} />
+            </View>
+                        
+            <View style={styles.inputContainer}>
+                <Input name ="Mot de passe" setText={setPassword} text={password} userStyle={{color:'#88E19D' }} type={true}/>
+            </View>
+            <View style={styles.inputContainer}>
+                <Input name ="Confirmer le mot de passe" setText={setSamePassword} text={samePassword} userStyle={{color:'#88E19D' }} type={true}/>
+            </View>
+            {errorMessage ? <Text>{errorMessage}</Text> : null}
+            <View style={styles.btnContainer}>
+                <SignBtn connection={handleInscription} />
+            </View>
+            {/* <TextInput
                 placeholder='Entrez votre Email'
                 onChangeText={setEmail}
                 value={email}
@@ -53,23 +69,27 @@ export default function InscriptionScreen({ navigation }) {
                 placeholder='Confirmez votre Mot de Passe'
                 onChangeText={setSamePassword}
                 value={samePassword}
-            />
+            /> */}
 
-            {errorMessage ? <Text>{errorMessage}</Text> : null}
-
-            <Button
+            {/* <Button
                 title="Inscription"
                 onPress={() => handleInscription()}
-            />
+            /> */}
 
-            <Text>Bouton Google</Text>
-            <Text>Bouton LinkedIn</Text>
+            <View style={styles.links}>
+                <Text style={styles.connectionLink}>G</Text>
+                <Text style={styles.connectionLink}>LI</Text>
+            </View>
             
-            <Button
-                title="Déjà inscrit inscrit ?"
+            <View style={styles.footer}>
+                <Text style={styles.text}>Déjà inscrit ?</Text>
+                <TouchableOpacity onPress={() => navigation.navigate('Connexion')}><Text style={styles.signUpLink}> Connexion</Text></TouchableOpacity>
+            </View>
+            {/* <Button
+                title="Déjà inscrit ?"
                 onPress={() => navigation.navigate('Connexion')}
-            />
-        </View>
+            /> */}
+        </KeyboardAvoidingView>
     );
 }
 
@@ -77,7 +97,53 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#FFFBF0',
-        alignItems: 'center',
-        justifyContent: 'center',
+        alignItems:'center'
+    },
+    logo:{
+        flex:0.8,
+        width:'80%',
+        objectFit:'contain'
+    },
+    inputContainer:{
+        width:'80%',
+        margin:5
+    },
+        btnContainer:{
+        width:'80%',
+        marginTop:20
+    },
+    footer:{
+        flexDirection:'row',
+        width:'80%',
+        alignItems:'center',
+        justifyContent:'center',
+        padding:30,
+        borderTopWidth:1,
+        
+    },
+    links:{
+        width:'80%',
+        flexDirection:'row',
+        justifyContent:'space-around',
+        padding:30
+    },
+    connectionLink:{
+        textAlign:'center',
+        width:60,
+        height:60,
+        fontSize:50,
+        fontWeight:'bold',
+        borderWidth:1,
+        borderRadius:50,
+        
+    },
+    text:{
+        fontSize:20,
+        fontFamily:'Montserrat'
+    },
+    signUpLink:{
+        fontWeight:'bold',
+        fontSize:20,
+        fontFamily:'Montserrat'
     }
 })
