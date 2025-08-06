@@ -1,6 +1,7 @@
 import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useUser } from '../contexts/UserContext';
+import { useSelector } from 'react-redux';
 import Pusher from 'pusher-js/react-native';
 //pusher
  const pusher = new Pusher('92055fe186a81018cec0', { cluster: 'eu' });
