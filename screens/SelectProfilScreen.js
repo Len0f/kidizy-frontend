@@ -25,7 +25,7 @@ export default function SelectProfilScreen({ navigation }) {
         <View style={styles.container}>
             <View style={styles.containerReturnBtn} >
                 <ReturnBtn 
-                    returnSreen={NAVreturn}
+                    returnScreen={NAVreturn}
                 />
             </View>
             <Image style={styles.logo}source={require('../assets/KidizyLogo.png')} />
