@@ -12,11 +12,25 @@ export default function SelectProfilScreen({ navigation }) {
     };
 
     const NAVbabysitter = () => {
+         fetch ('http://192.33.0.108.38',{
+             method: 'PUT',
+
+             headers: { 'Content-Type': 'application/json' },
+
+             body: JSON.stringify({role:"BABYSITTER"})
+        })
         setProfil('babysitter');
         navigation.navigate('InfoInscript');
     };
 
     const NAVparent = () => {
+        fetch ('http://192.33.0.108.38',{
+             method: 'PUT',
+
+             headers: { 'Content-Type': 'application/json' },
+
+             body: JSON.stringify({role:"PARENT"})
+        })
         setProfil('parent');
         navigation.navigate('InfoInscript');
     };
