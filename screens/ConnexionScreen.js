@@ -13,7 +13,7 @@ export default function ConnectionScreen({ navigation }) {
         headers: { 'Content-Type': 'application/json' },
 
         body: JSON.stringify({email, password:mdp})
-    }).then(response=>response.json()).then(data=>{console.log(data)
+    }).then(response=>response.json()).then(data=>{
         if(data.data==="BABYSITTER"){
             setProfil('babysitter')
             navigation.navigate('TabNavigator')
