@@ -10,31 +10,31 @@ export default function ConnectionScreen({ navigation }) {
     const [mdp, setMdp] = useState('')
     const { setProfil } = useUser();
 
-    const connection = ()=>{
-        setProfil('parent')
-        navigation.navigate('TabNavigator')
-    }
-
-    // const connection = () =>{
-    //     fetch('http://192.33.0.40:3000/users/signin',{
-    //          method: 'POST',
-
-    //     headers: { 'Content-Type': 'application/json' },
-
-
-    //     body: JSON.stringify({email, password:mdp})
-    // }).then(response=>response.json()).then(data=>{console.log(data)
-    //     if(data.data==="BABYSITTER"){
-    //         setProfil('babysitter')
-    //         navigation.navigate('TabNavigator')
-    //     } else if(data.data==="PARENT"){
-    //         setProfil('parent')
-    //         navigation.navigate('TabNavigator')
-    //     } else {
-    //         setError('Mot de passe ou Email incorrect')
-    //     }
-    // })
+    // const connection = ()=>{
+    //     setProfil('parent')
+    //     navigation.navigate('TabNavigator')
     // }
+
+    const connection = () =>{
+        fetch('http://192.33.0.40:3000/users/signin',{
+             method: 'POST',
+
+        headers: { 'Content-Type': 'application/json' },
+
+
+        body: JSON.stringify({email, password:mdp})
+    }).then(response=>response.json()).then(data=>{console.log(data)
+        if(data.data==="BABYSITTER"){
+            setProfil('babysitter')
+            navigation.navigate('TabNavigator')
+        } else if(data.data==="PARENT"){
+            setProfil('parent')
+            navigation.navigate('TabNavigator')
+        } else {
+            setError('Mot de passe ou Email incorrect')
+        }
+    })
+    }
 
 
     return (
