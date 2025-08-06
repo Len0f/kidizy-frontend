@@ -9,8 +9,9 @@
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/KidizyLogo.png",
-      "resizeMode": "contain",
+      "resizeMode": "cover",
       "backgroundColor": "#ffffff"
+      
     },
     "ios": {
       "supportsTablet": true
