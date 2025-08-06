@@ -3,11 +3,15 @@ import {Text, TouchableOpacity, StyleSheet} from 'react-native';
 
 export default function MainBtn(props){
 
-  
+const handleClick = () => {
+  props.clickNav()
+};  
 
     return (
             
-          <TouchableOpacity style={[styles.btnContainer, props.userStyle ]}>
+          <TouchableOpacity style={[styles.btnContainer, props.userStyle ]}
+            onPress={()=>handleClick()}
+          >
             <Text style={styles.text}>{props.btnTitle}</Text>
           </TouchableOpacity>
         
