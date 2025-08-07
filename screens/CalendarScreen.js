@@ -20,6 +20,7 @@ export default function CalendarScreen() {
       endHour: defaultEnd,
     }))
   );
+  
   const [loading, setLoading] = useState(false);
 
   const handleCheck = idx => {
@@ -63,7 +64,7 @@ export default function CalendarScreen() {
     let error = null;
     for (let d of dispo) {
       try {
-        const response = await fetch(`http://192.33.0.49:3000/gardes/${token}`, {
+        const response = await fetch(`http://192.33.0.108:3000/gardes/${token}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(d)
