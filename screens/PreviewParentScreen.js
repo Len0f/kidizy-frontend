@@ -1,11 +1,28 @@
-import { Button, StyleSheet, Text, View, SafeAreaView,Image, Dimensions } from 'react-native';
+import { Button, StyleSheet, Text, View, SafeAreaView,Image, Dimensions, KeyboardAvoidingView, ScrollView, Platform } from 'react-native';
 import ReturnBtn from '../components/returnBtn';
 import InfoBtn from '../components/infoBtn';
 import MainBtn from '../components/mainBtn';
 import TextInfo from '../components/TextInfo';
-import MapView from 'react-native-maps';
+import Input from '../components/Input';
+import MapView, {Marker} from 'react-native-maps';
+import * as Location from 'expo-location';
+import { useEffect, useState } from 'react';
+import { useUser } from '../contexts/UserContext';
 
 export default function PreviewParentScreen({ navigation }) {
+    const { profil } = useUser();
+//     useEffect(() => {
+//     (async () => {
+//       const { status } = await Location.requestForegroundPermissionsAsync();
+
+//       if (status === 'granted') {
+//         Location.watchPositionAsync({ distanceInterval: 10 },
+//           (location) => {
+//             console.log(location);
+//           });
+//       }
+//     })();
+//   }, []);
 
     const returnScreen = ()=>{
         navigation.navigate('Contacts')
@@ -28,8 +45,18 @@ export default function PreviewParentScreen({ navigation }) {
     console.log(infos)
     console.log(keys)
     
+    const [nom, setNom] = useState('')
+    const [prenom, setPrenom] = useState('')
+    const [day, setDay] = useState('')
+    const [hours, setHours] = useState('')
+    const [enfant, setEnfant] = useState('')
+    const [comment, setComment] = useState('')
+    
     return (
-        <View style={styles.container}>
+        
+        <View style={styles.container} >
+            {profil === 'babysitter' ? ( 
+                <View>
             <SafeAreaView style={styles.btnReturnContainer}>
                 <ReturnBtn style={styles.returnBtn} returnScreen={returnScreen}/>
             </SafeAreaView>
@@ -50,23 +77,69 @@ export default function PreviewParentScreen({ navigation }) {
                 <TextInfo title={keys[5]}textContent={data.Commentaires} userStyle={{color:'#88E19D'}} width={'90%'}/>
             </View>
 
-            <View>
-                 <MapView
+            <View style={styles.mapContainer}>
+            <MapView
                 initialRegion={{
-                latitude: 37.78825,
-                longitude: -122.4324,
-                latitudeDelta: 0.0922,
-                longitudeDelta: 0.0421,
+                latitude: 44.8643352091005,
+                longitude: -0.5760245233606299,
+                latitudeDelta:0.0022,
+                longitudeDelta:0.0021
                 }}
                 style={styles.map}
             >
+            <Marker coordinate={{ latitude: 44.8643352091005, longitude: -0.5760245233606299 }} title={data.Prenom} />
             </MapView>
             </View>
             <View style={styles.buttons}>
                 <MainBtn btnTitle={"Accepter"} userStyle={{width:"43%"}} clickNav={accept}/>
                 <MainBtn btnTitle={"Refuser"} userStyle={{backgroundColor:"#EBE6DA", width:"43%"}} clickNav={refus}/>
-            </View>          
+            </View> 
+            </View>
+            ):(
+                <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+            <SafeAreaView style={styles.btnReturnContainer}>
+                <ReturnBtn style={styles.returnBtn} returnScreen={returnScreen}/>
+            </SafeAreaView>
+            <SafeAreaView style={styles.btnProfilContainer}>
+                <InfoBtn style={styles.returnBtn} returnScreen={goParentProfil}/>
+            </SafeAreaView>
+            <SafeAreaView style={styles.avatarContainer}>
+                <Image style={styles.avatar} source={require('../assets/babysitter2.png')}/>
+                <Text style={styles.avatarName}>Prenom</Text>
+            </SafeAreaView>
+            
+            <View style={styles.mainContent}>
+                <Input name={`${keys[0]}`}setText={setNom} text={nom}  width={'43%'}/>
+                <Input name={keys[1]}setText={setPrenom} text={prenom}  width={'43%'}/>
+                <Input name={keys[2]}setText={setDay} text={day}  width={'43%'}/>
+                <Input name={keys[3]}setText={setHours} text={hours}  width={'43%'}/>
+                <Input name={keys[4]+'(s) à garder'}setText={setEnfant} text={enfant}  width={'90%'}/>
+                <Input name={keys[5]}setText={setComment} text={comment}  width={'90%'}/>
+            </View>
+
+            <View style={styles.mapContainer}>
+            <MapView
+                initialRegion={{
+                latitude: 44.8643352091005,
+                longitude: -0.5760245233606299,
+                latitudeDelta:0.0022,
+                longitudeDelta:0.0021
+                }}
+                style={styles.map}
+            >
+            <Marker coordinate={{ latitude: 44.8643352091005, longitude: -0.5760245233606299 }} title={data.Prenom} />
+            </MapView>
+            </View>
+            <View style={styles.buttons}>
+                <MainBtn btnTitle={"Accepter"} userStyle={{backgroundColor:'#98C2E6'}} clickNav={accept}/>
+            </View> 
+            </KeyboardAvoidingView>
+            )}
+
         </View>
+             
+
+
     );
 }
 
@@ -74,7 +147,8 @@ const styles = StyleSheet.create({
     container: {
         flex:1,
         backgroundColor: '#FFFBF0',
-        position:'relative'
+        position:'relative',
+        alignItems:'center'
     },
         btnReturnContainer:{
         position:"absolute",
@@ -111,11 +185,18 @@ const styles = StyleSheet.create({
         justifyContent:'center'
     },
     map: {
-        flex:0.1,
-
+        flex:1,
+        borderRadius:8
     },
     buttons:{
         flexDirection:'row',
-        justifyContent:'space-evenly'
+        justifyContent:'space-between',
+        width:'90%',
+        marginVertical:10
+    },
+    mapContainer:{
+        height:130,
+        width:'90%',
+        marginVertical:10
     }
 })

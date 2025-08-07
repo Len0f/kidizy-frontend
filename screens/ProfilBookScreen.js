@@ -53,7 +53,7 @@ export default function ProfilBookScreen({ navigation }) {
     }
 
         const goChat = ()=>{
-        navigation.navigate('Chat')
+        navigation.navigate('PreviewParent')
     }
 
     let avis = <><View style={styles.avis}>
