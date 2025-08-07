@@ -9,7 +9,7 @@ const handleClick = () => {
 
     return (
             
-          <TouchableOpacity style={[styles.btnContainer, props.userStyle ]}
+          <TouchableOpacity disabled={props.disabled}style={[styles.btnContainer, props.userStyle ]}
             onPress={()=>handleClick()}
           >
             <Text style={styles.text}>{props.btnTitle}</Text>

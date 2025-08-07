@@ -1,29 +1,34 @@
 import { Button, StyleSheet, Text, View, Image, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
+import { updateInfo } from '../reducers/user';
 import { useUser } from '../contexts/UserContext';
 import Input from '../components/Input';
 import SignBtn from '../components/signBtn';
 import { useState } from 'react';
 import { useSelector,useDispatch } from 'react-redux';
-import { updateInfo } from '../reducers/user';
+
 
 export default function ConnectionScreen({ navigation }) {
 
     const [email, setEmail] = useState('')
     const [mdp, setMdp] = useState('')
     const { setProfil } = useUser();
+
+
     const dispatch= useDispatch()
 
 
     const connection = () =>{
         fetch('http://192.33.0.108:3000/users/signin',{
+
              method: 'POST',
 
         headers: { 'Content-Type': 'application/json' },
 
 
         body: JSON.stringify({email, password:mdp})
+
     }).then(response=>response.json()).then(data=>{
-        dispatch(updateInfo({token:data.user.token}))
+        dispatch(updateInfo({token:data.user.token, id: data.user._id}))
         if(data.user.role==="BABYSITTER"){
             setProfil('babysitter')
             navigation.navigate('TabNavigator')
@@ -34,6 +39,7 @@ export default function ConnectionScreen({ navigation }) {
             navigation.navigate('SelectProfil')
         }
     })
+
     }
 
 

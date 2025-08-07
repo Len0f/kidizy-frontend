@@ -34,15 +34,16 @@ export default function ChatScreen({ navigation, route }) {
   }, [user.firstName]);
 
   // recupérations des anciens message
-  useEffect(()=>{
-    fetch(`${BACKEND_ADDRESS}/messages/${user.token}`).then(response=>response.json())
-    .then(data=>{
-        data.messagesUser.map(element=>handleReceiveMessage(element))
+//   useEffect(()=>{
+//     fetch(`${BACKEND_ADDRESS}/messages/${user.token}`).then(response=>response.json())
+//     .then(data=>{
+//         setMessages(data.messagesUser)
         
-    })
-  },[])
+//     })
+//   },[user.id])
 
   const handleReceiveMessage = (data) => {
+    console.log('data',data)
     setMessages(messages => [...messages, data]);
   };
 
@@ -53,14 +54,16 @@ export default function ChatScreen({ navigation, route }) {
     }
 
     const payload = {
-      token: user.token,
+      idUser: user.id,
       message: messageText,
-      username: user.firstName,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: new Date()
+      
+      
       
     };
 
+    
+console.log('payload',payload)
     fetch(`${BACKEND_ADDRESS}/messages`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -68,6 +71,7 @@ export default function ChatScreen({ navigation, route }) {
     });
 
     setMessageText('');
+    
   };
 
     const handleBack = () => {
@@ -82,15 +86,16 @@ export default function ChatScreen({ navigation, route }) {
 
     // Ajouter condition pour screen Baby.
 
-
+//console.log('message',messages)
     return (
+        
         <View style={styles.container}>
             
             <Text>Chat Screen</Text>
              
           {
             messages.map((message, i) => (
-            <Message createdAt={message.createdAt} key={i} text={message.message} username={message.username} colorBG={'#9FC6E7'}/>
+            <Message createdAt={message.createdAt} key={i} text={message.message} id={message.idUser} colorBG={'#9FC6E7'}/>
             ))
           }
         
