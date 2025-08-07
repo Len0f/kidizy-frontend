@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Platform, KeyboardAvoidingView, Alert, Image } from 'react-native';
 
 const daysOfWeek = [
   'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'
 ];
 
-// Valeurs par défaut pour les horaires
 const defaultStart = '00h';
 const defaultEnd = '00h';
 
 export default function CalendarScreen() {
-  // Structure : [{day: string, checked: bool, startHour: string, endHour: string}]
+    const token = useSelector(state => state.user.value.token);
+
   const [days, setDays] = useState(
     daysOfWeek.map(day => ({
       day,
@@ -19,8 +20,8 @@ export default function CalendarScreen() {
       endHour: defaultEnd,
     }))
   );
+  const [loading, setLoading] = useState(false);
 
-  // Handler pour cocher/décocher
   const handleCheck = idx => {
     setDays(prev =>
       prev.map((item, i) =>
@@ -29,7 +30,6 @@ export default function CalendarScreen() {
     );
   };
 
-  // Handler pour modifier l'heure
   const handleHourChange = (idx, type, value) => {
     setDays(prev =>
       prev.map((item, i) =>
@@ -38,8 +38,7 @@ export default function CalendarScreen() {
     );
   };
 
-  const handleSubmit = () => {
-    // Ne garder que les jours cochés
+  const handleSubmit = async () => {
     const dispo = days
       .filter(d => d.checked)
       .map(d => ({
@@ -48,20 +47,58 @@ export default function CalendarScreen() {
         endHour: d.endHour,
       }));
 
-   
+    if (!token) {
+      Alert.alert("Erreur", "Token utilisateur manquant.");
+      return;
+    }
+
     if (dispo.length === 0) {
       Alert.alert("Erreur", "Veuillez sélectionner au moins un jour");
       return;
     }
-   
-    console.log("Disponibilités sélectionnées :", dispo);
-    Alert.alert("Bravo", "Disponibilités enregistrées !");
+
+    setLoading(true);
+
+  
+    let error = null;
+    for (let d of dispo) {
+      try {
+        const response = await fetch(`http://192.33.0.49:3000/gardes/${token}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(d)
+        });
+        const data = await response.json();
+        if (!data.result) {
+          error = data.error || "Erreur serveur";
+          break;
+        }
+      } catch (err) {
+        error = err.message;
+        break;
+      }
+    }
+
+    setLoading(false);
+
+    if (error) {
+      Alert.alert("Erreur", error);
+    } else {
+      Alert.alert("Bravo", "Disponibilités enregistrées !");
+ 
+      setDays(daysOfWeek.map(day => ({
+        day,
+        checked: false,
+        startHour: defaultStart,
+        endHour: defaultEnd,
+      })));
+    }
   };
 
   return (
-    <KeyboardAvoidingView style={{flex:1}} behavior={Platform.OS === "ios" ? "padding" : "height"}>
+    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"}>
       <ScrollView contentContainerStyle={styles.container}>
-        <Image style={styles.logo}source={require('../assets/KidizyLogo.png')} />
+        <Image style={styles.logo} source={require('../assets/KidizyLogo.png')} />
         <Text style={styles.title}>Saisie tes disponibilités de la semaine</Text>
         <View style={styles.form}>
           {days.map((item, idx) => (
@@ -95,8 +132,8 @@ export default function CalendarScreen() {
             </View>
           ))}
         </View>
-        <TouchableOpacity style={styles.submitBtn} onPress={handleSubmit}>
-          <Text style={styles.submitText}>Soumettre</Text>
+        <TouchableOpacity style={styles.submitBtn} onPress={handleSubmit} disabled={loading}>
+          <Text style={styles.submitText}>{loading ? "Envoi..." : "Soumettre"}</Text>
         </TouchableOpacity>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -110,21 +147,20 @@ const styles = StyleSheet.create({
     paddingVertical: 30,
     flexGrow: 1
   },
-   logo:{
-        flex:0.4,
-        width:'30%',
-        objectFit:'contain'
-    },
+  logo: {
+    flex: 0.4,
+    width: '30%',
+    objectFit: 'contain'
+  },
   title: {
     fontSize: 18,
     color: '#010101ff',
     marginBottom: 66,
-    marginTop:1
+    marginTop: 1
   },
   form: {
     width: '80%',
     marginBottom: 20,
-    
   },
   row: {
     flexDirection: 'row',
@@ -179,7 +215,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginLeft: 5,
-    gap:2
+    gap: 2
   },
   hourLabel: {
     fontSize: 14,
@@ -196,14 +232,13 @@ const styles = StyleSheet.create({
     width: 40,
     textAlign: 'center',
     color: '#353535',
-   
   },
   submitBtn: {
-   backgroundColor:'#88E19D', 
+    backgroundColor: '#88E19D',
     alignItems: 'center',
     borderRadius: 8,
-    padding:15,
-    width:'80%'
+    padding: 15,
+    width: '80%'
   },
   submitText: {
     color: 'black',
