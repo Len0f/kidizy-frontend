@@ -1,15 +1,65 @@
 import { Button, StyleSheet, Text, View } from 'react-native';
 
 export default function InscriptionScreen({ navigation }) {
+
+    // const [email, setEmail] = useState('');
+    // const [password, setPassword] = useState('');
+    // const [samePassword, setSamePassword] = useState('');
+    // const [errorMessage, setErrorMessage] = useState('');
+
+    // const handleInscription = async () => {
+    //     setErrorMessage(''); // pour réinitialiser les erreurs à chaque tentatives.
+        
+    //     if (password !== samePassword) {
+    //         setErrorMessage("Les mots de passe ne correspondent pas");
+    //         return;
+    //     }
+
+    //     fetch('http://192.33.0.34:3000/users/signup', {
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type' : 'application/json'
+    //         },
+    //         body: JSON.stringify({
+    //             email,
+    //             password,
+    //         }),
+    //     })
+    //     .then ((response) => response.json())
+    //     .then ((dataUser) => {
+    //         if(dataUser.result) {
+    //             navigation.navigate('SelectProfil');
+    //         } else {
+    //             setErrorMessage(dataUser.error || `Erreur inconnue lors de l'inscription`);
+    //         }
+    //     })
+    // };
+
     return (
         <View style={styles.container}>
             <Text>Kidizy Inscription</Text>
-            <Text>Input email</Text>
-            <Text>Input mdp</Text>
-            <Text>Input confirmation mdp</Text>
+            {/* <TextInput
+                placeholder='Entrez votre Email'
+                onChangeText={setEmail}
+                value={email}
+            />
+            <TextInput
+                placeholder='Mot de Passe'
+                onChangeText={setPassword}
+                value={password}
+            />
+            <TextInput
+                placeholder='Confirmez votre Mot de Passe'
+                onChangeText={setSamePassword}
+                value={samePassword}
+            />
+
+            {errorMessage ? <Text>{errorMessage}</Text> : null} */}
+
             <Button
                 title="Inscription"
                 onPress={() => navigation.navigate('SelectProfil')}
+                //onPress={() => handleInscription()}
             />
 
             <Text>Bouton Google</Text>
