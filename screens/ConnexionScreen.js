@@ -5,40 +5,41 @@ import { useUser } from '../contexts/UserContext';
 import Input from '../components/Input';
 import SignBtn from '../components/signBtn';
 import { useState } from 'react';
+import { useSelector,useDispatch } from 'react-redux';
+import { updateInfo } from '../reducers/user';
 
 export default function ConnectionScreen({ navigation }) {
 
     const [email, setEmail] = useState('')
     const [mdp, setMdp] = useState('')
     const { setProfil } = useUser();
-     const dispatch = useDispatch();
-    const [error, setError] = useState('');
 
-    // const connection = ()=>{
-    //     setProfil('parent')
-    //     navigation.navigate('TabNavigator')
-    // }
+    const dispatch= useDispatch()
+
 
     const connection = () =>{
-        fetch('http://192.33.0.49:3000/users/signin',{
+        fetch('http://192.33.0.108:3000/users/signin',{
+
              method: 'POST',
 
         headers: { 'Content-Type': 'application/json' },
 
 
         body: JSON.stringify({email, password:mdp})
-    }).then(response => response.json())
-        .then(data => {
-            if (data.result) {
-                dispatch(updateInfo({
-                    token: data.token
-                }));
-                setProfil(data.role === "BABYSITTER" ? "babysitter" : "parent");
-                navigation.navigate('TabNavigator');
-            } else {
-                setError('Mot de passe ou Email incorrect');
-            }
-        })
+
+    }).then(response=>response.json()).then(data=>{
+        dispatch(updateInfo({token:data.user.token}))
+        if(data.user.role==="BABYSITTER"){
+            setProfil('babysitter')
+            navigation.navigate('TabNavigator')
+        } else if(data.user.role==="PARENT"){
+            setProfil('parent')
+            navigation.navigate('TabNavigator')
+        } else {
+            navigation.navigate('SelectProfil')
+        }
+    })
+
     }
 
 
