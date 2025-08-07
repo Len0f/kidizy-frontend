@@ -14,7 +14,7 @@ export default function SelectProfilScreen({ navigation }) {
     };
 
     const NAVbabysitter = async () => {
-        const response = await fetch ('http://192.33.0.108:3000/users/role',{
+        const response = await fetch ('http://192.33.0.42:3000/users/role',{
              method: 'PUT',
 
              headers: { 'Content-Type': 'application/json' },
@@ -29,7 +29,7 @@ export default function SelectProfilScreen({ navigation }) {
         }
 
     const NAVparent = async () => {console.log('token',userToken)
-        const response = await fetch ('http://192.33.0.108:3000/users/role',{
+        const response = await fetch ('http://192.33.0.42:3000/users/role',{
              method: 'PUT',
 
              headers: { 'Content-Type': 'application/json' },

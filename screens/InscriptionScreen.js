@@ -25,7 +25,7 @@ export default function InscriptionScreen({ navigation }) {
 
 
 
-        fetch('http://192.33.0.108:3000/users/signup', {
+        fetch('http://192.33.0.42:3000/users/signup', {
 
 
             method: 'POST',
