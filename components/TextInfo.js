@@ -25,6 +25,10 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   text: {
+    fontFamily:'Montserrat',
+    padding:10,
+    fontSize:16,
+    color:'#656565ff'
   },
   label: {
     height:20,
@@ -34,7 +38,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     zIndex: 1,
     fontWeight: "bold",
-    color: "#9FC6E7"
+    color: "#9FC6E7",
+    fontFamily:'Montserrat'
   },
   containLabel: {
     padding:0,
@@ -55,6 +60,7 @@ const styles = StyleSheet.create({
     width: "100%",
     borderRadius: 10,
     backgroundColor: "#EBE6DA",
+    
   },
 });
 
