@@ -23,16 +23,24 @@ export default function ChatScreen({ navigation, route }) {
     //connexion pusher
      useEffect(() => {
     (() => {
-      fetch(`${BACKEND_ADDRESS}/messages/${user.firstName}`, { method: 'PUT' });
+      fetch(`${BACKEND_ADDRESS}/messages/${user.token}`, { method: 'PUT' });
 
       const subscription = pusher.subscribe('chat');
       subscription.bind('pusher:subscription_succeeded', () => {
         subscription.bind('message', handleReceiveMessage);
       });
     })();
-
-    return () => fetch(`${BACKEND_ADDRESS}/messages/${user.firstName}`, { method: 'DELETE' });
+    return () => fetch(`${BACKEND_ADDRESS}/messages/${user.token}`, { method: 'DELETE' });
   }, [user.firstName]);
+
+  // recupérations des anciens message
+  useEffect(()=>{
+    fetch(`${BACKEND_ADDRESS}/messages/${user.token}`).then(response=>response.json())
+    .then(data=>{
+        data.messagesUser.map(element=>handleReceiveMessage(element))
+        
+    })
+  },[])
 
   const handleReceiveMessage = (data) => {
     setMessages(messages => [...messages, data]);
@@ -81,14 +89,8 @@ export default function ChatScreen({ navigation, route }) {
             <Text>Chat Screen</Text>
              
           {
-            messages.map((message, i) => (console.log("message",message),
-            //   <View key={i} style={[styles.messageWrapper, { ...(message.username === user.firstName ? styles.messageSent : styles.messageRecieved) }]}>
-            //     <View style={[styles.message, { ...(message.username === user.firstName ? styles.messageSentBg : styles.messageRecievedBg) }]}>
-            //       <Text style={styles.messageText}>{message.message}</Text>
-            //     </View>
-            //     <Text style={styles.timeText}>{new Date(message.createdAt).getHours()}:{String(new Date(message.createdAt).getMinutes()).padStart(2, '0')}</Text>
-            //   </View>
-            <Message createdAt={message.createdAt} text={message.message} username={message.username} colorBG={'#9FC6E7'}/>
+            messages.map((message, i) => (
+            <Message createdAt={message.createdAt} key={i} text={message.message} username={message.username} colorBG={'#9FC6E7'}/>
             ))
           }
         
