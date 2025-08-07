@@ -2,24 +2,46 @@ import { Button, StyleSheet, Text, View, Image } from 'react-native';
 import { useUser } from '../contexts/UserContext';
 import MainBtn from '../components/mainBtn';
 import ReturnBtn from '../components/returnBtn';
+import { useSelector } from 'react-redux';
 
 
 export default function SelectProfilScreen({ navigation }) {
     const { setProfil } = useUser();
+    const userToken=useSelector((state)=>state.user.value.token)
 
     const NAVreturn = () => {
         navigation.navigate('Inscription');
     };
 
-    const NAVbabysitter = () => {
-        setProfil('babysitter');
-        navigation.navigate('InfoInscript');
-    };
+    const NAVbabysitter = async () => {
+        const response = await fetch ('http://192.33.0.108:3000/users/role',{
+             method: 'PUT',
 
-    const NAVparent = () => {
-        setProfil('parent');
-        navigation.navigate('InfoInscript');
-    };
+             headers: { 'Content-Type': 'application/json' },
+
+             body: JSON.stringify({role:"BABYSITTER", token: userToken})
+        }) 
+        const data = await response.json()
+        if (data.result){
+             setProfil('babysitter');
+             navigation.navigate('InfoInscript')
+        }
+        }
+
+    const NAVparent = async () => {console.log('token',userToken)
+        const response = await fetch ('http://192.33.0.108:3000/users/role',{
+             method: 'PUT',
+
+             headers: { 'Content-Type': 'application/json' },
+
+             body: JSON.stringify({role:"PARENT", token: userToken})
+        }) 
+        const data = await response.json()
+        if (data.result){
+             setProfil('parent');
+             navigation.navigate('InfoInscript')
+        }
+        }
 
     return (
         <View style={styles.container}>

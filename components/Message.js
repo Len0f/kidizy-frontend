@@ -1,13 +1,15 @@
 import * as React from 'react';
 import { View, StyleSheet, Text } from 'react-native';
+import { useSelector } from 'react-redux';
 
 export default function Message(props) {
+   const user=useSelector((state)=>state.user.value)
   
   
     return (
-    <View style={[styles.messageWrapper, { ...(props.username === props.params.username ? styles.messageSent : styles.messageRecieved) }]}>
-        <Image style={(props.username != props.params.username ? styles.image : styles.imageNone)} source={require(props.imageURL)} />
-        <View style={[styles.message, { ...(props.username === props.params.username ? {backgroundColor: props.colorBG} : {backgroundColor: '#EBE6DA'}) }]}>
+    <View style={[styles.messageWrapper, { ...(props.username === user.firstName ? styles.messageSent : styles.messageRecieved) }]}>
+        {/* <Image style={(props.username != props.params.username ? styles.image : styles.imageNone)} source={require(props.imageURL)} /> */}
+        <View style={[styles.message, { ...(props.username === user.firstName ? {backgroundColor: props.colorBG} : {backgroundColor: '#EBE6DA'}) }]}>
             <Text style={styles.messageText}>{props.text}</Text>
         </View>
         <Text style={styles.timeText}>{new Date(props.createdAt).getHours()}:{String(new Date(props.createdAt).getMinutes()).padStart(2, '0')}</Text>

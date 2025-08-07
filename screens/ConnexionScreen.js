@@ -1,4 +1,6 @@
 import { Button, StyleSheet, Text, View, Image, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
+import { useDispatch } from 'react-redux';
+import { updateInfo } from '../reducers/user';
 import { useUser } from '../contexts/UserContext';
 import Input from '../components/Input';
 import SignBtn from '../components/signBtn';
@@ -11,25 +13,34 @@ export default function ConnectionScreen({ navigation }) {
     const { setProfil } = useUser();
 
 
+    const dispatch= useDispatch()
+
+
     const connection = () =>{
-        fetch('http://192.33.0.53:3000/users/signin',{
+        fetch('http://192.33.0.108:3000/users/signin',{
+
              method: 'POST',
 
         headers: { 'Content-Type': 'application/json' },
 
+
         body: JSON.stringify({email, password:mdp})
-    }).then(response=>response.json()).then(data=>{console.log(data)
-        if(data.data==="BABYSITTER"){
+
+    }).then(response=>response.json()).then(data=>{
+        dispatch(updateInfo({token:data.user.token}))
+        if(data.user.role==="BABYSITTER"){
             setProfil('babysitter')
             navigation.navigate('TabNavigator')
-        } else if(data.data==="PARENT"){
+        } else if(data.user.role==="PARENT"){
             setProfil('parent')
             navigation.navigate('TabNavigator')
         } else {
-            setError('Mot de passe ou Email incorrect')
+            navigation.navigate('SelectProfil')
         }
     })
+
     }
+
 
     return (
      <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>  

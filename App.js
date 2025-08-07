@@ -9,6 +9,14 @@ import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import {useEffect} from 'react';
 
+//redux
+import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
+import user from './reducers/user';
+const store = configureStore({
+  reducer: { user },
+});
+
 SplashScreen.preventAutoHideAsync();
 
 
@@ -36,6 +44,7 @@ import SearchScreen from './screens/SearchScreen';
 
 // Screens Baby.
 import PreviewParentScreen from './screens/PreviewParentScreen';
+
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -92,6 +101,7 @@ export default function App() {
     return null;
   }
   return (
+    <Provider store={store}>
     <UserProvider>
 
       <NavigationContainer>
@@ -123,6 +133,7 @@ export default function App() {
       </NavigationContainer>
       
     </UserProvider>
+    </Provider>
   );
 }
 
