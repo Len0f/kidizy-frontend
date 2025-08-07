@@ -16,35 +16,35 @@ export default function InscriptionScreen({ navigation }) {
 
     const handleInscription = async () => {
         setErrorMessage(''); // pour réinitialiser les erreurs à chaque tentatives.
-        
-        if (password !== samePassword) {
-            setErrorMessage("Les mots de passe ne correspondent pas");
-            return;
-        }
+        navigation.navigate('SelectProfil');
+        // if (password !== samePassword) {
+        //     setErrorMessage("Les mots de passe ne correspondent pas");
+        //     return;
+        // }
 
 
-        fetch('http://192.33.0.8:3000/users/signup', {
+        // fetch('http://192.33.0.8:3000/users/signup', {
 
-            method: 'POST',
-            headers: {
-                'Content-Type' : 'application/json'
-            },
-            body: JSON.stringify({
-                email,
-                password,
-            }),
-        })
-        .then ((response) => response.json())
-        .then ((dataUser) => {
-            if(dataUser.result) {
-                dispatch(updateInfo({
-                    token:dataUser.token
-                }))
-                navigation.navigate('SelectProfil');
-            } else {
-                setErrorMessage(dataUser.error || `Erreur inconnue lors de l'inscription`);
-            }
-        })
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type' : 'application/json'
+        //     },
+        //     body: JSON.stringify({
+        //         email,
+        //         password,
+        //     }),
+        // })
+        // .then ((response) => response.json())
+        // .then ((dataUser) => {
+        //     if(dataUser.result) {
+        //         dispatch(updateInfo({
+        //             token:dataUser.token
+        //         }))
+        //         navigation.navigate('SelectProfil');
+        //     } else {
+        //         setErrorMessage(dataUser.error || `Erreur inconnue lors de l'inscription`);
+        //     }
+        // })
     };
 
     return (
