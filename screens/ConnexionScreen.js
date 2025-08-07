@@ -5,7 +5,6 @@ import Input from '../components/Input';
 import SignBtn from '../components/signBtn';
 import { useState } from 'react';
 import { useSelector,useDispatch } from 'react-redux';
-import { updateInfo } from '../reducers/user';
 
 export default function ConnectionScreen({ navigation }) {
 
