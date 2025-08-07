@@ -1,7 +1,9 @@
-import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
-import { useState } from 'react';
+import { Button, StyleSheet, Text, TextInput, View, TouchableOpacity } from 'react-native';
+import { useState, useEffect } from 'react';
 import { useUser } from '../contexts/UserContext';
+import { useSelector } from 'react-redux';
 import Pusher from 'pusher-js/react-native';
+import Message from '../components/Message';
 //pusher
  const pusher = new Pusher('92055fe186a81018cec0', { cluster: 'eu' });
  const BACKEND_ADDRESS = 'http://192.33.0.108:3000';
@@ -21,16 +23,24 @@ export default function ChatScreen({ navigation, route }) {
     //connexion pusher
      useEffect(() => {
     (() => {
-      fetch(`${BACKEND_ADDRESS}/messages/${user.firstName}`, { method: 'PUT' });
+      fetch(`${BACKEND_ADDRESS}/messages/${user.token}`, { method: 'PUT' });
 
       const subscription = pusher.subscribe('chat');
       subscription.bind('pusher:subscription_succeeded', () => {
         subscription.bind('message', handleReceiveMessage);
       });
     })();
-
-    return () => fetch(`${BACKEND_ADDRESS}/messages/${user.firstName}`, { method: 'DELETE' });
+    return () => fetch(`${BACKEND_ADDRESS}/messages/${user.token}`, { method: 'DELETE' });
   }, [user.firstName]);
+
+  // recupérations des anciens message
+  useEffect(()=>{
+    fetch(`${BACKEND_ADDRESS}/messages/${user.token}`).then(response=>response.json())
+    .then(data=>{
+        data.messagesUser.map(element=>handleReceiveMessage(element))
+        
+    })
+  },[])
 
   const handleReceiveMessage = (data) => {
     setMessages(messages => [...messages, data]);
@@ -75,8 +85,22 @@ export default function ChatScreen({ navigation, route }) {
 
     return (
         <View style={styles.container}>
+            
             <Text>Chat Screen</Text>
-
+             
+          {
+            messages.map((message, i) => (
+            <Message createdAt={message.createdAt} key={i} text={message.message} username={message.username} colorBG={'#9FC6E7'}/>
+            ))
+          }
+        
+        <TextInput onChangeText={(value)=>setMessageText(value)}value={messageText} placeholder='Message'/>
+           <Button
+                        title="send"
+                        onPress={() => {
+                            handleSendMessage()
+                        }}
+                    /> 
             {/* Partie babysitter */}
             {!isParent && (
                 <>
