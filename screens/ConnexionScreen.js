@@ -5,12 +5,14 @@ import Input from '../components/Input';
 import SignBtn from '../components/signBtn';
 import { useState } from 'react';
 import { useSelector,useDispatch } from 'react-redux';
+import { updateInfo } from '../reducers/user';
 
 export default function ConnectionScreen({ navigation }) {
 
     const [email, setEmail] = useState('')
     const [mdp, setMdp] = useState('')
     const { setProfil } = useUser();
+
 
     const dispatch= useDispatch()
 
