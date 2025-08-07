@@ -1,5 +1,7 @@
-import { Button, StyleSheet, Text, View } from 'react-native';
+import { Button, StyleSheet, Text, View, Image } from 'react-native';
 import { useUser } from '../contexts/UserContext';
+import Input from '../components/Input';
+import { useState } from 'react';
 
 export default function InfoInscriptScreen({ navigation }) {
     const { profil } = useUser();
@@ -14,6 +16,10 @@ export default function InfoInscriptScreen({ navigation }) {
             
             {profil === 'parent' ? (
                 <>
+                <View>
+                    <Image style={styles.logo}source={require('../assets/KidizyLogo.png')} />
+                    <Image style={styles.photo}source={require('../assets/babysitter2.png')} />
+                </View>
                     <Text>Photo</Text>
                     <Text>Nom</Text>
                     <Text>Prénom</Text>

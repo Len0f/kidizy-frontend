@@ -5,6 +5,21 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { UserProvider, useUser } from './contexts/UserContext';
 
+import { useFonts } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
+import {useEffect} from 'react';
+
+//redux
+import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
+import user from './reducers/user';
+const store = configureStore({
+  reducer: { user },
+});
+
+SplashScreen.preventAutoHideAsync();
+
+
 // Écrans de connexion / inscription
 import ConnexionScreen from './screens/ConnexionScreen';
 import InscriptionScreen from './screens/InscriptionScreen';
@@ -29,6 +44,7 @@ import SearchScreen from './screens/SearchScreen';
 
 // Screens Baby.
 import PreviewParentScreen from './screens/PreviewParentScreen';
+
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -71,7 +87,21 @@ const TabsRouter = () => {
 }
 
 export default function App() {
+
+  const [loaded, error] = useFonts({
+    'Montserrat': require('./assets/fonts/Montserrat-VariableFont_wght.ttf'),
+  });
+  useEffect(() => {
+    if (loaded || error) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded, error]);
+
+  if (!loaded && !error) {
+    return null;
+  }
   return (
+    <Provider store={store}>
     <UserProvider>
 
       <NavigationContainer>
@@ -101,7 +131,9 @@ export default function App() {
 
         </Stack.Navigator>
       </NavigationContainer>
+      
     </UserProvider>
+    </Provider>
   );
 }
 

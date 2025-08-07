@@ -24,7 +24,11 @@ export default function FilterBar(props) {
             props.setNoteFilter(value === "Toutes" ? "" : Number(value.split(" ")[0])); // Ex: 4 étoiles = 4 (nombre)
         }
         if (currentFilter === 'location') {
-            props.setLocationFilter(value === "Toutes" ? "" : Number(value.split(" ")[0])); // 10 km = 10 (nombre)
+            if (value === "Toutes") {
+                props.setLocationFilter("");
+            } else {
+                props.setLocationFilter(Number(value.split(" ")[0])); // 10 km = 10 (nombre)
+            }
         }
         if (currentFilter === 'age') {
             if (value === "Tous") props.setAgeFilter("");

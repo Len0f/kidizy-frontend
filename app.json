@@ -4,13 +4,14 @@
     "slug": "kidizy",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/KidizyLogo.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
+      "image": "./assets/KidizyLogo.png",
+      "resizeMode": "cover",
       "backgroundColor": "#ffffff"
+      
     },
     "ios": {
       "supportsTablet": true
@@ -24,6 +25,27 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+       "plugins": [
+      [
+        "expo-font",
+        {
+          "fonts": ["./assets/fonts/Montserrat-VariableFont_wght.ttf"],
+          "android": {
+            "fonts": [
+              {
+                "fontFamily": "Source Serif 4",
+                "fontDefinitions": [
+                  {
+                    "path": "./assets/fonts/Montserrat-VariableFont_wght.ttf",
+                    "weight": 800
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    ]
   }
 }

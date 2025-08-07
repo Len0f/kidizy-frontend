@@ -10,7 +10,7 @@ export default function NotationScreen({ navigation }) {
             />
         </View>
     );
-}
+};
 
 const styles = StyleSheet.create({
     container: {
