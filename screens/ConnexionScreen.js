@@ -6,6 +6,7 @@ import SignBtn from '../components/signBtn';
 import { useState } from 'react';
 import { useSelector,useDispatch } from 'react-redux';
 
+
 export default function ConnectionScreen({ navigation }) {
 
     const [email, setEmail] = useState('')

@@ -2,6 +2,8 @@ import { Button, StyleSheet, Text, View, Image, TouchableOpacity, KeyboardAvoidi
 import { useState } from 'react';
 import Input from '../components/Input';
 import SignBtn from '../components/signBtn';
+import { updateInfo } from '../reducers/user';
+import { useDispatch } from 'react-redux';
 
 export default function InscriptionScreen({ navigation }) {
 
@@ -9,6 +11,7 @@ export default function InscriptionScreen({ navigation }) {
     const [password, setPassword] = useState('');
     const [samePassword, setSamePassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    const dispatch= useDispatch()
 
     const handleInscription = async () => {
         setErrorMessage(''); // pour réinitialiser les erreurs à chaque tentatives.
