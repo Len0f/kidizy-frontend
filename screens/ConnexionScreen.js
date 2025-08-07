@@ -23,7 +23,7 @@ export default function ConnectionScreen({ navigation }) {
 
         body: JSON.stringify({email, password:mdp})
     }).then(response=>response.json()).then(data=>{
-        dispatch(updateInfo({token:data.user.token}))
+        dispatch(updateInfo({token:data.user.token, id: data.user._id}))
         if(data.user.role==="BABYSITTER"){
             setProfil('babysitter')
             navigation.navigate('TabNavigator')
