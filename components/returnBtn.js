@@ -4,11 +4,13 @@ import {Text, TouchableOpacity, StyleSheet,View} from 'react-native';
 
 export default function ReturnBtn(props){
 
-  
+  const handleReturn = ()=>{
+    props.returnScreen()
+  }
 
     return (
             
-          <TouchableOpacity style={styles.btnContainer}>
+          <TouchableOpacity style={styles.btnContainer} onPress={()=>handleReturn()}>
             <View style={styles.triangle}></View>
           </TouchableOpacity>
         
@@ -26,7 +28,13 @@ const styles = StyleSheet.create({
     padding:15,
     width:55,
     height:55,
-    justifyContent:'center'
+    justifyContent:'center',
+    //generation des ombres
+    shadowColor: "#263238",
+    shadowOffset: {width: 0,height: 2},
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   triangle: {
    width: 0,

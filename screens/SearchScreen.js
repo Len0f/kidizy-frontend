@@ -1,85 +1,71 @@
 import { 
-    Button, 
     FlatList, 
     Image, 
     StyleSheet, 
-    SafeAreaView, 
-    Text, 
-    TouchableOpacity, 
+    SafeAreaView,
     View 
 } from 'react-native';
 import { useEffect, useState } from 'react';
-import { Picker } from "@react-native-picker/picker";
-import * as Location from 'expo-location';
+// import * as Location from 'expo-location'; (PAS BESOIN POUR LA SIMULATION)
 
 import SearchCard from '../components/searchCard';
 import FilterBar from '../components/filterBar';
 
-// Data exemple fictif d'un parent.
-const parentTest = {
-  firstName: "Sophie",
-  lastName: "Martin",
+// -----------------------Données en dur pour simulation (à retirer plus tard)
+const parentFalse = {
+  firstName: 'Sophie',
+  lastName: 'Martin',
   location: {
-    lat: "48.8570",
-    lon: "2.3500",
-    address: "Paris, France"
-  },
-  parentInfos: {
-    kids: [
-      { firstName: "Emma", age: "5" },
-      { firstName: "Lucas", age: "8" }
-    ]
+    lat: '48.8570',
+    lon: '2.3500',
+    address: 'Paris, France'
   }
 };
 
-
-// Data exemple fictif de babysitters.
-const babysittersData = [
-  {
-    firstName: "Anakin",
-    lastName: "Skywalker",
-    avatar: require("../assets/babysitter2.png"),
-    rating: 4.5,
-    location: {
-        lat: "48.8500",
-        lon: "2.3300",
-        address: "Paris, France"
-    },
-    price: 18,
-    age: 26,
-    babysits: 42
-  },
+const babysittersFalse = [
     {
-    firstName: "Hannibal",
-    lastName: "Lecter",
-    avatar: require("../assets/babysitter3.jpg"),
-    rating: 2.5,
-    location: {
-        lat: "48.9000",
-        lon: "2.3300",
-        address: "Paris, France"
+        firstName: 'Anakin',
+        lastName: 'Skywalker',
+        rating: 4.5,
+        location: { lat: '48.8520', lon: '2.3480', address: 'Paris' }, // ~2km - Visible avec: 5km, 10km, 20km, Toutes
+        price: 18,
+        babysits: 42,
+        avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
+        age: '26',
     },
-    price: 20,
-    age: 40,
-    babysits: 42
-  },
-  {
-    firstName: "Penny",
-    lastName: "Wise",
-    avatar: require("../assets/babysitter1.jpg"),
-    rating: 3,
-    location: {
-      lat: "43.6045",
-      lon: "1.4442",
-      address: "Toulouse, France"
+    {
+        firstName: 'Leia',
+        lastName: 'Organa',
+        rating: 4.9,
+        location: { lat: '48.8800', lon: '2.3800', address: 'Paris' }, // ~7km - Visible avec: 10km, 20km, Toutes
+        price: 20,
+        babysits: 50,
+        avatar: 'https://randomuser.me/api/portraits/women/2.jpg',
+        age: '24',
     },
-    price: 15,
-    age: 84,
-    babysits: 28
-  }
+    {       
+        firstName: 'Luke',
+        lastName: 'Skywalker',
+        rating: 3.2,
+        location: { lat: '48.9000', lon: '2.4200', address: 'Paris' }, // ~15km - Visible avec: 20km, Toutes
+        price: 17,
+        babysits: 30,
+        avatar: 'https://randomuser.me/api/portraits/men/3.jpg',
+        age: '22',
+    },
+    {
+        firstName: 'Rey',
+        lastName: 'Palpatine',
+        rating: 2.5,
+        location: { lat: '48.9300', lon: '2.4800', address: 'Paris' }, // ~25km - Visible avec: Toutes seulement
+        price: 15,
+        babysits: 18,
+        avatar: 'https://randomuser.me/api/portraits/women/4.jpg',
+        age: '20',
+    },
 ];
 
-//Calcul des distances avec Haversine (déjà utilisé dans mappulator)
+// -------------------------- CALCULS DISTANCE HAVERSINE (déjà utilisé dans mappulator)
 function getDistanceKm(lat1, lon1, lat2, lon2) {
   const R = 6371; // Rayon de la Terre en km
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
@@ -93,70 +79,112 @@ function getDistanceKm(lat1, lon1, lat2, lon2) {
   return R * c; // km
 }
 
-export default function SearchScreen({ navigation }) {
+export default function SearchScreen() {
+
+    // Etat des users
+    const [babysitters, setBabysitters] = useState([]);
+    const [parent, setParent] = useState(null);
+    
+    // Localisation du parent
+    const [parentLocation, setParentLocation] = useState(null);
 
     // Etats des filtres
     const [noteFilter, setNoteFilter] = useState('');
     const [locationFilter, setLocationFilter] = useState('');
     const [ageFilter, setAgeFilter] = useState('');
 
-    // Localisation du parent
-    const [parentLocation, setParentLocation] = useState(null);
-
-    //On récupère la position du parent (challenge mappulator).
+// -------------------------- RECUPERATION DE LA POSITION DU PARENT (challenge mappulator).
     useEffect(() => {
-        (async() => {
-            let { status } = await Location.requestForegroundPermissionsAsync();
-
-            if(status !== "granted") {
-                console.log("Permission de localisation refusée");
-                return;
-            }
-
-            let location = await Location.getCurrentPositionAsync({});
-            setParentLocation(
-                parentTest.location // a virer et remplacer par le com' dessous pour la bdd.
-                // {lat: location.coords.latitude.toString(),
-                // lon: location.coords.longitude.toString()}
-        );
-        }) ();
+        // ------------------ ON FORCE LES DONNEES DE SIMULATIONS
+        setParent(parentFalse);
+        setParentLocation(parentFalse.location);
+        setBabysitters(babysittersFalse);
     }, []);
 
 
-    // On filtre selon les 3 critères.
-    const filteredBabysitters = babysittersData.filter((b) => {
+    // ---------------------- RECUPERATION DU PARENT VIA TOKEN
+
+    //         const token = "PARENT_TOKEN" // a remplacer dynamiquement
+
+    //         fetch(`https:192.33.0.42:3000/users/me/${token}`)
+    //         .then(response => response.json())
+    //         .then ((data) => {
+    //             if(data.result) {
+    //                 setParent(data.user);
+    //                 setParentLocation(data.user.location || currentPosition);
+    //             } else {
+    //                 console.log("Erreur parent :", data.error);
+    //             }
+    //         });
+
+
+    // ---------------------- RECUPERATION DES BABYSITTERS
+
+    //         const requests = babysitterIds.map(id =>
+    //             fetch(`https:192.33.0.42:3000/users/id/${id}`)
+    //             .then(response => response.json())
+    //             .then((data) => {
+    //                 if (data.result) {
+    //                     return data.user;
+    //                 } else {
+    //                     return null;
+    //                 }
+    //             })
+    //         );
+
+    //         // La fonction promise.all : créer un tableau de promesse, on attend que toutes les promesses soient resolues (ou qu'une échoue), retourne un tableau de résultats.
+    //         // Permet d'attendre que tous les fetch soient terminées avant de mettre à jour l'état setBabysitters.
+    //         Promise.all(requests).then((results) => {
+    //             const validBabysitters = results.filter(Boolean);
+    //             setBabysitters(validBabysitters);
+    //         });
+    //     }) ();
+    // }, []);
+
+
+// ----------------------- FILTRE DES BABYSITTERS : 3 CRITERES
+
+    const filteredBabysitters = babysitters.filter((b) => {
         let keep = true;
 
-        // Filtrer par note
+        // -------------------------- PAR NOTE
+
         if (noteFilter) {
             keep = keep && Math.floor(b.rating) === parseInt(noteFilter);
             // Keep && permet de combiner les filtres.
         }
 
-        // Filtrer par localisation
-        if (locationFilter && parentLocation) {
-            // Calcul de la distance entre le parent et le babysitter
-            const distance = getDistanceKm(
-                parseFloat(parentLocation.lat), // Transforme le string en nombre pour la fct getDistance
-                parseFloat(parentLocation.lon),
-                parseFloat(b.location.lat), 
-                parseFloat(b.location.lon)
-            );
+        // -------------------------- PAR LOCALISATION
 
-            // On garde uniquement les babysitter dans le rayon choisi.
-            keep = keep && distance <= locationFilter;
-            // parseInt transforme la valeur du rayon (ex: "10") en nombre
+        if (locationFilter && parentLocation) {
+            
+            if (b.location?.lat && b.location?.lon) {
+                // Calcul de la distance entre le parent et le babysitter
+                const distance = getDistanceKm(
+                    parseFloat(parentLocation.lat), // Transforme le string en nombre pour la fct getDistance
+                    parseFloat(parentLocation.lon),
+                    parseFloat(b.location.lat), 
+                    parseFloat(b.location.lon)
+                );
+
+                // On garde uniquement les babysitter dans le rayon choisi.
+                keep = keep && distance <= locationFilter;
+            } else {
+                // On exclut les bb sans positions si le filtre distance est actif.
+                keep = false;
+            }
         }
 
-        // Filtrer par âge.
-        if (ageFilter) {
+        // -------------------------- PAR AGE
+
+        if (ageFilter && b?.age) {
             const [min, max] = ageFilter.split("-").map(Number); // pour faire les intervales d'âges.
-            keep = keep && b.age >= min && b.age <= (max || b.age);
+            const age = parseInt(b.age);
+            keep = keep && age >= min && age <= (max || age);
         }
 
         return keep;
     })
-
 
     return (
         <SafeAreaView style={styles.container}>
@@ -176,14 +204,18 @@ export default function SearchScreen({ navigation }) {
                 setAgeFilter={setAgeFilter}
             />
            
-            {/* Liste Babysitters filtrés */}
+            {/* LISTE DES BABYSITTERS FILTRES */}
             <FlatList
                 data={filteredBabysitters}
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({item}) => {
                     let distanceText = "";
                     
-                    if (parentLocation) {
+                    if (
+                        parentLocation &&
+                        item.location?.lat &&
+                        item.location?.lon
+                    ) {
                         const dist = getDistanceKm(
                             parseFloat(parentLocation.lat),
                             parseFloat(parentLocation.lon),
@@ -208,7 +240,7 @@ export default function SearchScreen({ navigation }) {
                     );
                 }}
             />
-           
+
         </SafeAreaView>
     );
 }
@@ -234,13 +266,5 @@ const styles = StyleSheet.create({
     sort: {
         fontSize: 16,
         marginBottom: 8
-    },
-
-    picker: {
-        backgroundColor: "#EBE6DA",
-        marginBottom: 12,
-        borderRadius: 12,
-        borderRadius: 8,
-        height: 40
     },
 });
