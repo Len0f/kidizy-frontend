@@ -6,7 +6,7 @@ import Pusher from 'pusher-js/react-native';
 import Message from '../components/Message';
 //pusher
  const pusher = new Pusher('92055fe186a81018cec0', { cluster: 'eu' });
- const BACKEND_ADDRESS = 'http://192.33.0.108:3000';
+ const BACKEND_ADDRESS = 'http://192.33.0.42:3000';
 
 export default function ChatScreen({ navigation, route }) {
     const { profil } = useUser();

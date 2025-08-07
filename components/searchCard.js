@@ -41,6 +41,7 @@ export default function SearchCard(props){
                     paddingHorizontal: 12,
                     width:'auto'
                     }}
+                    clickNav={props.onPress}
                   />
             </View>
           </View>
