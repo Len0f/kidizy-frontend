@@ -3,43 +3,43 @@ import { useState } from 'react';
 
 export default function InscriptionScreen({ navigation }) {
 
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [samePassword, setSamePassword] = useState('');
-    const [errorMessage, setErrorMessage] = useState('');
+    // const [email, setEmail] = useState('');
+    // const [password, setPassword] = useState('');
+    // const [samePassword, setSamePassword] = useState('');
+    // const [errorMessage, setErrorMessage] = useState('');
 
-    const handleInscription = async () => {
-        setErrorMessage(''); // pour réinitialiser les erreurs à chaque tentatives.
+    // const handleInscription = async () => {
+    //     setErrorMessage(''); // pour réinitialiser les erreurs à chaque tentatives.
         
-        if (password !== samePassword) {
-            setErrorMessage("Les mots de passe ne correspondent pas");
-            return;
-        }
+    //     if (password !== samePassword) {
+    //         setErrorMessage("Les mots de passe ne correspondent pas");
+    //         return;
+    //     }
 
-        fetch('http://192.33.0.35:3000/users/signup', {
-            method: 'POST',
-            headers: {
-                'Content-Type' : 'application/json'
-            },
-            body: JSON.stringify({
-                email,
-                password,
-            }),
-        })
-        .then ((response) => response.json())
-        .then ((dataUser) => {
-            if(dataUser.result) {
-                navigation.navigate('SelectProfil');
-            } else {
-                setErrorMessage(dataUser.error || `Erreur inconnue lors de l'inscription`);
-            }
-        })
-    };
+    //     fetch('http://192.33.0.34:3000/users/signup', {
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type' : 'application/json'
+    //         },
+    //         body: JSON.stringify({
+    //             email,
+    //             password,
+    //         }),
+    //     })
+    //     .then ((response) => response.json())
+    //     .then ((dataUser) => {
+    //         if(dataUser.result) {
+    //             navigation.navigate('SelectProfil');
+    //         } else {
+    //             setErrorMessage(dataUser.error || `Erreur inconnue lors de l'inscription`);
+    //         }
+    //     })
+    // };
 
     return (
         <View style={styles.container}>
             <Text>Kidizy Inscription</Text>
-            <TextInput
+            {/* <TextInput
                 placeholder='Entrez votre Email'
                 onChangeText={setEmail}
                 value={email}
@@ -55,11 +55,12 @@ export default function InscriptionScreen({ navigation }) {
                 value={samePassword}
             />
 
-            {errorMessage ? <Text>{errorMessage}</Text> : null}
+            {errorMessage ? <Text>{errorMessage}</Text> : null} */}
 
             <Button
                 title="Inscription"
-                onPress={() => handleInscription()}
+                onPress={() => navigation.navigate('SelectProfil')}
+                //onPress={() => handleInscription()}
             />
 
             <Text>Bouton Google</Text>
