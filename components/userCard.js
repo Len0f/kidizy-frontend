@@ -29,6 +29,7 @@ export default function UserCard(props){
                     paddingHorizontal: 12,
                     width:'auto'
                     }}
+                  onPress={props.onPress}
                   />
             </View>
           </View>

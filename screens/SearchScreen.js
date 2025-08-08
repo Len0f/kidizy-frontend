@@ -15,17 +15,16 @@ import SearchCard from '../components/searchCard';
 import FilterBar from '../components/filterBar';
 
 // -----------------------Données en dur pour simulation (à retirer plus tard)
-const parentFalse = {
-  firstName: 'Sophie',
-  lastName: 'Martin',
-  location: {
-    lat: '48.8570',
-    lon: '2.3500',
-    address: 'Paris, France'
-  }
-};
 
-
+// const parentFalse = {
+//   firstName: 'Sophie',
+//   lastName: 'Martin',
+//   location: {
+//     lat: '48.8570',
+//     lon: '2.3500',
+//     address: 'Paris, France'
+//   }
+// };
 
 // -------------------------- CALCULS DISTANCE HAVERSINE (déjà utilisé dans mappulator)
 function getDistanceKm(lat1, lon1, lat2, lon2) {
@@ -92,10 +91,6 @@ export default function SearchScreen() {
         });
     }, []);
 
-    // ---------------------- RECUPERATION DU PARENT VIA TOKEN
-
-
-
 // ----------------------- FILTRE DES BABYSITTERS : 3 CRITERES
     const filteredBabysitters = babysitters.filter((b) => {
         let keep = true;
@@ -148,7 +143,6 @@ export default function SearchScreen() {
             );
             keep = keep && isAvailableThatHour;
         }
-
 
         return keep;
     })
