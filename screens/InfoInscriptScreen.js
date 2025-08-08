@@ -6,6 +6,7 @@ import FranceConnectBtn from '../components/franceConnectBtn';
 import ReturnBtn from '../components/returnBtn';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
+import {url} from '../App'; // Import the API URL from App.js
 
 export default function InfoInscriptScreen({ navigation }) {
     const { profil } = useUser();
@@ -25,7 +26,7 @@ export default function InfoInscriptScreen({ navigation }) {
 
 
     const handleSubmit = async ()=> {
-        const sendinfo = await fetch('htttp://192.0.33.108:3000/users',{
+        const sendinfo = await fetch(`${url}users`,{
              method: 'PUT',
 
              headers: { 'Content-Type': 'application/json' },
@@ -41,7 +42,7 @@ export default function InfoInscriptScreen({ navigation }) {
                         criminalRecord: cj,
                         },
                     parentInfos:{
-                        kids:[{lastEnfant}]
+                        kids: lastEnfant
                     }
                     })
         })
@@ -57,13 +58,13 @@ export default function InfoInscriptScreen({ navigation }) {
     }
 
     const handleAdd = () => {
-        setLastEnfant([...lastEnfant, {enfants:'',ages:''}])
+        setLastEnfant([...lastEnfant, {firstName:'',age:''}])
     };
 
     const modifAge = (age,i) => {
         setLastEnfant(lastEnfant.map((prenom,t) => {
       if (t === i) {
-        return {enfants:prenom.enfants,ages:age};
+        return {firstName:prenom.firstName,age:age};
       } else {
         return prenom;
       }
@@ -73,7 +74,7 @@ export default function InfoInscriptScreen({ navigation }) {
     const modifEnfant = (prenom,i) => {
         setLastEnfant(lastEnfant.map((Ages,t) => {
       if (t === i) {
-        return {enfants:prenom,ages:Ages.ages};
+        return {firstName:prenom,age:Ages.age};
       } else {
         return Ages;
       }
