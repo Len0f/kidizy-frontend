@@ -102,7 +102,7 @@ const TabsRouter = () => {
       tabBarInactiveTintColor: '#979797',
       tabBarActiveBackgroundColor:'#FFFBF0',
       tabBarInactiveBackgroundColor:'#EBE6DA',
-      tabBarLabelStyle:{fontFamily:'Montserrat', fontWeight:'500', fontSize:'14'},
+      tabBarLabelStyle:{fontFamily:'Montserrat', fontWeight:'500', fontSize:14},
       headerShown: false,
      
     })}>
