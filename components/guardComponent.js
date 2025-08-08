@@ -4,21 +4,23 @@ import {Text, TouchableOpacity, StyleSheet,View} from 'react-native';
 
 export default function GuardComponent(props){
 
-  
+  const handleClick = ()=>{
+    props.click()
+  }
 
     return (
             
-          <TouchableOpacity style={[styles.guardComponentContainer, props.guardStyle]}>
+          <TouchableOpacity style={[styles.guardComponentContainer, props.guardStyle]} onPress={()=>handleClick()}>
             <View style={styles.header}>
                 <Text style={styles.title}>{props.title}</Text>
                 <View style={styles.noRead}>
-                  <Text style={(props.title === "Messages" && props.count !== '0'? styles.secondaryTitle : styles.secondaryTitleNone) }>Non lus</Text>
+                  <Text style={(props.title === "Messages" && props.count !== 0? styles.secondaryTitle : styles.secondaryTitleNone) }>Non lus</Text>
                 </View>
                 
             </View>
             <View style={styles.mainContent}>
-              <View style={[styles.countContainer,{...(props.count === '0'? {backgroundColor:'#EBE6DA'} : {backgroundColor:props.colorCount})} ]}>
-                {/* <View style={[styles.countContainer, props.colorCount]}> */}
+              <View style={[styles.countContainer,{...(props.count === 0 ? {backgroundColor:'#EBE6DA'} : {backgroundColor:props.colorCount})} ]}>
+                
                     <Text style={styles.count}>{props.count}</Text>
                 </View>
             </View>
@@ -36,7 +38,8 @@ const styles = StyleSheet.create({
     backgroundColor:'#FFFBF0', //couleur à passer en #98C2E6 si c'est un parent ou #EBE6DA
     borderRadius: 8,
     padding:15,
-    margin:10,
+    marginHorizontal:10,
+    marginVertical:15,
     //generation des ombres
     shadowColor: "#263238",
     shadowOffset: {width: 0,height: 2},
