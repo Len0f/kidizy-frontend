@@ -55,7 +55,7 @@ export default function NotationScreen({ navigation }) {
                     </View>
                     <View style={styles.containeBtn}>
                         <MainBtn 
-                            userStyle ={{color: color}}
+                            userStyle ={{backgroundColor: color}}
                             btnTitle={"Soumettre"} 
                             clickNav={handleSubmit}
                         />
