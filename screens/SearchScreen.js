@@ -1,3 +1,4 @@
+
 import { 
     FlatList, 
     Image, 
@@ -23,64 +24,64 @@ const parentFalse = {
   }
 };
 
-const babysittersFalse = [
-    {
-        firstName: 'Anakin',
-        lastName: 'Skywalker',
-        rating: 4.5,
-        location: { lat: '48.8520', lon: '2.3480', address: 'Paris' }, // ~2km - Visible avec: 5km, 10km, 20km, Toutes
-        price: 18,
-        babysits: 42,
-        avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
-        age: '26',
-        availability: [
-            { day: 'Lundi', startHour: '08:00', endHour: '12:00' },
-            { day: 'Mercredi', startHour: '14:00', endHour: '18:00' }
-        ]
-    },
-    {
-        firstName: 'Leia',
-        lastName: 'Organa',
-        rating: 4.9,
-        location: { lat: '48.8800', lon: '2.3800', address: 'Paris' }, // ~7km - Visible avec: 10km, 20km, Toutes
-        price: 20,
-        babysits: 50,
-        avatar: 'https://randomuser.me/api/portraits/women/2.jpg',
-        age: '24',
-         availability: [
-            { day: 'Lundi', startHour: '09:00', endHour: '17:00' },
-            { day: 'Vendredi', startHour: '10:00', endHour: '13:00' }
-        ]
-    },
-    {       
-        firstName: 'Luke',
-        lastName: 'Skywalker',
-        rating: 3.2,
-        location: { lat: '48.9000', lon: '2.4200', address: 'Paris' }, // ~15km - Visible avec: 20km, Toutes
-        price: 17,
-        babysits: 30,
-        avatar: 'https://randomuser.me/api/portraits/men/3.jpg',
-        age: '22',
-         availability: [
-            { day: 'Jeudi', startHour: '09:00', endHour: '17:00' },
-            { day: 'Samedi', startHour: '20:00', endHour: '23:00' }
-        ]
-    },
-    {
-        firstName: 'Rey',
-        lastName: 'Palpatine',
-        rating: 2.5,
-        location: { lat: '48.9300', lon: '2.4800', address: 'Paris' }, // ~25km - Visible avec: Toutes seulement
-        price: 15,
-        babysits: 18,
-        avatar: 'https://randomuser.me/api/portraits/women/4.jpg',
-        age: '20',
-         availability: [
-            { day: 'Dimanche', startHour: '10:00', endHour: '15:00' },
-            { day: 'Mercredi', startHour: '14:00', endHour: '18:00' }
-        ]
-    },
-];
+// const babysittersFalse = [
+//     {
+//         firstName: 'Anakin',
+//         lastName: 'Skywalker',
+//         rating: 4.5,
+//         location: { lat: '48.8520', lon: '2.3480', address: 'Paris' }, // ~2km - Visible avec: 5km, 10km, 20km, Toutes
+//         price: 18,
+//         babysits: 42,
+//         avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
+//         age: '26',
+//         availability: [
+//             { day: 'Lundi', startHour: '08:00', endHour: '12:00' },
+//             { day: 'Mercredi', startHour: '14:00', endHour: '18:00' }
+//         ]
+//     },
+//     {
+//         firstName: 'Leia',
+//         lastName: 'Organa',
+//         rating: 4.9,
+//         location: { lat: '48.8800', lon: '2.3800', address: 'Paris' }, // ~7km - Visible avec: 10km, 20km, Toutes
+//         price: 20,
+//         babysits: 50,
+//         avatar: 'https://randomuser.me/api/portraits/women/2.jpg',
+//         age: '24',
+//          availability: [
+//             { day: 'Lundi', startHour: '09:00', endHour: '17:00' },
+//             { day: 'Vendredi', startHour: '10:00', endHour: '13:00' }
+//         ]
+//     },
+//     {       
+//         firstName: 'Luke',
+//         lastName: 'Skywalker',
+//         rating: 3.2,
+//         location: { lat: '48.9000', lon: '2.4200', address: 'Paris' }, // ~15km - Visible avec: 20km, Toutes
+//         price: 17,
+//         babysits: 30,
+//         avatar: 'https://randomuser.me/api/portraits/men/3.jpg',
+//         age: '22',
+//          availability: [
+//             { day: 'Jeudi', startHour: '09:00', endHour: '17:00' },
+//             { day: 'Samedi', startHour: '20:00', endHour: '23:00' }
+//         ]
+//     },
+//     {
+//         firstName: 'Rey',
+//         lastName: 'Palpatine',
+//         rating: 2.5,
+//         location: { lat: '48.9300', lon: '2.4800', address: 'Paris' }, // ~25km - Visible avec: Toutes seulement
+//         price: 15,
+//         babysits: 18,
+//         avatar: 'https://randomuser.me/api/portraits/women/4.jpg',
+//         age: '20',
+//          availability: [
+//             { day: 'Dimanche', startHour: '10:00', endHour: '15:00' },
+//             { day: 'Mercredi', startHour: '14:00', endHour: '18:00' }
+//         ]
+//     },
+// ];
 
 // -------------------------- CALCULS DISTANCE HAVERSINE (déjà utilisé dans mappulator)
 function getDistanceKm(lat1, lon1, lat2, lon2) {
@@ -118,13 +119,19 @@ export default function SearchScreen() {
         // ------------------ ON FORCE LES DONNEES DE SIMULATIONS
         setParent(parentFalse);
         setParentLocation(parentFalse.location);
-        setBabysitters(babysittersFalse);
+
+        // setBabysitters(babysittersFalse);
+
+
+        // ---------------------- RECUPERATION DES BABYSITTERS
+        fetch('https://')
+    
+
     }, []);
 
 
     // ---------------------- RECUPERATION DU PARENT VIA TOKEN
 
-    //         const token = "PARENT_TOKEN" // a remplacer dynamiquement
 
     //         fetch(`https:192.33.0.42:3000/users/me/${token}`)
     //         .then(response => response.json())
@@ -136,30 +143,6 @@ export default function SearchScreen() {
     //                 console.log("Erreur parent :", data.error);
     //             }
     //         });
-
-
-    // ---------------------- RECUPERATION DES BABYSITTERS
-
-    //         const requests = babysitterIds.map(id =>
-    //             fetch(`https:192.33.0.42:3000/users/id/${id}`)
-    //             .then(response => response.json())
-    //             .then((data) => {
-    //                 if (data.result) {
-    //                     return data.user;
-    //                 } else {
-    //                     return null;
-    //                 }
-    //             })
-    //         );
-
-    //         // La fonction promise.all : créer un tableau de promesse, on attend que toutes les promesses soient resolues (ou qu'une échoue), retourne un tableau de résultats.
-    //         // Permet d'attendre que tous les fetch soient terminées avant de mettre à jour l'état setBabysitters.
-    //         Promise.all(requests).then((results) => {
-    //             const validBabysitters = results.filter(Boolean);
-    //             setBabysitters(validBabysitters);
-    //         });
-    //     }) ();
-    // }, []);
 
 
 // ----------------------- FILTRE DES BABYSITTERS : 3 CRITERES
