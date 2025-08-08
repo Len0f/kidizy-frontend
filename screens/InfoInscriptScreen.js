@@ -5,6 +5,7 @@ import MainBtn from '../components/mainBtn';
 import FranceConnectBtn from '../components/franceConnectBtn';
 import ReturnBtn from '../components/returnBtn';
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 
 export default function InfoInscriptScreen({ navigation }) {
     const { profil } = useUser();
@@ -19,9 +20,36 @@ export default function InfoInscriptScreen({ navigation }) {
     const [th, setTH] = useState('');
     const [lastEnfant, setLastEnfant] = useState([]);
 
+    const userToken=useSelector((state)=>state.user.value.token)
 
-    const handleSubmit = () => {
-        navigation.navigate('TabNavigator');
+
+
+    const handleSubmit = async ()=> {
+        const sendinfo = await fetch('htttp://192.0.33.108:3000/users',{
+             method: 'PUT',
+
+             headers: { 'Content-Type': 'application/json' },
+
+             body: JSON.stringify({
+                    firstName:prenom,
+                    lastName:nom,
+                    phone:telephone,
+                    token:userToken,
+                    babysitterInfos:{
+                        age: age,
+                        price: th,
+                        criminalRecord: cj,
+                        },
+                    parentInfos:{
+                        kids:[{lastEnfant}]
+                    }
+                    })
+        })
+        const res = await sendinfo.json()
+        if (res.result){
+
+        navigation.navigate('TabNavigator')
+        };
     }
 
     const NAVreturn = () => {
@@ -142,7 +170,10 @@ export default function InfoInscriptScreen({ navigation }) {
                     <Input style={styles.inputTelephone} userStyle={color} width="90%" name="Télephone" setText={setTelephone} text={telephone} />
                 </View>
                 <View style={styles.containeInput}>
-                    <Input style={styles.inputCI} userStyle={color} width="60%" name="Carte d'identité" setText={setCI} text={ci} />
+                    <Input style={styles.inputEnfant} width="41%" name="Carte d'identité" setText={setCI} text={ci} />
+                    <View style={styles.inputAge}>
+                        <Input  width="100%" name="Age" setText={setAge} text={age} />
+                    </View>
                 </View>
                 <View style={styles.containeInput}>
                     <Input style={styles.inputCJ} userStyle={color} width="60%" name="Casier Judiciare" setText={setCJ} text={cj} />
