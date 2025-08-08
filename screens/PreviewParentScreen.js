@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
         alignItems:'center',
     },
     avatar:{
-        borderRadius:'100%',
+        borderRadius:100,
         width:150,
         height:150,
         objectFit:'contain',

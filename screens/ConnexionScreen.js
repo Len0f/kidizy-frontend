@@ -18,7 +18,7 @@ export default function ConnectionScreen({ navigation }) {
 
 
     const connection = () =>{
-        fetch('http://192.33.0.108:3000/users/signin',{
+        fetch('http://192.33.0.15:3000/users/signin',{
 
              method: 'POST',
 
