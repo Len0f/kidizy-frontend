@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 import { useEffect, useState } from 'react';
 // import * as Location from 'expo-location'; (PAS BESOIN POUR LA SIMULATION)
+import { useNavigation } from '@react-navigation/native';
 
 import SearchCard from '../components/searchCard';
 import FilterBar from '../components/filterBar';
@@ -80,6 +81,7 @@ function getDistanceKm(lat1, lon1, lat2, lon2) {
 }
 
 export default function SearchScreen() {
+    const navigation = useNavigation();
 
     // Etat des users
     const [babysitters, setBabysitters] = useState([]);
@@ -236,6 +238,11 @@ export default function SearchScreen() {
                             distance={distanceText}
                             btnTitle="Reserver"
                             userColor="#98C2E6"
+                            onPress = {() => 
+                                navigation.navigate('ProfilBook', {
+                                    babysitter : item,
+                                })
+                            }
                         />
                     );
                 }}
