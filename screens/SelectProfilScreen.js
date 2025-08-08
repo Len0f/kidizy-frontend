@@ -3,7 +3,7 @@ import { useUser } from '../contexts/UserContext';
 import MainBtn from '../components/mainBtn';
 import ReturnBtn from '../components/returnBtn';
 import { useSelector } from 'react-redux';
-
+import {url} from '../App'; // Import the API URL from App.js   
 
 export default function SelectProfilScreen({ navigation }) {
     const { setProfil } = useUser();
@@ -14,7 +14,7 @@ export default function SelectProfilScreen({ navigation }) {
     };
 
     const NAVbabysitter = async () => {
-        const response = await fetch ('http://192.33.0.108:3000/users/role',{
+        const response = await fetch (`${url}users/role`, {
              method: 'PUT',
 
              headers: { 'Content-Type': 'application/json' },
@@ -29,7 +29,7 @@ export default function SelectProfilScreen({ navigation }) {
         }
 
     const NAVparent = async () => {console.log('token',userToken)
-        const response = await fetch ('http://192.33.0.108:3000/users/role',{
+        const response = await fetch (`${url}users/role`,{
              method: 'PUT',
 
              headers: { 'Content-Type': 'application/json' },

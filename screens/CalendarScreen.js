@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Platform, KeyboardAvoidingView, Alert, Image } from 'react-native';
-
+import {url} from '../App'; // Import the API URL from App.js
 const daysOfWeek = [
   'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'
 ];
@@ -64,7 +64,11 @@ export default function CalendarScreen() {
     let error = null;
     for (let d of dispo) {
       try {
-        const response = await fetch(`http://192.33.0.108:3000/gardes/${token}`, {
+<<<<<<< HEAD
+        const response = await fetch(`${url}gardes/${token}`, {
+=======
+        const response = await fetch(`http://192.33.0.42:3000/gardes/${token}`, {
+>>>>>>> 64e569c76d458e6b14dd4a6c3851c8889d43ec32
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(d)

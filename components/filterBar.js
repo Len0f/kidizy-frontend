@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Modal, FlatList } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 export default function FilterBar(props) {
     const [modalVisible, setModalVisible] = useState(false);
@@ -55,13 +55,14 @@ export default function FilterBar(props) {
         }
 
         if(type === 'location') {
-            if(!props.locationFilter) return "Localisation";
+            if(!props.locationFilter) return "Distance";
             return `${props.locationFilter} km`;
         }
 
         if (type === 'age') {
             if (!props.ageFilter) return "Âge";
             const mapAgesLabel = {
+                
                 "18-25": "18 - 25 ans",
                 "26-35": "26 - 35 ans",
                 "36-45": "36 - 45 ans",
@@ -78,17 +79,17 @@ export default function FilterBar(props) {
 
                 <TouchableOpacity style={styles.filterBtn} onPress={() => openModal('note')}>
                     <Text style={styles.filterText}>{getLabel('note')}</Text>
-                    <Ionicons name="chevron-down" size={16} color="#555" />
+                    <FontAwesome name="chevron-down" size={10} color="#555" />
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.filterBtn} onPress={() => openModal('location')}>
                     <Text style={styles.filterText}>{getLabel('location')}</Text>
-                    <Ionicons name="chevron-down" size={16} color="#555" />
+                    <FontAwesome name="chevron-down" size={10} color="#555" />
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.filterBtn} onPress={() => openModal('age')}>
                     <Text style={styles.filterText}>{getLabel('age')}</Text>
-                    <Ionicons name="chevron-down" size={16} color="#555" />
+                    <FontAwesome name="chevron-down" size={10} color="#555" />
                 </TouchableOpacity>
 
             </View>
