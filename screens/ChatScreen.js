@@ -13,11 +13,15 @@ export default function ChatScreen({ navigation, route }) {
     const { profil } = useUser();
     const isParent = profil === 'parent';
     const { from } = route.params || {};
+    const {conversation}=route.params
 
     const [deadlineMessage, setDeadlineMessage] = useState('');
 
     const user=useSelector((state)=>state.user.value)
 
+
+     
+    
 //     //pusher
      const [messages, setMessages] = useState([]);
      const [messageText, setMessageText] = useState('');
@@ -35,13 +39,13 @@ export default function ChatScreen({ navigation, route }) {
   }, [user.firstName]);
 
   // recupérations des anciens message
-//   useEffect(()=>{
-//     fetch(`${BACKEND_ADDRESS}/messages/${user.token}`).then(response=>response.json())
-//     .then(data=>{
-//         setMessages(data.messagesUser)
+  useEffect(()=>{
+    fetch(`${url}messages?token=${user.token}&conversation=${conversation}`).then(response=>response.json())
+    .then(data=>{
+        setMessages(messages=>[...messages,data.messagesUser])
         
-//     })
-//   },[user.id])
+    })
+  },[user.id])
 
   const handleReceiveMessage = (data) => {
     console.log('data',data)
@@ -57,8 +61,8 @@ export default function ChatScreen({ navigation, route }) {
     const payload = {
       idUser: user.id,
       message: messageText,
-      createdAt: new Date()
-      
+      createdAt: new Date(),
+      conversation
       
       
     };

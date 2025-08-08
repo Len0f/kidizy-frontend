@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react';
 import { useUser } from '../contexts/UserContext';
 import { useSelector } from 'react-redux';
 import {url} from '../App'; // Import the API URL from App.js
+import Conversation from '../components/conversation';
 
 export default function PreviewParentScreen({ navigation }) {
     const user=useSelector((state)=>state.user.value)
@@ -46,7 +47,7 @@ export default function PreviewParentScreen({ navigation }) {
                 lastName: nom,
                 kids:enfant,
                 idUserParent: user.id,
-                idUserBabysitter: null,
+                idUserBabysitter: user.selectedBabysitterId,
                 day,
                 propoStart:hours,
                 propoEnd:hours,
@@ -64,13 +65,13 @@ export default function PreviewParentScreen({ navigation }) {
              body: JSON.stringify({
                 token: user.token,
                 idUserParent: user.id,
-                idUserBabysitter: null,
+                idUserBabysitter: user.selectedBabysitterId,
                 updatedAt: new Date()
              })
             })
             const resConv = await newConversation.json()
             if(resConv.result){
-        navigation.navigate('Chat')
+        navigation.navigate('Chat', {conversation:resConv.conversationId._id})
             }
         }
     }
@@ -79,7 +80,6 @@ export default function PreviewParentScreen({ navigation }) {
         navigation.navigate('Contacts')
     }
 
-    const data = {Prenom:"Josiane",Nom:"Pichet",Jour:"09/08",Horaires:"19H00-23H00",Enfant:"Gregory",Commentaires:"Ne sait pas nager"}
     const keys = Object.keys(data)
     const infos = Object.entries(data)
     console.log(infos)
