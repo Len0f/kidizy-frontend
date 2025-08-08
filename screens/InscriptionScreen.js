@@ -2,6 +2,8 @@ import { Button, StyleSheet, Text, View, Image, TouchableOpacity, KeyboardAvoidi
 import { useState } from 'react';
 import Input from '../components/Input';
 import SignBtn from '../components/signBtn';
+import { updateInfo } from '../reducers/user';
+import { useDispatch } from 'react-redux';
 
 export default function InscriptionScreen({ navigation }) {
 
@@ -9,16 +11,23 @@ export default function InscriptionScreen({ navigation }) {
     const [password, setPassword] = useState('');
     const [samePassword, setSamePassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    const dispatch= useDispatch()
 
     const handleInscription = async () => {
         setErrorMessage(''); // pour réinitialiser les erreurs à chaque tentatives.
-        
+
+        navigation.navigate('SelectProfil');
+
         if (password !== samePassword) {
             setErrorMessage("Les mots de passe ne correspondent pas");
             return;
         }
 
-        fetch('http://192.33.0.53:3000/users/signup', {
+
+
+        fetch('http://192.33.0.42:3000/users/signup', {
+
+
             method: 'POST',
             headers: {
                 'Content-Type' : 'application/json'
@@ -31,6 +40,10 @@ export default function InscriptionScreen({ navigation }) {
         .then ((response) => response.json())
         .then ((dataUser) => {
             if(dataUser.result) {
+                dispatch(updateInfo({
+                    token:dataUser.token,
+                    id: dataUser._id
+                }))
                 navigation.navigate('SelectProfil');
             } else {
                 setErrorMessage(dataUser.error || `Erreur inconnue lors de l'inscription`);

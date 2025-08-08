@@ -1,6 +1,12 @@
-import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
-import { useState } from 'react';
+import { Button, StyleSheet, Text, TextInput, View, TouchableOpacity } from 'react-native';
+import { useState, useEffect } from 'react';
 import { useUser } from '../contexts/UserContext';
+import { useSelector } from 'react-redux';
+import Pusher from 'pusher-js/react-native';
+import Message from '../components/Message';
+//pusher
+ const pusher = new Pusher('92055fe186a81018cec0', { cluster: 'eu' });
+ const BACKEND_ADDRESS = 'http://192.33.0.42:3000';
 
 export default function ChatScreen({ navigation, route }) {
     const { profil } = useUser();
@@ -8,6 +14,65 @@ export default function ChatScreen({ navigation, route }) {
     const { from } = route.params || {};
 
     const [deadlineMessage, setDeadlineMessage] = useState('');
+
+    const user=useSelector((state)=>state.user.value)
+
+//     //pusher
+     const [messages, setMessages] = useState([]);
+     const [messageText, setMessageText] = useState('');
+    //connexion pusher
+     useEffect(() => {
+    (() => {
+      fetch(`${BACKEND_ADDRESS}/messages/${user.token}`, { method: 'PUT' });
+
+      const subscription = pusher.subscribe('chat');
+      subscription.bind('pusher:subscription_succeeded', () => {
+        subscription.bind('message', handleReceiveMessage);
+      });
+    })();
+    return () => fetch(`${BACKEND_ADDRESS}/messages/${user.token}`, { method: 'DELETE' });
+  }, [user.firstName]);
+
+  // recupérations des anciens message
+//   useEffect(()=>{
+//     fetch(`${BACKEND_ADDRESS}/messages/${user.token}`).then(response=>response.json())
+//     .then(data=>{
+//         setMessages(data.messagesUser)
+        
+//     })
+//   },[user.id])
+
+  const handleReceiveMessage = (data) => {
+    console.log('data',data)
+    setMessages(messages => [...messages, data]);
+  };
+
+//     //pusher send message
+    const handleSendMessage = () => {
+    if (!messageText) {
+      return;
+    }
+
+    const payload = {
+      idUser: user.id,
+      message: messageText,
+      createdAt: new Date()
+      
+      
+      
+    };
+
+    
+console.log('payload',payload)
+    fetch(`${BACKEND_ADDRESS}/messages`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    setMessageText('');
+    
+  };
 
     const handleBack = () => {
         if (from === 'Contacts') {
@@ -21,11 +86,26 @@ export default function ChatScreen({ navigation, route }) {
 
     // Ajouter condition pour screen Baby.
 
-
+//console.log('message',messages)
     return (
+        
         <View style={styles.container}>
+            
             <Text>Chat Screen</Text>
-
+             
+          {
+            messages.map((message, i) => (
+            <Message createdAt={message.createdAt} key={i} text={message.message} id={message.idUser} colorBG={'#9FC6E7'}/>
+            ))
+          }
+        
+        <TextInput onChangeText={(value)=>setMessageText(value)}value={messageText} placeholder='Message'/>
+           <Button
+                        title="send"
+                        onPress={() => {
+                            handleSendMessage()
+                        }}
+                    /> 
             {/* Partie babysitter */}
             {!isParent && (
                 <>
