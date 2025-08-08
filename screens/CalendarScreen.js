@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
+import { useUser } from '../contexts/UserContext';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Platform, KeyboardAvoidingView, Alert, Image } from 'react-native';
+import { url } from '../App'; // Import de l'URL API
 
 const daysOfWeek = [
   'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'
@@ -10,7 +12,21 @@ const defaultStart = '00h';
 const defaultEnd = '00h';
 
 export default function CalendarScreen() {
-    const token = useSelector(state => state.user.value.token);
+  const { profil } = useUser();
+  const token = useSelector(state => state.user.value.token);
+  // const role = useSelector(state => state.user.value.role); 
+
+
+  // if (role !== 'BABYSITTER') {
+  //   return (
+  //     <View style={styles.blockedContainer}>
+  //       <Image style={styles.logo} source={require('../assets/KidizyLogo.png')} />
+  //       <Text style={styles.blockedText}>
+  //         Accès réservé aux babysitters !
+  //       </Text>
+  //     </View>
+  //   );
+  // }
 
   const [days, setDays] = useState(
     daysOfWeek.map(day => ({
@@ -20,7 +36,7 @@ export default function CalendarScreen() {
       endHour: defaultEnd,
     }))
   );
-  
+
   const [loading, setLoading] = useState(false);
 
   const handleCheck = idx => {
@@ -60,11 +76,10 @@ export default function CalendarScreen() {
 
     setLoading(true);
 
-  
     let error = null;
     for (let d of dispo) {
       try {
-        const response = await fetch(`http://192.33.0.42:3000/gardes/${token}`, {
+        const response = await fetch(`${url}gardes/${token}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(d)
@@ -86,7 +101,6 @@ export default function CalendarScreen() {
       Alert.alert("Erreur", error);
     } else {
       Alert.alert("Bravo", "Disponibilités enregistrées !");
- 
       setDays(daysOfWeek.map(day => ({
         day,
         checked: false,
@@ -97,6 +111,15 @@ export default function CalendarScreen() {
   };
 
   return (
+    <>
+    {profil === 'parent' ? (
+      <View style={styles.blockedContainer}>
+        <Image style={styles.logo} source={require('../assets/KidizyLogo.png')} />
+        <Text style={styles.blockedText}>
+          Accès réservé aux babysitters !
+        </Text>
+      </View>
+     ) : (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"}>
       <ScrollView contentContainerStyle={styles.container}>
         <Image style={styles.logo} source={require('../assets/KidizyLogo.png')} />
@@ -138,6 +161,8 @@ export default function CalendarScreen() {
         </TouchableOpacity>
       </ScrollView>
     </KeyboardAvoidingView>
+      )}
+      </>
   );
 }
 
@@ -147,6 +172,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 30,
     flexGrow: 1
+  },
+  blockedContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FFFBF0'
+  },
+  blockedText: {
+    fontSize: 18,
+    color: '#D14E72',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    paddingHorizontal: 20
   },
   logo: {
     flex: 0.4,

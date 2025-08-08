@@ -13,6 +13,10 @@ import {useEffect} from 'react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import user from './reducers/user';
+import {getDevApiUrl}  from './utils/constants';
+export const url = getDevApiUrl();
+
+
 const store = configureStore({
   reducer: { user },
 });
@@ -54,6 +58,7 @@ const Tab = createBottomTabNavigator();
 const DashboardStack = createNativeStackNavigator();
 
 const DashboardStackScreen = () => {
+ 
   return (
     <DashboardStack.Navigator screenOptions={{ headerShown: false }}>
       <DashboardStack.Screen name="DashboardHome" component={DashboardScreen} />
@@ -87,6 +92,7 @@ const TabsRouter = () => {
 }
 
 export default function App() {
+console.log('API URL:', url); // Log the API URL to verify it's correct
 
   const [loaded, error] = useFonts({
     'Montserrat': require('./assets/fonts/Montserrat-VariableFont_wght.ttf'),

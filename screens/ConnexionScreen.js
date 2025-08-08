@@ -5,7 +5,7 @@ import Input from '../components/Input';
 import SignBtn from '../components/signBtn';
 import { useState } from 'react';
 import { useSelector,useDispatch } from 'react-redux';
-
+import {url} from '../App'; // Import the API URL from App.js
 
 export default function ConnectionScreen({ navigation }) {
 
@@ -18,7 +18,9 @@ export default function ConnectionScreen({ navigation }) {
 
 
     const connection = () =>{
-        fetch('http://192.33.0.40:3000/users/signin',{
+
+        fetch(`${url}users/signin`,{
+
 
              method: 'POST',
 
