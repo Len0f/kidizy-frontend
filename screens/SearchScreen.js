@@ -7,10 +7,10 @@ import {
     View 
 } from 'react-native';
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 // import * as Location from 'expo-location'; (PAS BESOIN POUR LA SIMULATION)
 import { useNavigation } from '@react-navigation/native';
-
+import { updateInfo } from '../reducers/user';
 import SearchCard from '../components/searchCard';
 import FilterBar from '../components/filterBar';
 
@@ -27,6 +27,7 @@ import FilterBar from '../components/filterBar';
 
 // -------------------------- CALCULS DISTANCE HAVERSINE (déjà utilisé dans mappulator)
 function getDistanceKm(lat1, lon1, lat2, lon2) {
+  const dispatch= useDispatch()
   const R = 6371; // Rayon de la Terre en km
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
   const dLon = ((lon2 - lon1) * Math.PI) / 180;
@@ -81,6 +82,7 @@ export default function SearchScreen() {
         .then(response => response.json())
         .then(data => {
             if(data.result) {
+                dispatch(updateInfo({selectedBabysitterId: data.babysitters._id}))
                 setBabysitters(data.babysitters);
             } else {
                 console.log('Erreur de récupération des babysitters', data.error);
