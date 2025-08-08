@@ -96,7 +96,7 @@ export default function PreviewParentScreen({ navigation }) {
             </View> 
             </View>
             ):(
-                <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+            <ScrollView>
             <SafeAreaView style={styles.btnReturnContainer}>
                 <ReturnBtn style={styles.returnBtn} returnScreen={returnScreen}/>
             </SafeAreaView>
@@ -111,10 +111,10 @@ export default function PreviewParentScreen({ navigation }) {
             <View style={styles.mainContent}>
                 <Input name={`${keys[0]}`}setText={setNom} text={nom}  width={'43%'}/>
                 <Input name={keys[1]}setText={setPrenom} text={prenom}  width={'43%'}/>
-                <Input name={keys[2]}setText={setDay} text={day}  width={'43%'}/>
+                <Input name={keys[2]}setText={setDay} text={day} width={'43%'}/>
                 <Input name={keys[3]}setText={setHours} text={hours}  width={'43%'}/>
-                <Input name={keys[4]+'(s) à garder'}setText={setEnfant} text={enfant}  width={'90%'}/>
-                <Input name={keys[5]}setText={setComment} text={comment}  width={'90%'}/>
+                <Input name={keys[4]+'(s) à garder'}setText={setEnfant} text={enfant} width={'90%'}/>
+                <Input name={keys[5]}setText={setComment} text={comment}width={'90%'}/>
             </View>
 
             <View style={styles.mapContainer}>
@@ -131,9 +131,9 @@ export default function PreviewParentScreen({ navigation }) {
             </MapView>
             </View>
             <View style={styles.buttons}>
-                <MainBtn btnTitle={"Accepter"} userStyle={{backgroundColor:'#98C2E6'}} clickNav={accept}/>
+                <MainBtn btnTitle={"Envoyer"} userStyle={{backgroundColor:'#98C2E6'}} clickNav={accept}/>
             </View> 
-            </KeyboardAvoidingView>
+            </ScrollView>
             )}
 
         </View>
@@ -147,8 +147,8 @@ const styles = StyleSheet.create({
     container: {
         flex:1,
         backgroundColor: '#FFFBF0',
-        position:'relative',
-        alignItems:'center'
+        position:'relative'
+
     },
         btnReturnContainer:{
         position:"absolute",
@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
         alignItems:'center',
     },
     avatar:{
-        borderRadius:'100%',
+        borderRadius:100,
         width:150,
         height:150,
         objectFit:'contain',
@@ -186,17 +186,18 @@ const styles = StyleSheet.create({
     },
     map: {
         flex:1,
-        borderRadius:8
+        borderRadius:8,
+        width:'90%'
     },
     buttons:{
+        marginHorizontal:20,
         flexDirection:'row',
         justifyContent:'space-between',
-        width:'90%',
-        marginVertical:10
+        marginVertical:10,
     },
     mapContainer:{
         height:130,
-        width:'90%',
-        marginVertical:10
+        marginVertical:10,
+        alignItems:'center'
     }
 })

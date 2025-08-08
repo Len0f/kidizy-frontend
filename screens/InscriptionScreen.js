@@ -18,7 +18,7 @@ export default function InscriptionScreen({ navigation }) {
             return;
         }
 
-        fetch('http://192.33.0.8:3000/users/signup', {
+        fetch('http://192.33.0.53:3000/users/signup', {
             method: 'POST',
             headers: {
                 'Content-Type' : 'application/json'

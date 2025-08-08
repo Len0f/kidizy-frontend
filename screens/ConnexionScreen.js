@@ -19,10 +19,10 @@ export default function ConnectionScreen({ navigation }) {
 
         body: JSON.stringify({email, password:mdp})
     }).then(response=>response.json()).then(data=>{console.log(data)
-        if(data.data==="BABYSITTER"){
+        if(data.user.role==="BABYSITTER"){
             setProfil('babysitter')
             navigation.navigate('TabNavigator')
-        } else if(data.data==="PARENT"){
+        } else if(data.user.role==="PARENT"){
             setProfil('parent')
             navigation.navigate('TabNavigator')
         } else {
