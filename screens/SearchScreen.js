@@ -7,10 +7,10 @@ import {
     View 
 } from 'react-native';
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 // import * as Location from 'expo-location'; (PAS BESOIN POUR LA SIMULATION)
 import { useNavigation } from '@react-navigation/native';
-
+import { updateInfo } from '../reducers/user';
 import SearchCard from '../components/searchCard';
 import FilterBar from '../components/filterBar';
 
@@ -25,67 +25,11 @@ const parentFalse = {
   }
 };
 
-// const babysittersFalse = [
-//     {
-//         firstName: 'Anakin',
-//         lastName: 'Skywalker',
-//         rating: 4.5,
-//         location: { lat: '48.8520', lon: '2.3480', address: 'Paris' }, // ~2km - Visible avec: 5km, 10km, 20km, Toutes
-//         price: 18,
-//         babysits: 42,
-//         avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
-//         age: '26',
-//         availability: [
-//             { day: 'Lundi', startHour: '08:00', endHour: '12:00' },
-//             { day: 'Mercredi', startHour: '14:00', endHour: '18:00' }
-//         ]
-//     },
-//     {
-//         firstName: 'Leia',
-//         lastName: 'Organa',
-//         rating: 4.9,
-//         location: { lat: '48.8800', lon: '2.3800', address: 'Paris' }, // ~7km - Visible avec: 10km, 20km, Toutes
-//         price: 20,
-//         babysits: 50,
-//         avatar: 'https://randomuser.me/api/portraits/women/2.jpg',
-//         age: '24',
-//          availability: [
-//             { day: 'Lundi', startHour: '09:00', endHour: '17:00' },
-//             { day: 'Vendredi', startHour: '10:00', endHour: '13:00' }
-//         ]
-//     },
-//     {       
-//         firstName: 'Luke',
-//         lastName: 'Skywalker',
-//         rating: 3.2,
-//         location: { lat: '48.9000', lon: '2.4200', address: 'Paris' }, // ~15km - Visible avec: 20km, Toutes
-//         price: 17,
-//         babysits: 30,
-//         avatar: 'https://randomuser.me/api/portraits/men/3.jpg',
-//         age: '22',
-//          availability: [
-//             { day: 'Jeudi', startHour: '09:00', endHour: '17:00' },
-//             { day: 'Samedi', startHour: '20:00', endHour: '23:00' }
-//         ]
-//     },
-//     {
-//         firstName: 'Rey',
-//         lastName: 'Palpatine',
-//         rating: 2.5,
-//         location: { lat: '48.9300', lon: '2.4800', address: 'Paris' }, // ~25km - Visible avec: Toutes seulement
-//         price: 15,
-//         babysits: 18,
-//         avatar: 'https://randomuser.me/api/portraits/women/4.jpg',
-//         age: '20',
-//          availability: [
-//             { day: 'Dimanche', startHour: '10:00', endHour: '15:00' },
-//             { day: 'Mercredi', startHour: '14:00', endHour: '18:00' }
-//         ]
-//     },
-// ];
+
 
 // -------------------------- CALCULS DISTANCE HAVERSINE (déjà utilisé dans mappulator)
 function getDistanceKm(lat1, lon1, lat2, lon2) {
+  const dispatch= useDispatch()
   const R = 6371; // Rayon de la Terre en km
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
   const dLon = ((lon2 - lon1) * Math.PI) / 180;
@@ -140,6 +84,7 @@ export default function SearchScreen() {
         .then(response => response.json())
         .then(data => {
             if(data.result) {
+                dispatch(updateInfo({selectedBabysitterId: data.babysitters._id}))
                 setBabysitters(data.babysitters);
             } else {
                 console.log('Erreur de récupération des babysitters', data.error);
