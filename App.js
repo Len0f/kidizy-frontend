@@ -4,6 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { UserProvider, useUser } from './contexts/UserContext';
+import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
@@ -70,20 +71,52 @@ const DashboardStackScreen = () => {
 // On fait un routeur pour avoir les bons onglets selon le profil.
 const TabsRouter = () => {
   const { profil } = useUser();
+  let userColor;
+    if(profil==='parent'){
+        userColor='#98C2E6'
+    }else{
+        userColor='#88E19D'
+    }
 
   return (
-    <Tab.Navigator screenOptions={{headerShown: false}}>
-      <Tab.Screen name="Dashboard" component={DashboardStackScreen}/>
-      <Tab.Screen name="Calendar" component={CalendarScreen}/>
+    <Tab.Navigator screenOptions={({ route }) => ({
+      tabBarIcon: ({ color, size }) => {
+        let iconName = '';
+
+        if (route.name === 'Dashboard') {
+          iconName = 'home';
+        } else if (route.name === 'Calendar') {
+          iconName = 'calendar';
+        } else if (route.name === 'ProfilUser') {
+          iconName = 'user';
+        } else if (route.name === 'Contacts') {
+          iconName = 'comment';
+        } else if (route.name === 'Search') {
+          iconName = 'tag';
+        } 
+
+        return <FontAwesome name={iconName} size={size} color={color} />;
+      },
+      tabBarStyle:{borderTopWidth:0},
+      tabBarActiveTintColor: userColor,
+      tabBarInactiveTintColor: '#979797',
+      tabBarActiveBackgroundColor:'#FFFBF0',
+      tabBarInactiveBackgroundColor:'#EBE6DA',
+      tabBarLabelStyle:{fontFamily:'Montserrat', fontWeight:'500', fontSize:'14'},
+      headerShown: false,
+     
+    })}>
+      <Tab.Screen name="Dashboard" component={DashboardStackScreen} options={{title:'Dashboard'}}/>
+      <Tab.Screen name="Calendar" component={CalendarScreen} options={{title:'Calendrier'}}/>
       {profil === 'parent' ? (
         <>
-          <Tab.Screen name="Search" component={SearchScreen}/>
-          <Tab.Screen name="Contacts" component={ContactsScreen}/>
+          <Tab.Screen name="Search" component={SearchScreen} options={{title:'Recherche'}}/>
+          <Tab.Screen name="Contacts" component={ContactsScreen} options={{title:'Messagerie'}}/>
         </>
       ) : (
         <>
-          <Tab.Screen name="ProfilUser" component={ProfilScreen} />
-          <Tab.Screen name="Contacts" component={ContactsScreen} />
+          <Tab.Screen name="ProfilUser" component={ProfilScreen} options={{title:'Votre profil'}}/>
+          <Tab.Screen name="Contacts" component={ContactsScreen} options={{title:'Messagerie'}}/>
         </>
       )}
     </Tab.Navigator>
