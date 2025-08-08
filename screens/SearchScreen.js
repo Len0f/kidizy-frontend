@@ -33,6 +33,10 @@ const babysittersFalse = [
         babysits: 42,
         avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
         age: '26',
+        availability: [
+            { day: 'Lundi', startHour: '08:00', endHour: '12:00' },
+            { day: 'Mercredi', startHour: '14:00', endHour: '18:00' }
+        ]
     },
     {
         firstName: 'Leia',
@@ -43,6 +47,10 @@ const babysittersFalse = [
         babysits: 50,
         avatar: 'https://randomuser.me/api/portraits/women/2.jpg',
         age: '24',
+         availability: [
+            { day: 'Lundi', startHour: '09:00', endHour: '17:00' },
+            { day: 'Vendredi', startHour: '10:00', endHour: '13:00' }
+        ]
     },
     {       
         firstName: 'Luke',
@@ -53,6 +61,10 @@ const babysittersFalse = [
         babysits: 30,
         avatar: 'https://randomuser.me/api/portraits/men/3.jpg',
         age: '22',
+         availability: [
+            { day: 'Jeudi', startHour: '09:00', endHour: '17:00' },
+            { day: 'Samedi', startHour: '20:00', endHour: '23:00' }
+        ]
     },
     {
         firstName: 'Rey',
@@ -63,6 +75,10 @@ const babysittersFalse = [
         babysits: 18,
         avatar: 'https://randomuser.me/api/portraits/women/4.jpg',
         age: '20',
+         availability: [
+            { day: 'Dimanche', startHour: '10:00', endHour: '15:00' },
+            { day: 'Mercredi', startHour: '14:00', endHour: '18:00' }
+        ]
     },
 ];
 
@@ -91,9 +107,11 @@ export default function SearchScreen() {
     const [parentLocation, setParentLocation] = useState(null);
 
     // Etats des filtres
-    const [noteFilter, setNoteFilter] = useState('');
-    const [locationFilter, setLocationFilter] = useState('');
-    const [ageFilter, setAgeFilter] = useState('');
+    const [noteFilter, setNoteFilter] = useState(''); // par note
+    const [locationFilter, setLocationFilter] = useState(''); // par localisation
+    const [ageFilter, setAgeFilter] = useState(''); // par age
+    const [availabilityDayFilter, setAvailabilityDayFilter] = useState(''); // par jour
+    const [availabilityHoursFilter, setAvailabilityHoursFilter] = useState(''); // par tranches horaires
 
 // -------------------------- RECUPERATION DE LA POSITION DU PARENT (challenge mappulator).
     useEffect(() => {
@@ -145,19 +163,16 @@ export default function SearchScreen() {
 
 
 // ----------------------- FILTRE DES BABYSITTERS : 3 CRITERES
-
     const filteredBabysitters = babysitters.filter((b) => {
         let keep = true;
 
         // -------------------------- PAR NOTE
-
         if (noteFilter) {
             keep = keep && Math.floor(b.rating) === parseInt(noteFilter);
             // Keep && permet de combiner les filtres.
         }
 
         // -------------------------- PAR LOCALISATION
-
         if (locationFilter && parentLocation) {
             
             if (b.location?.lat && b.location?.lon) {
@@ -178,12 +193,28 @@ export default function SearchScreen() {
         }
 
         // -------------------------- PAR AGE
-
         if (ageFilter && b?.age) {
             const [min, max] = ageFilter.split("-").map(Number); // pour faire les intervales d'âges.
             const age = parseInt(b.age);
             keep = keep && age >= min && age <= (max || age);
         }
+
+        // -------------------------- PAR DISPONIBILITE
+        // Filtre par jour uniquement
+        if (availabilityDayFilter) {
+            const isAvailableThatDay = b.availability?.some(slot => slot.day === availabilityDayFilter);
+            keep = keep && isAvailableThatDay;
+        }
+
+        // Filtre par tranche horaire uniquement
+        if (availabilityHoursFilter) {
+            const [desiredStart, desiredEnd] = availabilityHoursFilter.split('-');
+            const isAvailableThatHour = b.availability?.some(slot =>
+                slot.startHour < desiredEnd && slot.endHour > desiredStart
+            );
+            keep = keep && isAvailableThatHour;
+        }
+
 
         return keep;
     })
@@ -204,6 +235,10 @@ export default function SearchScreen() {
                 setLocationFilter={setLocationFilter}
                 ageFilter={ageFilter}
                 setAgeFilter={setAgeFilter}
+                availabilityDayFilter={availabilityDayFilter}
+                setAvailabilityDayFilter={setAvailabilityDayFilter}
+                availabilityHoursFilter={availabilityHoursFilter}
+                setAvailabilityHoursFilter={setAvailabilityHoursFilter}
             />
            
             {/* LISTE DES BABYSITTERS FILTRES */}
