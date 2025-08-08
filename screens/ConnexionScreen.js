@@ -18,7 +18,9 @@ export default function ConnectionScreen({ navigation }) {
 
 
     const connection = () =>{
+
         fetch(`${url}users/signin`,{
+
 
              method: 'POST',
 
