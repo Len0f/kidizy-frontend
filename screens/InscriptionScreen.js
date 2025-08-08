@@ -18,7 +18,7 @@ export default function InscriptionScreen({ navigation }) {
     const handleInscription = async () => {
         setErrorMessage(''); // pour réinitialiser les erreurs à chaque tentatives.
 
-        navigation.navigate('SelectProfil');
+        
 
         if (password !== samePassword) {
             setErrorMessage("Les mots de passe ne correspondent pas");
