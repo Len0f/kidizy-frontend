@@ -4,8 +4,19 @@ import MainBtn from '../components/mainBtn'
 import TextInfo from '../components/TextInfo'
 import MapView, {Marker} from 'react-native-maps';
 import { useState, useEffect, useRef } from 'react';
+import { useUser } from '../contexts/UserContext';
 
 export default function GardeScreen({ navigation, route }) {
+    const { profil } = useUser();
+
+    let userColor;
+    if(profil==='parent'){
+        userColor='#98C2E6'
+    }else{
+        userColor='#88E19D'
+    }
+
+    
 
     const [debutGarde, setDebutGarde] = useState(false)
     const debutDeGarde = ()=>{
@@ -67,6 +78,8 @@ export default function GardeScreen({ navigation, route }) {
 
     return (
         <SafeAreaView style={styles.container}>
+            
+           
             <SafeAreaView style={styles.btnReturnContainer}>
                 <ReturnBtn style={styles.returnBtn} returnScreen={returnScreen}/>
             </SafeAreaView>
@@ -74,40 +87,33 @@ export default function GardeScreen({ navigation, route }) {
             <View style={styles.screenTitleContainer}>
                  <Text style={styles.screenTitle}>Garde du jour :</Text>
             </View>
-           
-
             <View style={styles.mainContent}>
-                            <TextInfo title={keys[0]}textContent={data.Prenom} userStyle={{color:'#88E19D'}} width={'43%'}/>
-                            <TextInfo title={keys[1]}textContent={data.Nom} userStyle={{color:'#88E19D'}} width={'43%'}/>
-                            <TextInfo title={keys[2]}textContent={data.Jour} userStyle={{color:'#88E19D'}} width={'43%'}/>
-                            <TextInfo title={keys[3]}textContent={data.Horaires} userStyle={{color:'#88E19D'}} width={'43%'}/>
-                            <TextInfo title={keys[4]+'(s) à garder'}textContent={data.Enfant} userStyle={{color:'#88E19D'}} width={'90%'}/>
-                        </View>
-            
+                <TextInfo title={keys[0]}textContent={data.Prenom} userStyle={{color:userColor}} width={'43%'}/>
+                <TextInfo title={keys[1]}textContent={data.Nom} userStyle={{color:userColor}} width={'43%'}/>
+                <TextInfo title={keys[2]}textContent={data.Jour} userStyle={{color:userColor}} width={'43%'}/>
+                <TextInfo title={keys[3]}textContent={data.Horaires} userStyle={{color:userColor}} width={'43%'}/>
+                <TextInfo title={keys[4]+'(s) à garder'}textContent={data.Enfant} userStyle={{color:userColor}} width={'90%'}/>
+            </View>    
             <View style={styles.mapContainer}>
-            <MapView
-                initialRegion={{
-                latitude: 44.8643352091005,
-                longitude: -0.5760245233606299,
-                latitudeDelta:0.0022,
-                longitudeDelta:0.0021
-                }}
-                style={styles.map}
-            >
-            <Marker coordinate={{ latitude: 44.8643352091005, longitude: -0.5760245233606299 }} title={data.Prenom} />
-            </MapView>
+                <MapView
+                    initialRegion={{
+                    latitude: 44.8643352091005,
+                    longitude: -0.5760245233606299,
+                    latitudeDelta:0.0022,
+                    longitudeDelta:0.0021
+                    }}
+                    style={styles.map}
+                >
+                    <Marker coordinate={{ latitude: 44.8643352091005, longitude: -0.5760245233606299 }} title={data.Prenom} />
+                </MapView>
             </View>
 
-            <View style={styles.buttons}>
-                
-                    <MainBtn disabled={debutGarde}clickNav={debutDeGarde} btnTitle={(debutGarde ? `Garde debutée : ${formatTime()}` : "Debut")} userStyle={debutGarde ? {backgroundColor:"#EBE6DA", width:"auto"}:{width:'43%'}} />
-
-                
-                    <MainBtn clickNav={finDeGarde}style={styles.btn} btnTitle={"Fin"} userStyle={!debutGarde ? {backgroundColor:"#EBE6DA", width:"43%", marginTop:20}: {backgroundColor:'#88E19D', width:"43%", marginTop:20}}/>
-               
-                
+            <View style={styles.buttons}> 
+                <MainBtn disabled={debutGarde}clickNav={debutDeGarde} btnTitle={(debutGarde ? `Garde debutée : ${formatTime()}` : "Debut")} userStyle={debutGarde ? {backgroundColor:"#EBE6DA", width:"auto"}:{backgroundColor:userColor,width:'43%'}} />
+                <MainBtn clickNav={finDeGarde}style={styles.btn} btnTitle={"Fin"} userStyle={!debutGarde ? {backgroundColor:"#EBE6DA", width:"43%", marginTop:20}: {backgroundColor:userColor, width:"43%", marginTop:20}}/>   
             </View> 
-
+          
+        
         </SafeAreaView>
     );
 }

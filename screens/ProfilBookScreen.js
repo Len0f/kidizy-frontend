@@ -44,12 +44,18 @@ export default function ProfilBookScreen({ navigation }) {
 
 
     const { profil } = useUser();
+    let userColor;
+    if(profil==='parent'){
+        userColor='#98C2E6'
+    }else{
+        userColor='#88E19D'
+    }
 
     const returnScreen = ()=>{
         navigation.navigate('TabNavigator')
     }
         const returnbabyScreen = ()=>{
-        navigation.navigate('PreviewParent')
+        navigation.navigate('Contacts')
     }
 
         const goChat = ()=>{
@@ -132,14 +138,14 @@ export default function ProfilBookScreen({ navigation }) {
                     
 
                         <View style={styles.mainContent}>
-                            <TextInfo style={styles.textInfo} userStyle={{color:'#88E19D'}} title={"Enfant(s) à garder"} textContent={infoenfant} />
-                            <TextInfo style={styles.textInfo} userStyle={{color:'#88E19D'}} title={"Informations complémentaires"} textContent={""}/>
-                            <TextInfo style={styles.textInfo} userStyle={{color:'#88E19D'}} title={"Avis"} textContent={avis}/>
+                            <TextInfo style={styles.textInfo} userStyle={{color:userColor}} title={"Enfant(s) à garder"} textContent={infoenfant} />
+                            <TextInfo style={styles.textInfo} userStyle={{color:userColor}} title={"Informations complémentaires"} textContent={""}/>
+                            <TextInfo style={styles.textInfo} userStyle={{color:userColor}} title={"Avis"} textContent={avis}/>
                         </View>
                     </ScrollView>  
 
                     <SafeAreaView style={styles.btnContactContainer}>
-                        <MainBtn clickNav={goChat}style={styles.contactBtn} btnTitle='Contacter' userStyle={{backgroundColor : '#88E19D'}}/>
+                        <MainBtn clickNav={goChat}style={styles.contactBtn} btnTitle='Contacter' userStyle={{backgroundColor : userColor}}/>
                     </SafeAreaView>
                 </>
             ) : ( //ecran profil baysitter vu par un parent
@@ -190,7 +196,7 @@ export default function ProfilBookScreen({ navigation }) {
                     </ScrollView>  
 
                     <SafeAreaView style={styles.btnContactContainer}>
-                        <MainBtn clickNav={goChat}style={styles.contactBtn} btnTitle='Contacter' userStyle={{backgroundColor : '#98C2E6'}}/>
+                        <MainBtn clickNav={goChat}style={styles.contactBtn} btnTitle='Contacter' userStyle={{backgroundColor : userColor}}/>
                     </SafeAreaView>
                 </>
             )}
