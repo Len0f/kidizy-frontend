@@ -17,9 +17,7 @@
     "expo": "~53.0.20",
     "expo-font": "~13.3.2",
     "expo-linear-gradient": "~14.1.5",
-
     "expo-location": "^18.1.6",
-
     "expo-splash-screen": "~0.30.10",
     "expo-status-bar": "~2.2.3",
     "install": "^0.13.0",
@@ -35,7 +33,18 @@
     "redux-persist": "^6.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0"
+    "@babel/core": "^7.20.0",
+    "@testing-library/jest-native": "^5.4.3",
+    "@testing-library/react-native": "^13.2.2",
+    "jest": "^30.0.5",
+    "jest-expo": "^53.0.9",
+    "react-test-renderer": "^19.0.0"
+  },
+  "jest": {
+    "preset": "jest-expo",
+    "setupFilesAfterEnv": [
+      "@testing-library/jest-native/extend-expect"
+    ]
   },
   "private": true
 }

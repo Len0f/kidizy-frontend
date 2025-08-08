@@ -1,16 +1,41 @@
-import { Button, StyleSheet, Text, View } from 'react-native';
+import { Button, StyleSheet, Text, View, Image } from 'react-native';
 import { useUser } from '../contexts/UserContext';
+import UserCard from '../components/userCard';
+import FontAwesome from "react-native-vector-icons/FontAwesome";
+import Conversation from '../components/conversation';
 
 export default function ContactsScreen({ navigation, route }) {
     const {profil} = useUser();
 
+    let userColor;
+    if(profil==='parent'){
+        userColor='#98C2E6'
+    }else{
+        userColor='#88E19D'
+    }
+    const goProfil = ()=>{
+        navigation.navigate('ProfilBook', {from: 'Contacts', profil})
+    }
+
+    const chat = () =>{
+        navigation.navigate('Chat', {from: 'Contacts', profil})
+    }
+
     return (
         <View style={styles.container}>
-            <Text>Contacts Screen</Text>
+            <Image style={styles.logo}source={require('../assets/KidizyLogo.png')} />
+            <View style={styles.screenTitleContainer}>
+                <Text style={styles.screenTitle}>Demande de chat :</Text>
+            </View>
 
             {/* Partie uniquement visible par les babysitter */}
-            {profil === 'babysitter' && (
+            {profil === 'babysitter' ? (
                 <>
+                    <Conversation click={goProfil} clickNav={chat}userColor={userColor} btnTitle={<View style={styles.message}><FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/></View>} />
+            
+                   
+                </>
+            ):(<>
                     <Text>Nouvelles demandes</Text>
                     <Button
                         title="Voir le profil"
@@ -20,10 +45,7 @@ export default function ContactsScreen({ navigation, route }) {
                 </>
             )}
 
-            <Button
-                title="Voir le chat"
-                onPress={() => navigation.navigate('Chat', {from: 'Contacts', profil})}
-            />
+            
         </View>
     );
 }
@@ -33,6 +55,26 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#FFFBF0',
         alignItems: 'center',
-        justifyContent: 'center',
+    },
+    logo:{
+        marginTop:40,
+        height:'10%',
+        width:'80%',
+        objectFit:'contain'
+    },
+    screenTitleContainer:{
+        marginVertical:50,
+        justifyContent:'center'
+    },
+    screenTitle:{
+        fontFamily:'Montserrat',
+        fontSize:28,
+        fontWeight:'700'
+    },
+    message:{
+        padding:5,
+    },
+    icon:{
+        fontSize:20,
     }
 })
