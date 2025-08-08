@@ -64,7 +64,7 @@ export default function CalendarScreen() {
     let error = null;
     for (let d of dispo) {
       try {
-        const response = await fetch(`http://192.33.0.42:3000/gardes/${token}`, {
+        const response = await fetch(`${url}/gardes/${token}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(d)

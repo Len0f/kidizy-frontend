@@ -1,4 +1,4 @@
-
+import { url } from '../App';
 import { 
     FlatList, 
     Image, 
@@ -7,6 +7,7 @@ import {
     View 
 } from 'react-native';
 import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 // import * as Location from 'expo-location'; (PAS BESOIN POUR LA SIMULATION)
 import { useNavigation } from '@react-navigation/native';
 
@@ -115,34 +116,39 @@ export default function SearchScreen() {
     const [availabilityHoursFilter, setAvailabilityHoursFilter] = useState(''); // par tranches horaires
 
 // -------------------------- RECUPERATION DE LA POSITION DU PARENT (challenge mappulator).
+    const token = useSelector((state) => state.user.value.token);
+
     useEffect(() => {
-        // ------------------ ON FORCE LES DONNEES DE SIMULATIONS
-        setParent(parentFalse);
-        setParentLocation(parentFalse.location);
+        // ------------------ RECUPERATION DU PARENT
+        if(!token) return;
 
-        // setBabysitters(babysittersFalse);
-
-
-        // ---------------------- RECUPERATION DES BABYSITTERS
-        fetch('https://')
-    
-
+        console.log("Token utilisé pour le fetch parent :", token);
+        fetch(`${url}users/me/${token}`)
+        .then(response => response.json())
+        .then ((data) => {
+            if(data.result) {
+                //console.log("Parent connecté récupéré depuis le backend :", data.user);
+                setParent(data.user);
+                setParentLocation(data.user.location || null);
+            } else {
+                //console.log("Erreur récupération du parent :", data.error);
+            }
+        });
+        
+        // ------------------ RECUPERATION DES BABYSITTERS
+        fetch(`${url}users/babysitters`)
+        .then(response => response.json())
+        .then(data => {
+            if(data.result) {
+                setBabysitters(data.babysitters);
+            } else {
+                console.log('Erreur de récupération des babysitters', data.error);
+            }
+        });
     }, []);
-
 
     // ---------------------- RECUPERATION DU PARENT VIA TOKEN
 
-
-    //         fetch(`https:192.33.0.42:3000/users/me/${token}`)
-    //         .then(response => response.json())
-    //         .then ((data) => {
-    //             if(data.result) {
-    //                 setParent(data.user);
-    //                 setParentLocation(data.user.location || currentPosition);
-    //             } else {
-    //                 console.log("Erreur parent :", data.error);
-    //             }
-    //         });
 
 
 // ----------------------- FILTRE DES BABYSITTERS : 3 CRITERES
