@@ -14,12 +14,11 @@ export default function InfoInscriptScreen({ navigation }) {
     const [prenom, setPrenom] = useState('');
     const [adresse, setAdresse] = useState('');
     const [telephone, setTelephone] = useState('');
-    const [enfant, setEnfant] = useState('');
     const [age, setAge] = useState('');
     const [ci, setCI] = useState('');
     const [cj, setCJ] = useState('');
     const [th, setTH] = useState('');
-    const [lastEnfant, setLastEnfant] = useState([]);
+    const [lastEnfant, setLastEnfant] = useState([{firstName:'',age:''}]);
 
     const userToken=useSelector((state)=>state.user.value.token)
 
@@ -82,7 +81,7 @@ export default function InfoInscriptScreen({ navigation }) {
     };
     
     const addEnfant = lastEnfant.map((data,i) => {console.log(lastEnfant)
-        return <View style={styles.containeInput}>
+        return <View key={i} style={styles.containeInput}>
                     <Input style={styles.inputEnfant} width="41%" name="Enfant" setText={(prenom)=>{modifEnfant(prenom,i)}} text={lastEnfant[i].enfants} />
                     <View style={styles.inputAge}>
                         <Input  width="100%" name="Age" setText={(age)=>{modifAge(age,i)}} text={lastEnfant[i].ages} />
@@ -128,18 +127,17 @@ export default function InfoInscriptScreen({ navigation }) {
                 <View style={styles.containeInput}>
                     <Input style={styles.inputTelephone} width="90%" name="Télephone" setText={setTelephone} text={telephone} />
                 </View>
-                <View style={styles.containeInput}>
-                    <Input style={styles.inputEnfant} width="41%" name="Enfant" setText={setEnfant} text={enfant} />
-                    <View style={styles.inputAge}>
-                        <Input  width="100%" name="Age" setText={setAge} text={age} />
-                    </View>
-                    <View style={styles.inputAge}>
+                <View style={styles.containeEnfant}>
+                    <View style={styles.containeBtnEnfant}>
                         <TouchableOpacity style={styles.btnContainer} userStyle={{color:"#98C2E6"}} onPress={()=>handleAdd()}>
                             <View style={styles.triangle}></View>
                         </TouchableOpacity>
                     </View>
+                    <View style={styles.containeInputEnfant}>
+                        {addEnfant}
+                    </View>
                 </View>
-                {addEnfant}
+                
                     {/* <Text>Photo</Text>
                     <Text>Nom</Text>
                     <Text>Prénom</Text>
@@ -270,7 +268,7 @@ const styles = StyleSheet.create({
     },
     inputAge: {
         marginLeft: 20,
-        width: "20%"
+        width: "20%",
     },
     btnContainer:{
     backgroundColor:'#98C2E6',
@@ -303,5 +301,18 @@ const styles = StyleSheet.create({
 containeBtn:{
     marginLeft: 25,
     marginBottom: 25,
+},
+containeEnfant: {
+        width: "100%",
+    },
+containeBtnEnfant: {
+    width: "20%",
+    position: "absolute",
+    zIndex: 10,
+    right:0,
+    top: 22,
+},
+containeInputEnfant: {
+    position: "relative",
 },
 })
