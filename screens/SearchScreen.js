@@ -15,6 +15,7 @@ import SearchCard from '../components/searchCard';
 import FilterBar from '../components/filterBar';
 
 // -----------------------Données en dur pour simulation (à retirer plus tard)
+
 // const parentFalse = {
 //   firstName: 'Sophie',
 //   lastName: 'Martin',
