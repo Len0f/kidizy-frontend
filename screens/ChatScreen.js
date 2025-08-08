@@ -4,9 +4,10 @@ import { useUser } from '../contexts/UserContext';
 import { useSelector } from 'react-redux';
 import Pusher from 'pusher-js/react-native';
 import Message from '../components/Message';
+import {url} from '../App'; // Import the API URL from App.js
 //pusher
  const pusher = new Pusher('92055fe186a81018cec0', { cluster: 'eu' });
- const BACKEND_ADDRESS = 'http://192.33.0.108:3000';
+ const BACKEND_ADDRESS = url;
 
 export default function ChatScreen({ navigation, route }) {
     const { profil } = useUser();
@@ -30,7 +31,7 @@ export default function ChatScreen({ navigation, route }) {
         subscription.bind('message', handleReceiveMessage);
       });
     })();
-    return () => fetch(`${BACKEND_ADDRESS}/messages/${user.token}`, { method: 'DELETE' });
+    return () => fetch(`${url}messages/${user.token}`, { method: 'DELETE' });
   }, [user.firstName]);
 
   // recupérations des anciens message
