@@ -27,6 +27,7 @@ export default function InscriptionScreen({ navigation }) {
 
 
 
+
         fetch(`${url}users/signup`, {
 
 
