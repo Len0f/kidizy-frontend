@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 //save1
 //supersave
 const initialState = {
-  value: { firstName: null, token: null, id:null },
+  value: { firstName: null, token: null, id:null, selectedBabysitterId: null },
 };
 
 export const userSlice = createSlice({
