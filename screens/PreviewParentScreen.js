@@ -8,8 +8,11 @@ import MapView, {Marker} from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useEffect, useState } from 'react';
 import { useUser } from '../contexts/UserContext';
+import { useSelector } from 'react-redux';
+import {url} from '../App'; // Import the API URL from App.js
 
 export default function PreviewParentScreen({ navigation }) {
+    const user=useSelector((state)=>state.user.value)
     const { profil } = useUser();
 //     useEffect(() => {
 //     (async () => {
@@ -31,8 +34,45 @@ export default function PreviewParentScreen({ navigation }) {
         navigation.navigate('ProfilBook')
     }
 
-    const accept = ()=>{
+    const accept = async()=>{
+        const newProp = await fetch (`${url}propositions`,{
+             method: 'POST',
+
+             headers: { 'Content-Type': 'application/json' },
+
+             body: JSON.stringify({
+                token: user.token,
+                firstName:prenom,
+                lastName: nom,
+                kids:enfant,
+                idUserParent: user.id,
+                idUserBabysitter: null,
+                day,
+                propoStart:hours,
+                propoEnd:hours,
+                updatedAt: new Date(),
+                comment
+             })
+        })
+        const res = await newProp.json()
+        if (res.result){
+            const newConversation = await fetch(`${url}conversations`,{
+                method: 'POST',
+
+             headers: { 'Content-Type': 'application/json' },
+
+             body: JSON.stringify({
+                token: user.token,
+                idUserParent: user.id,
+                idUserBabysitter: null,
+                updatedAt: new Date()
+             })
+            })
+            const resConv = await newConversation.json()
+            if(resConv.result){
         navigation.navigate('Chat')
+            }
+        }
     }
 
     const refus = ()=>{

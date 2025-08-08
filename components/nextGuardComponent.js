@@ -10,11 +10,11 @@ export default function NextGuardComponent(props){
 
     return (
             
-          <TouchableOpacity style={styles.guardComponentContainer} onPress={()=>handleClick()}>
+          <TouchableOpacity style={[styles.guardComponentContainer, props.guardStyle]} onPress={()=>handleClick()}>
 
             <View style={styles.content}>
-                <Text style={styles.title}>Prochaine garde</Text>
-                <Text style={styles.nextGuardDate}>DD/MM/YYYY à XXhXX</Text>
+                <Text style={styles.title}>{props.title}</Text>
+                <Text style={[styles.nextGuardDate, props.dateStyle]}>{props.content}</Text>
             </View>
             
           </TouchableOpacity>
@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     elevation: 5,
     borderWidth:1,
     borderColor:'#98C2E6',
-    
+    marginBottom:15
   },
     title:{
        fontFamily:'Montserrat',

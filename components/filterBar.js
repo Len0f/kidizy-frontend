@@ -10,13 +10,15 @@ export default function FilterBar(props) {
     const filterData = {
         note: ["Toutes", "1 étoile", "2 étoiles", "3 étoiles", "4 étoiles", "5 étoiles"],
         location: ["Toutes", "5 km", "10 km", "20 km"],
-        age: ["Tous", "18 - 25 ans", "26 - 35 ans", "36 - 45 ans", "46 ans et +"]
+        age: ["Tous", "18 - 25 ans", "26 - 35 ans", "36 - 45 ans", "46 ans et +"],
+        availabilityDay: ["Tous", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"],
+        availabilityHours: ["Toutes", "08:00-12:00", "12:00-16:00", "16:00-20:00", "20:00-00:00"]
     };
 
     const openModal = (filterType) => {
         setCurrentFilter(filterType);
         setModalVisible(true);
-    };
+    }; 
 
     // Ouvre le modal pour un type de filtre.
     const selectOption = (value) => {
@@ -45,6 +47,14 @@ export default function FilterBar(props) {
             }
         }
 
+        if (currentFilter === 'availabilityDay') {
+            props.setAvailabilityDayFilter(value === "Tous" ? "" : value);
+        }
+
+        if (currentFilter === 'availabilityHours') {
+            props.setAvailabilityHoursFilter(value === "Toutes" ? "" : value);
+        }
+
         setModalVisible(false);
     };
 
@@ -70,6 +80,16 @@ export default function FilterBar(props) {
             };
             return mapAgesLabel[props.ageFilter];
         }
+
+        if (type === 'availabilityDay') {
+              return props.availabilityDayFilter || "Jour";
+          }
+      
+          if (type === 'availabilityHours') {
+              if (!props.availabilityHoursFilter) return "Tranche horaire";
+              const [start, end] = props.availabilityHoursFilter.split("-");
+              return `${start} - ${end}`;
+          }
     };
 
     return (
@@ -94,6 +114,19 @@ export default function FilterBar(props) {
 
             </View>
 
+            <View style={styles.row}>
+
+                <TouchableOpacity style={styles.filterBtn} onPress={() => openModal('availabilityDay')}>
+                    <Text style={styles.filterText}>{getLabel('availabilityDay')}</Text>
+                    <FontAwesome name="chevron-down" size={10} color="#555" />
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.filterBtn} onPress={() => openModal('availabilityHours')}>
+                    <Text style={styles.filterText}>{getLabel('availabilityHours')}</Text>
+                    <FontAwesome name="chevron-down" size={10} color="#555" />
+                </TouchableOpacity>
+
+            </View>
 
             {/* Choix dans le modal */}
             <Modal visible={modalVisible} transparent animationType="fade">
