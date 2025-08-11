@@ -80,7 +80,7 @@ export default function InfoInscriptScreen({ navigation }) {
     }));
     };
     
-    const addEnfant = lastEnfant.map((data,i) => {console.log(lastEnfant)
+    const addEnfant = lastEnfant.map((data,i) => {
         return <View key={i} style={styles.containeInput}>
                     <Input style={styles.inputEnfant} width="41%" name="Enfant" setText={(prenom)=>{modifEnfant(prenom,i)}} text={lastEnfant[i].enfants} />
                     <View style={styles.inputAge}>
