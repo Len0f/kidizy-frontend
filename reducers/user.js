@@ -2,13 +2,14 @@ import { createSlice } from '@reduxjs/toolkit';
 //save1
 //supersave
 const initialState = {
-  value: { firstName: null, token: null, id:null },
+  value: { firstName: null, token: null, id:null, selectedBabysitterId: null },
 };
 
 export const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
+    
     updateInfo: (state, action) => {
 
       state.value.firstName = action.payload.firstName;
@@ -27,6 +28,7 @@ export const userSlice = createSlice({
     resetInfo: (state) => {
       state.value = { firstName: 'utilisateur', token: null };
     }
+    
   },
 });
 

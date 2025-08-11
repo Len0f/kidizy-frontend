@@ -24,24 +24,37 @@ export default function ContactsScreen({ navigation, route }) {
     return (
         <View style={styles.container}>
             <Image style={styles.logo}source={require('../assets/KidizyLogo.png')} />
-            <View style={styles.screenTitleContainer}>
-                <Text style={styles.screenTitle}>Demande de chat :</Text>
-            </View>
+            <FontAwesome name={'user'} size={50} color={userColor} />
 
             {/* Partie uniquement visible par les babysitter */}
             {profil === 'babysitter' ? (
-                <>
-                    <Conversation click={goProfil} clickNav={chat}userColor={userColor} btnTitle={<View style={styles.message}><FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/></View>} />
+                <>  
+                    <View style={styles.newConvContainer}>
+                        <View style={styles.screenTitleContainer}>
+                            <Text style={styles.screenTitle}>Demande de chat :</Text>
+                        </View>
+                        <Conversation click={goProfil} clickNav={chat}userColor={userColor} btnTitle={<View style={styles.message}><FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/></View>} />
+                        <Conversation click={goProfil} clickNav={chat}userColor={userColor} btnTitle={<View style={styles.message}><FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/></View>} />
+                    </View>
+                    <View style={styles.previousConvContainer}>
+                        <Conversation click={goProfil} clickNav={chat}userColor={userColor} btnTitle={<View style={styles.message}><FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/></View>} />
+                        <Conversation click={goProfil} clickNav={chat}userColor={userColor} btnTitle={<View style={styles.message}><FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/></View>} />
+                    </View>
             
                    
                 </>
             ):(<>
-                    <Text>Nouvelles demandes</Text>
+
+                    <View style={styles.previousConvContainer}>
+                        <Conversation click={goProfil} clickNav={chat}userColor={userColor} btnTitle={<View style={styles.message}><FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/></View>} />
+                        <Conversation click={goProfil} clickNav={chat}userColor={userColor} btnTitle={<View style={styles.message}><FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/></View>} />
+                    </View>
+                    {/* <Text>Nouvelles demandes</Text>
                     <Button
                         title="Voir le profil"
                         onPress={() => navigation.navigate('PreviewParent', {from: 'Contacts', profil})}
                     />
-                    <Text>En cours</Text>
+                    <Text>En cours</Text> */}
                 </>
             )}
 
@@ -70,6 +83,14 @@ const styles = StyleSheet.create({
         fontFamily:'Montserrat',
         fontSize:28,
         fontWeight:'700'
+    },
+    newConvContainer:{
+        alignItems:'center',
+        paddingBottom:15,
+        borderBottomWidth:1
+    },
+    previousConvContainer:{
+        paddingTop:27
     },
     message:{
         padding:5,
