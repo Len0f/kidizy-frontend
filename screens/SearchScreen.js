@@ -65,18 +65,18 @@ export default function SearchScreen() {
         // ------------------ RECUPERATION DU PARENT
         if(!token) return;
 
-        console.log("Token utilisé pour le fetch parent :", token);
-        fetch(`${url}users/me/${token}`)
-        .then(response => response.json())
-        .then ((data) => {
-            if(data.result) {
-                //console.log("Parent connecté récupéré depuis le backend :", data.user);
-                setParent(data.user);
-                setParentLocation(data.user.location || null);
-            } else {
-                //console.log("Erreur récupération du parent :", data.error);
-            }
-        });
+        // console.log("Token utilisé pour le fetch parent :", token);
+        // fetch(`${url}users/me/${token}`)
+        // .then(response => response.json())
+        // .then ((data) => {
+        //     if(data.result) {
+        //         //console.log("Parent connecté récupéré depuis le backend :", data.user);
+        //         setParent(data.user);
+        //         setParentLocation(data.user.location || null);
+        //     } else {
+        //         //console.log("Erreur récupération du parent :", data.error);
+        //     }
+        // });
         
         // ------------------ RECUPERATION DES BABYSITTERS
         fetch(`${url}users/babysitters`)

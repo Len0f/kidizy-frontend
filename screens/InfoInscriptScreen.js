@@ -25,6 +25,7 @@ export default function InfoInscriptScreen({ navigation }) {
 
 
     const handleSubmit = async ()=> {
+        console.log('prenom',prenom,'nom',nom,'tel',telephone,'lastenfant',lastEnfant)
         const sendinfo = await fetch(`${url}users`,{
              method: 'PUT',
 
@@ -43,7 +44,7 @@ export default function InfoInscriptScreen({ navigation }) {
                     parentInfos:{
                         kids: lastEnfant
                     }
-                    })
+                    })                   
         })
         const res = await sendinfo.json()
         if (res.result){
@@ -80,7 +81,7 @@ export default function InfoInscriptScreen({ navigation }) {
     }));
     };
     
-    const addEnfant = lastEnfant.map((data,i) => {console.log(lastEnfant)
+    const addEnfant = lastEnfant.map((data,i) => {
         return <View key={i} style={styles.containeInput}>
                     <Input style={styles.inputEnfant} width="41%" name="Enfant" setText={(prenom)=>{modifEnfant(prenom,i)}} text={lastEnfant[i].enfants} />
                     <View style={styles.inputAge}>
