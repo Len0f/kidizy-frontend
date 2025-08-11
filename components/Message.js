@@ -8,7 +8,7 @@ export default function Message(props) {
   
     return (
     <View style={[styles.messageWrapper, { ...(props.id ===user.id ? styles.messageSent : styles.messageRecieved) }]}>
-        {/* <Image style={(props.username != props.params.username ? styles.image : styles.imageNone)} source={require(props.imageURL)} /> */}
+        {/* <Image style={(props.username != props.params.username ? styles.image : styles.imageNone)} source={{uri:props.urlImage}} } /> */}
         <View style={[styles.message, { ...(props.username === user.firstName ? {backgroundColor: props.colorBG} : {backgroundColor: '#EBE6DA'}) }]}>
             <Text style={styles.messageText}>{props.text}</Text>
         </View>

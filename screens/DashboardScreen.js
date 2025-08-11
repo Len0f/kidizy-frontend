@@ -3,8 +3,13 @@ import { useUser } from '../contexts/UserContext';
 import NextGuardComponent from '../components/nextGuardComponent'
 import GuardComponent from '../components/guardComponent';
 import FontAwesome from "react-native-vector-icons/FontAwesome";
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import {url} from '../App';
 
 export default function DashboardScreen({ navigation }) {
+    const user = useSelector((state) => state.user.value);
+    const [avatar, setAvatar] = useState('')
     const { profil } = useUser();
 
     let userColor;
@@ -28,6 +33,17 @@ export default function DashboardScreen({ navigation }) {
         navigation.navigate('Calendar')
     }
 
+        //recuperation de ses propres données grace au token présent dans le reducer
+        useEffect(()=>{
+            fetch(`${url}users/me/${user.token}`)
+        .then(response=>response.json())
+        .then(data=>{
+            setAvatar(data.user.avatar)
+        })
+        },[])
+        
+  
+
     return (
         <View style={styles.container}>
             <Image style={styles.logo}source={require('../assets/KidizyLogo.png')} />
@@ -45,7 +61,7 @@ export default function DashboardScreen({ navigation }) {
                 <>
                 <View>
                     <TouchableOpacity style={styles.avatarContainer} onPress={()=>navigation.navigate('ProfilUser')}>
-                        <Image style={styles.avatar} source={require('../assets/babysitter1.jpg')}/>
+                        <Image style={styles.avatar} source={{uri:avatar}}/>
                         <FontAwesome style={styles.update}name="gear" size={12} color={'#323232'}/>
                     </TouchableOpacity>     
                 </View>  

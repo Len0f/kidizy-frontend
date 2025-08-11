@@ -3,9 +3,54 @@ import { useUser } from '../contexts/UserContext';
 import UserCard from '../components/userCard';
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Conversation from '../components/conversation';
+import { useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
+import {url} from '../App';
 
 export default function ContactsScreen({ navigation, route }) {
     const {profil} = useUser();
+    const [convs, setConvs] = useState([])
+    const [propos, setPropos] = useState([])
+    const [isVisible, setIsVisible] = useState (false)
+    const user = useSelector((state) => state.user.value);
+
+    useEffect(()=>{
+        if(profil === 'PARENT'){
+            fetch(`${url}conversations?token=${user.token}&id=${user.id}`)
+            .then(response=>response.json())
+            .then(data=>{
+                const conversations = data.myConversations.map((conv, i)=>{
+                    return <Conversation key={i}firstName={conv.idUserBabysitter.firstName} lastName={conv.idUserBabysitter.lastName} urlImage={conv.idUserBabysitter.avatar}click={goProfil} clickNav={chat}userColor={userColor} btnTitle={<View style={styles.message}><FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/></View>} />
+                })
+                setConvs(conversations)
+            })
+        }else{
+            fetch(`${url}conversations?token=${user.token}&id=${user.id}`)
+            .then(response=>response.json())
+            .then(data=>{
+                const conversations = data.myConversations.map((conv, i)=>{
+                    return <Conversation key={i}firstName={conv.idUserParent.firstName} lastName={conv.idUserParent.lastName} urlImage={conv.idUserParent.avatar}click={goProfil} clickNav={chat}userColor={userColor} btnTitle={<View style={styles.message}><FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/></View>} />
+                })
+                setConvs(conversations)
+            })
+            fetch(`${url}propositions?token=${user.token}&id=${user.id}`)
+            .then(response=>response.json())
+            .then(data=>{
+                const propositions = data.filteredPropositions.map((propo, i)=>{
+                    console.log(propo.idUserParent)
+                    return <Conversation key={i}firstName={propo.idUserParent.firstName} lastName={propo.idUserParent.lastName} urlImage={propo.idUserParent.avatar}click={goProfil} clickNav={chat}userColor={userColor} btnTitle={<View style={styles.message}><FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/></View>} />
+                })
+                setPropos(propositions)
+                if (propos.length) {
+                    setIsVisible(true)
+                } else {
+                    setIsVisible(false)
+
+                }
+            })
+        }               
+    },[])
+    
 
     let userColor;
     if(profil==='parent'){
@@ -21,24 +66,23 @@ export default function ContactsScreen({ navigation, route }) {
         navigation.navigate('Chat', {from: 'Contacts', profil})
     }
 
+    
+
     return (
         <View style={styles.container}>
             <Image style={styles.logo}source={require('../assets/KidizyLogo.png')} />
-            <FontAwesome name={'user'} size={50} color={userColor} />
 
             {/* Partie uniquement visible par les babysitter */}
             {profil === 'babysitter' ? (
                 <>  
-                    <View style={styles.newConvContainer}>
+                    {isVisible && <View style={styles.newConvContainer}>
                         <View style={styles.screenTitleContainer}>
                             <Text style={styles.screenTitle}>Demande de chat :</Text>
                         </View>
-                        <Conversation click={goProfil} clickNav={chat}userColor={userColor} btnTitle={<View style={styles.message}><FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/></View>} />
-                        <Conversation click={goProfil} clickNav={chat}userColor={userColor} btnTitle={<View style={styles.message}><FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/></View>} />
-                    </View>
+                        {propos}
+                    </View>}
                     <View style={styles.previousConvContainer}>
-                        <Conversation click={goProfil} clickNav={chat}userColor={userColor} btnTitle={<View style={styles.message}><FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/></View>} />
-                        <Conversation click={goProfil} clickNav={chat}userColor={userColor} btnTitle={<View style={styles.message}><FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/></View>} />
+                        {convs}
                     </View>
             
                    
@@ -46,8 +90,7 @@ export default function ContactsScreen({ navigation, route }) {
             ):(<>
 
                     <View style={styles.previousConvContainer}>
-                        <Conversation click={goProfil} clickNav={chat}userColor={userColor} btnTitle={<View style={styles.message}><FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/></View>} />
-                        <Conversation click={goProfil} clickNav={chat}userColor={userColor} btnTitle={<View style={styles.message}><FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/></View>} />
+                        {convs}
                     </View>
                     {/* <Text>Nouvelles demandes</Text>
                     <Button
