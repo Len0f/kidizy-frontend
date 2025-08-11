@@ -151,7 +151,7 @@ export default function CalendarScreen() {
                   editable={item.checked}
                   onChangeText={val => handleHourChange(idx, "endHour", val)}
                 />
-                <Text style={styles.hourLabel}>h</Text>
+              
               </View>
             </View>
           ))}
