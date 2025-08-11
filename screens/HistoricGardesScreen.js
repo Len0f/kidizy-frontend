@@ -9,7 +9,10 @@ import {
 import UserCard from '../components/userCard';
 import { useNavigation } from '@react-navigation/native';
 import { useUser } from '../contexts/UserContext';
+import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
 
+const user = useSelector((state)=>state.user.value)
 const gardParentFake = [
     {
         avatar: require('../assets/babysitter1.jpg'),
@@ -61,6 +64,14 @@ const gardBabyFake = [
 
 export default function HistoricGardesScreen(navigate) {
     const navigation = useNavigation();
+
+    //recuperation gardes et proposition babysitter
+    // useEffect(()=>{
+    //     if(profil==='babysitter'){
+    //     fetch(`${url}propositions?token=${user.token}&id=${user.id}`)
+    //     }
+    // })
+
 
     // Data et Couleur change selon le type de profil
     const { profil } = useUser();

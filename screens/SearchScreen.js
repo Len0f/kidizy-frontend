@@ -11,20 +11,21 @@ import { useSelector, useDispatch } from 'react-redux';
 // import * as Location from 'expo-location'; (PAS BESOIN POUR LA SIMULATION)
 import { useNavigation } from '@react-navigation/native';
 import { updateInfo } from '../reducers/user';
+
 import SearchCard from '../components/searchCard';
 import FilterBar from '../components/filterBar';
 
 // -----------------------Données en dur pour simulation (à retirer plus tard)
 
-// const parentFalse = {
-//   firstName: 'Sophie',
-//   lastName: 'Martin',
-//   location: {
-//     lat: '48.8570',
-//     lon: '2.3500',
-//     address: 'Paris, France'
-//   }
-// };
+const parentFalse = {
+  firstName: 'Sophie',
+  lastName: 'Martin',
+  location: {
+    lat: '48.8570',
+    lon: '2.3500',
+    address: 'Paris, France'
+  }
+};
 
 // -------------------------- CALCULS DISTANCE HAVERSINE (déjà utilisé dans mappulator)
 function getDistanceKm(lat1, lon1, lat2, lon2) {
@@ -65,18 +66,18 @@ export default function SearchScreen() {
         // ------------------ RECUPERATION DU PARENT
         if(!token) return;
 
-        // console.log("Token utilisé pour le fetch parent :", token);
-        // fetch(`${url}users/me/${token}`)
-        // .then(response => response.json())
-        // .then ((data) => {
-        //     if(data.result) {
-        //         //console.log("Parent connecté récupéré depuis le backend :", data.user);
-        //         setParent(data.user);
-        //         setParentLocation(data.user.location || null);
-        //     } else {
-        //         //console.log("Erreur récupération du parent :", data.error);
-        //     }
-        // });
+        console.log("Token utilisé pour le fetch parent :", token);
+        fetch(`${url}users/me/${token}`)
+        .then(response => response.json())
+        .then ((data) => {
+            if(data.result) {
+                //console.log("Parent connecté récupéré depuis le backend :", data.user);
+                setParent(data.user);
+                setParentLocation(data.user.location || null);
+            } else {
+                //console.log("Erreur récupération du parent :", data.error);
+            }
+        });
         
         // ------------------ RECUPERATION DES BABYSITTERS
         fetch(`${url}users/babysitters`)
