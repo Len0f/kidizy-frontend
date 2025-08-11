@@ -14,7 +14,7 @@ export default function ContactsScreen({ navigation, route }) {
         userColor='#88E19D'
     }
     const goProfil = ()=>{
-        navigation.navigate('ProfilBook', {from: 'Contacts', profil})
+        navigation.navigate('ProfilBook', {from:'Contacts', profil})
     }
 
     const chat = () =>{

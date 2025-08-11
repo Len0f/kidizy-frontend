@@ -12,6 +12,11 @@ export default function Input(props) {
       return
     }
     setActif(!actif)
+  };
+
+  let titre = props.placeholder;
+  if (!props.placeholder) {
+    titre = props.name
   }
 
     return (
@@ -26,7 +31,7 @@ export default function Input(props) {
           multiline={true}
           numberOfLines={8}
           maxLength={350}
-          placeholder={props.name}
+          placeholder={titre}
           placeholderTextColor={"#979797"}
           onChangeText={(value) => props.setText(value)}
           value={props.text}

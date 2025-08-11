@@ -21,10 +21,6 @@ export default function NotationScreen({ navigation }) {
         color = "#88E19D"
     };
 
-    const handlePress = (i) => {
-        console.log(i)
-    }
-
     const stars = [];
       for (let i = 1; i < 6; i++) {
         stars.push(<FontAwesome 
@@ -32,7 +28,7 @@ export default function NotationScreen({ navigation }) {
             name="star" 
             size={60} 
             color={i <= personalStar ? color : '#323232'} 
-            onPress={()=> {handlePress(i); setPersonalStar(i)}}
+            onPress={()=> setPersonalStar(i)}
             />);
       };
 
@@ -55,7 +51,7 @@ export default function NotationScreen({ navigation }) {
                     </View>
                     <View style={styles.containeBtn}>
                         <MainBtn 
-                            userStyle ={{color: color}}
+                            userStyle ={{backgroundColor: color}}
                             btnTitle={"Soumettre"} 
                             clickNav={handleSubmit}
                         />
