@@ -11,6 +11,11 @@ export default function Input(props) {
       return
     }
     setActif(!actif)
+  };
+
+  let titre = props.placeholder;
+  if (!props.placeholder) {
+    titre = props.name
   }
 
     return (
@@ -23,7 +28,7 @@ export default function Input(props) {
           onFocus={()=>handleClick()}
           onBlur={()=>handleClick()}
           maxLength={280}
-          placeholder={props.name}
+          placeholder={titre}
           placeholderTextColor={"#979797"}
           onChangeText={(value) => props.setText(value)}
           value={props.text}
