@@ -8,11 +8,11 @@ export default function FilterBar(props) {
 
     // Données des options pour chaques filtres.
     const filterData = {
-        note: ["Toutes", "1 étoile", "2 étoiles", "3 étoiles", "4 étoiles", "5 étoiles"],
+        note: ["Toutes", "0 étoile", "1 étoile", "2 étoiles", "3 étoiles", "4 étoiles", "5 étoiles"],
         location: ["Toutes", "5 km", "10 km", "20 km"],
         age: ["Tous", "18 - 25 ans", "26 - 35 ans", "36 - 45 ans", "46 ans et +"],
         availabilityDay: ["Tous", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"],
-        availabilityHours: ["Toutes", "08:00-12:00", "12:00-16:00", "16:00-20:00", "20:00-00:00"]
+        availabilityHours: ["Toutes", "08h00-12h00", "12h00-16h00", "16h00-20h00", "20h00-00h00"]
     };
 
     const openModal = (filterType) => {
@@ -22,16 +22,16 @@ export default function FilterBar(props) {
 
     // Ouvre le modal pour un type de filtre.
     const selectOption = (value) => {
+        console.log('FilterBar selection:', currentFilter, value);
+
         if (currentFilter === 'note') {
             props.setNoteFilter(value === "Toutes" ? "" : Number(value.split(" ")[0])); // Ex: 4 étoiles = 4 (nombre)
         }
+
         if (currentFilter === 'location') {
-            if (value === "Toutes") {
-                props.setLocationFilter("");
-            } else {
-                props.setLocationFilter(Number(value.split(" ")[0])); // 10 km = 10 (nombre)
-            }
+            props.setLocationFilter(value === 'Toutes' ? '' : Number(value.split(' ')[0]));
         }
+
         if (currentFilter === 'age') {
             if (value === "Tous") props.setAgeFilter("");
 
@@ -86,7 +86,7 @@ export default function FilterBar(props) {
           }
       
           if (type === 'availabilityHours') {
-              if (!props.availabilityHoursFilter) return "Tranche horaire";
+              if (!props.availabilityHoursFilter) return "Heures";
               const [start, end] = props.availabilityHoursFilter.split("-");
               return `${start} - ${end}`;
           }
@@ -133,7 +133,7 @@ export default function FilterBar(props) {
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalContent}>
                         <FlatList
-                        data={filterData[currentFilter]}
+                        data={filterData[currentFilter] || []}
                         keyExtractor={(item, index) => index.toString()}
                         renderItem={({item}) => (
                             <TouchableOpacity
