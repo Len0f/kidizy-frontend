@@ -13,13 +13,10 @@ export default function Conversation(props){
           <View style={styles.userContainer}>
 
             <View style={styles.userHeader}>
-                <TouchableOpacity onPress={()=>goProfil()}><Image style={styles.avatar} source={require('../assets/babysitter1.jpg')}/></TouchableOpacity>
+                <TouchableOpacity onPress={()=>goProfil()}><Image style={styles.avatar} source={{uri:props.urlImage}}/></TouchableOpacity>
 
                 <View style={styles.infoContainer}>
-                    <Text style={styles.userName} >{props.name} ohzodjza</Text>
-                    <Text style={styles.userDetails}>
-                    {props.age} ans - {props.guards} gardes
-                    </Text>
+                    <Text style={styles.userName} >{props.firstName} {props.lastName}</Text>
                 </View>
             </View>
 
