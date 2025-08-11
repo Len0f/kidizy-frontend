@@ -100,6 +100,8 @@ export default function InfoInscriptScreen({ navigation }) {
         price: th,
         CNI: cniUrl || '',
         criminalRecord: casierUrl || '',
+        bio: Biographie,
+        interest: Interest
       },
       parentInfos: {
         kids: lastEnfant,
