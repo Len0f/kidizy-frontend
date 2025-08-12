@@ -162,11 +162,7 @@ useEffect(() => {
                         distance={item.distanceKm ?? ''}
                         btnTitle="Reserver"
                         userColor="#98C2E6"
-                        onPress = {() => 
-                            navigation.navigate('ProfilBook', {
-                                babysitter : item,
-                            })
-                        }
+                        onPress = {() =>navigation.navigate('ProfilBook', { babysitter : item, })}
                     />
                 )}
                 
