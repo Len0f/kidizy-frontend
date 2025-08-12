@@ -12,8 +12,24 @@ export default function FilterBar(props) {
         location: ["Toutes", "5 km", "10 km", "20 km"],
         age: ["Tous", "18 - 25 ans", "26 - 35 ans", "36 - 45 ans", "46 ans et +"],
         availabilityDay: ["Tous", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"],
-        availabilityHours: ["Toutes", "08h00-12h00", "12h00-16h00", "16h00-20h00", "20h00-00h00"]
-    };
+        availabilityHours: ["Toutes", "08h00-12h00", "12h00-16h00", "16h00-20h00", "20h00-00h00"],
+        sort: [
+            "Aucun tri",
+            "Note ↑", "Note ↓",
+            "Distance ↑", "Distance ↓",
+            "Âge ↑", "Âge ↓",
+          ],
+        };
+        
+        // Tri les filtres
+        const sortMap = {
+            "Note ↑": "rating",
+            "Note ↓": "-rating",
+            "Distance ↑": "distance",
+            "Distance ↓": "-distance",
+            "Âge ↑": "age",
+            "Âge ↓": "-age",
+        };
 
     const openModal = (filterType) => {
         setCurrentFilter(filterType);
@@ -55,6 +71,10 @@ export default function FilterBar(props) {
             props.setAvailabilityHoursFilter(value === "Toutes" ? "" : value);
         }
 
+        if (currentFilter === 'sort') {
+            props.setSortFilter(sortMap[value] || '');
+        }
+
         setModalVisible(false);
     };
 
@@ -90,7 +110,19 @@ export default function FilterBar(props) {
               const [start, end] = props.availabilityHoursFilter.split("-");
               return `${start} - ${end}`;
           }
+
+          if (type === 'sort') {
+            if (!props.sortFilter) return "Tri";
+            const reverseMap = {
+                rating: "Note ↑", "-rating": "Note ↓",
+                distance: "Distance ↑", "-distance": "Distance ↓",
+                age: "Âge ↑", "-age": "Âge ↓",
+            };
+            return reverseMap[props.sortFilter] || "Tri";
+        }
     };
+
+
 
     return (
         <>
@@ -123,6 +155,11 @@ export default function FilterBar(props) {
 
                 <TouchableOpacity style={styles.filterBtn} onPress={() => openModal('availabilityHours')}>
                     <Text style={styles.filterText}>{getLabel('availabilityHours')}</Text>
+                    <FontAwesome name="chevron-down" size={10} color="#555" />
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.filterBtn} onPress={() => openModal('sort')}>
+                    <Text style={styles.filterText}>{getLabel('sort')}</Text>
                     <FontAwesome name="chevron-down" size={10} color="#555" />
                 </TouchableOpacity>
 
