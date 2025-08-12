@@ -36,7 +36,7 @@ export default function SearchScreen() {
     const [error, setError] = useState('');
     
     // Localisation du parent
-    const [parentLocation] = useState(parentFalse.location);
+    //const [parentLocation] = useState(parentFalse.location);
 
     // Etats des filtres
     const [noteFilter, setNoteFilter] = useState('');                               // par note
