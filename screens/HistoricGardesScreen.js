@@ -62,6 +62,9 @@ const gardBabyFake = [
 export default function HistoricGardesScreen(navigate) {
     const navigation = useNavigation();
 
+    
+
+
     // Data et Couleur change selon le type de profil
     const { profil } = useUser();
     const datatoDisplay = profil === 'parent' ? gardParentFake : gardBabyFake;

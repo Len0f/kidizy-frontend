@@ -14,7 +14,7 @@ const defaultEnd = '00h';
 export default function CalendarScreen() {
   const { profil } = useUser();
   const token = useSelector(state => state.user.value.token);
-  // const role = useSelector(state => state.user.value.role); 
+  const role = useSelector(state => state.user.value.role); 
 
 
   // if (role !== 'BABYSITTER') {

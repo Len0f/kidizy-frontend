@@ -1,21 +1,20 @@
-import { url } from '../App';
 import { 
+    ActivityIndicator,
     FlatList, 
     Image, 
     StyleSheet, 
     SafeAreaView,
-    View 
+    Text,
+    View,
 } from 'react-native';
-import { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-// import * as Location from 'expo-location'; (PAS BESOIN POUR LA SIMULATION)
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { updateInfo } from '../reducers/user';
 import SearchCard from '../components/searchCard';
 import FilterBar from '../components/filterBar';
+import { url } from '../App';
+import { useUser } from '../contexts/UserContext';
 
 // -----------------------Données en dur pour simulation (à retirer plus tard)
-
 // const parentFalse = {
 //   firstName: 'Sophie',
 //   lastName: 'Martin',
@@ -26,126 +25,117 @@ import FilterBar from '../components/filterBar';
 //   }
 // };
 
-// -------------------------- CALCULS DISTANCE HAVERSINE (déjà utilisé dans mappulator)
-function getDistanceKm(lat1, lon1, lat2, lon2) {
-  const dispatch= useDispatch()
-  const R = 6371; // Rayon de la Terre en km
-  const dLat = ((lat2 - lat1) * Math.PI) / 180;
-  const dLon = ((lon2 - lon1) * Math.PI) / 180;
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos((lat1 * Math.PI) / 180) *
-      Math.cos((lat2 * Math.PI) / 180) *
-      Math.sin(dLon / 2) ** 2;
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c; // km
-}
-
 export default function SearchScreen() {
     const navigation = useNavigation();
+    const { user } = useUser();
+    const parentLocation = user?.location;
 
-    // Etat des users
+    // ------------------- ETATS AVEC DONNEES VENANT DU BACK
     const [babysitters, setBabysitters] = useState([]);
-    const [parent, setParent] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
     
     // Localisation du parent
-    const [parentLocation, setParentLocation] = useState(null);
+    const [parentLocation] = useState(parentFalse.location);
 
     // Etats des filtres
-    const [noteFilter, setNoteFilter] = useState(''); // par note
-    const [locationFilter, setLocationFilter] = useState(''); // par localisation
-    const [ageFilter, setAgeFilter] = useState(''); // par age
-    const [availabilityDayFilter, setAvailabilityDayFilter] = useState(''); // par jour
-    const [availabilityHoursFilter, setAvailabilityHoursFilter] = useState(''); // par tranches horaires
+    const [noteFilter, setNoteFilter] = useState('');                               // par note
+    const [locationFilter, setLocationFilter] = useState('');                       // par localisation
+    const [ageFilter, setAgeFilter] = useState('');                                 // par tranche d'ages
+    const [availabilityDayFilter, setAvailabilityDayFilter] = useState('');         // par jour
+    const [availabilityHoursFilter, setAvailabilityHoursFilter] = useState('');     // par tranches horaires
 
-// -------------------------- RECUPERATION DE LA POSITION DU PARENT (challenge mappulator).
-    const token = useSelector((state) => state.user.value.token);
+// -------------------------- CONSTRUCTION DE L'URL /users/babysitters
+    const buildUrl = useCallback((offset = 0, limit = 20) => {                         // useCallBack : mémorise la fonction pou.  //offset/limit : le nombre de babysitter chargé par bloc.
+        const params = new URLSearchParams();                                          // Objet qui permet de créer l'URL
 
-    useEffect(() => {
-        // ------------------ RECUPERATION DU PARENT
-        if(!token) return;
+        // Application des filtres : si un ou des filtres sont défini, on l'ajoute dans l'URL comme paramètre GET.
+        if (noteFilter) params.set('rating', String(noteFilter));
+        if (ageFilter) params.set('ageRange', ageFilter);                              
+        if (availabilityDayFilter) params.set('day', availabilityDayFilter);
+        if (availabilityHoursFilter) params.set('hours', availabilityHoursFilter);
+        if (locationFilter && parentLocation?.lat && parentLocation?.lon) {
+            params.set('maxDistanceKm', String(locationFilter));
+            params.set('parentLat', String(parentLocation.lat));                       // Ajout de la localisation GPS du parent pour le calcul de la distance.
+            params.set('parentLon', String(parentLocation.lon));
+        }
 
-        // console.log("Token utilisé pour le fetch parent :", token);
-        // fetch(`${url}users/me/${token}`)
-        // .then(response => response.json())
-        // .then ((data) => {
-        //     if(data.result) {
-        //         //console.log("Parent connecté récupéré depuis le backend :", data.user);
-        //         setParent(data.user);
-        //         setParentLocation(data.user.location || null);
-        //     } else {
-        //         //console.log("Erreur récupération du parent :", data.error);
-        //     }
-        // });
+        // Tri des réponses.
+        if (sortFilter) params.set('sort', sortFilter);
+
+        // Pour la gestion des blocs de chargement.
+        params.set('offset', String(offset));        // s'incrémente avec nextOffSet
+        params.set('limit', String(limit));          // nombre max d'éléments qu'on appelle par requête (20).
         
-        // ------------------ RECUPERATION DES BABYSITTERS
-        fetch(`${url}users/babysitters`)
-        .then(response => response.json())
-        .then(data => {
-            if(data.result) {
-                dispatch(updateInfo({selectedBabysitterId: data.babysitters._id}))
-                setBabysitters(data.babysitters);
+        return `${url}users/babysitters?${params.toString()}`;  // Construction de l'URL.
+    }, [
+        // Dépendances qui permet de recharger l'URL que si le filtre change.
+        noteFilter,
+        ageFilter,
+        availabilityDayFilter,
+        availabilityHoursFilter,
+        locationFilter,
+        parentLocation,
+        sortFilter,
+    ]);
+
+// -------------------------- CHARGEMENT DES BABYSITTERS
+    // 20 premiers chargements.
+    const loadInitial = useCallback(async () => {
+        setRefreshing(true);
+        setError('');
+        try {const response = await fetch(buildUrl(0, 20));
+            const data = await response.json();
+            if (data.result) {
+                setBabysitters(data.babysitters || []);
+                setHasMore(!!data.hasMore);
+                setNextOffset(Number(data.nextOffset || 0));
             } else {
-                console.log('Erreur de récupération des babysitters', data.error);
+                setError(data.error || 'Erreur inconnue');
             }
-        });
-    }, []);
-
-// ----------------------- FILTRE DES BABYSITTERS : 3 CRITERES
-    const filteredBabysitters = babysitters.filter((b) => {
-        let keep = true;
-
-        // -------------------------- PAR NOTE
-        if (noteFilter) {
-            keep = keep && Math.floor(b.rating) === parseInt(noteFilter);
-            // Keep && permet de combiner les filtres.
+        } catch (e) {
+            setError('Erreur réseau');
+            console.log('loadInitial error:', e);
+        } finally {
+            setRefreshing(false);
         }
+    }, [buildUrl]);
 
-        // -------------------------- PAR LOCALISATION
-        if (locationFilter && parentLocation) {
-            
-            if (b.location?.lat && b.location?.lon) {
-                // Calcul de la distance entre le parent et le babysitter
-                const distance = getDistanceKm(
-                    parseFloat(parentLocation.lat), // Transforme le string en nombre pour la fct getDistance
-                    parseFloat(parentLocation.lon),
-                    parseFloat(b.location.lat), 
-                    parseFloat(b.location.lon)
-                );
-
-                // On garde uniquement les babysitter dans le rayon choisi.
-                keep = keep && distance <= locationFilter;
-            } else {
-                // On exclut les bb sans positions si le filtre distance est actif.
-                keep = false;
-            }
+    // chargement de la suite.
+    const loadMore = useCallback(async () => {
+        if (loading || !hasMore) return;
+        try {
+          setLoading(true);
+          const response = await fetch(buildUrl(nextOffset, 20));
+          const data = await response.json();
+          if (data.result) {
+              setBabysitters(prev => {
+                const merged = [...prev, ...(data.babysitters || [])];
+                const seen = new Set();
+                return merged.filter(item => {
+                  if (!item?._id) return false;
+                  if (seen.has(item._id)) return false;
+                  seen.add(item._id);
+                  return true;
+                });
+              });
+            setHasMore(!!data.hasMore);
+            setNextOffset(Number(data.nextOffset || nextOffset));
+          } else {
+            setError(data.error || 'Erreur inconnue');
+          }
+        } catch (e) {
+          setError('Erreur réseau');
+          console.log('Erreur réseau:', e);
+        } finally {
+          setLoading(false);
         }
-
-        // -------------------------- PAR AGE
-        if (ageFilter && b?.age) {
-            const [min, max] = ageFilter.split("-").map(Number); // pour faire les intervales d'âges.
-            const age = parseInt(b.age);
-            keep = keep && age >= min && age <= (max || age);
-        }
-
-        // -------------------------- PAR DISPONIBILITE
-        // Filtre par jour uniquement
-        if (availabilityDayFilter) {
-            const isAvailableThatDay = b.availability?.some(slot => slot.day === availabilityDayFilter);
-            keep = keep && isAvailableThatDay;
-        }
-
-        // Filtre par tranche horaire uniquement
-        if (availabilityHoursFilter) {
-            const [desiredStart, desiredEnd] = availabilityHoursFilter.split('-');
-            const isAvailableThatHour = b.availability?.some(slot =>
-                slot.startHour < desiredEnd && slot.endHour > desiredStart
-            );
-            keep = keep && isAvailableThatHour;
-        }
-
-        return keep;
-    })
+    }, [buildUrl, hasMore, loading, nextOffset]);
+    
+    // Recharger à chaque changement de filtres
+    useEffect(() => {
+        loadInitial();
+    }, [loadInitial]);
 
     return (
         <SafeAreaView style={styles.container}>
@@ -167,52 +157,52 @@ export default function SearchScreen() {
                 setAvailabilityDayFilter={setAvailabilityDayFilter}
                 availabilityHoursFilter={availabilityHoursFilter}
                 setAvailabilityHoursFilter={setAvailabilityHoursFilter}
+
+                sortFilter={sortFilter}
+                setSortFilter={setSortFilter}
             />
+
+            {error ? (
+                <Text style={{ color: 'crimson', marginBottom: 8 }}>{error}</Text>
+            ) : null}
            
             {/* LISTE DES BABYSITTERS FILTRES */}
             <FlatList
-                data={filteredBabysitters}
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={({item}) => {
-                    let distanceText = "";
-                    
-                    if (
-                        parentLocation &&
-                        item.location?.lat &&
-                        item.location?.lon
-                    ) {
-                        const dist = getDistanceKm(
-                            parseFloat(parentLocation.lat),
-                            parseFloat(parentLocation.lon),
-                            parseFloat(item.location.lat),
-                            parseFloat(item.location.lon)
-                        ).toFixed(1);
-                        distanceText = dist;
+                data={babysitters}
+                keyExtractor={(item) => item._id}
+                renderItem={({item}) => (
+
+                    <SearchCard
+                        avatar={item.avatar}
+                        name={`${item.firstName} ${item.lastName}`}
+                        price={item.price}
+                        age={item.age}
+                        guards={item.babysits}
+                        rating={item.rating}
+                        distance={item.distanceKm ?? ''}
+                        btnTitle="Reserver"
+                        userColor="#98C2E6"
+                        onPress = {() =>navigation.navigate('ProfilBook', { babysitter : item, })}
+                    />
+                )}
+                onEndReachedThreshold={0.3}
+                onEndReached={loadMore}
+                refreshing={refreshing}
+                onRefresh={loadInitial}
+                ListFooterComponent={
+                    loading ? <ActivityIndicator style={{ marginVertical: 12 }} /> : null
+                }
+                ListEmptyComponent={
+                    !refreshing && !error ? (
+                        <Text style={{ textAlign: 'center', marginTop: 24 }}>
+                            Aucun résultat pour ces filtres.
+                        </Text>
+                        ) : null
                     }
-
-                    return (
-                        <SearchCard
-                            avatar={item.avatar}
-                            name={`${item.firstName} ${item.lastName}`}
-                            price={item.price}
-                            age={item.age}
-                            guards={item.babysits}
-                            rating={item.rating}
-                            distance={distanceText}
-                            btnTitle="Reserver"
-                            userColor="#98C2E6"
-                            onPress = {() => 
-                                navigation.navigate('ProfilBook', {
-                                    babysitter : item,
-                                })
-                            }
-                        />
-                    );
-                }}
+                contentContainerStyle={{ paddingBottom: 24 }}
             />
-
         </SafeAreaView>
-    );
+  );
 }
 
 const styles = StyleSheet.create({

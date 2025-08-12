@@ -12,9 +12,11 @@ import { useSelector } from 'react-redux';
 import {url} from '../App'; // Import the API URL from App.js
 import Conversation from '../components/conversation';
 
-export default function PreviewParentScreen({ navigation }) {
+
+export default function PreviewParentScreen({ navigation, route }) {
     const user=useSelector((state)=>state.user.value)
     const { profil } = useUser();
+    const { propoId }= route.params
 //     useEffect(() => {
 //     (async () => {
 //       const { status } = await Location.requestForegroundPermissionsAsync();
@@ -28,6 +30,22 @@ export default function PreviewParentScreen({ navigation }) {
 //     })();
 //   }, []);
 
+useEffect(()=>{
+    if(profil==='babysitter'){
+        fetch(`${url}proposition/id?token=${user.token}&id=${propoId}`).then(response=>response.json())
+        .then(data=>{
+            
+            setNom(data.propo.firstName)
+            setPrenom(data.propo.lastName)
+            setDay(data.propo.day)
+            setHours(data.propo.propoStart)
+            setEnfant(data.propo.kids)
+            setComment(data.propo.comment)
+        })
+    }
+},[])
+    
+    
     const returnScreen = ()=>{
         navigation.navigate('Contacts')
     }
@@ -70,6 +88,7 @@ export default function PreviewParentScreen({ navigation }) {
              })
             })
             const resConv = await newConversation.json()
+           
             if(resConv.result){
         navigation.navigate('Chat', {conversation:resConv.conversationId._id})
             }
@@ -80,10 +99,7 @@ export default function PreviewParentScreen({ navigation }) {
         navigation.navigate('Contacts')
     }
 
-    const keys = Object.keys(data)
-    const infos = Object.entries(data)
-    console.log(infos)
-    console.log(keys)
+
     
     const [nom, setNom] = useState('')
     const [prenom, setPrenom] = useState('')
@@ -109,12 +125,12 @@ export default function PreviewParentScreen({ navigation }) {
             </SafeAreaView>
             
             <View style={styles.mainContent}>
-                <TextInfo title={keys[0]}textContent={data.Prenom} userStyle={{color:'#88E19D'}} width={'43%'}/>
-                <TextInfo title={keys[1]}textContent={data.Nom} userStyle={{color:'#88E19D'}} width={'43%'}/>
-                <TextInfo title={keys[2]}textContent={data.Jour} userStyle={{color:'#88E19D'}} width={'43%'}/>
-                <TextInfo title={keys[3]}textContent={data.Horaires} userStyle={{color:'#88E19D'}} width={'43%'}/>
-                <TextInfo title={keys[4]+'(s) à garder'}textContent={data.Enfant} userStyle={{color:'#88E19D'}} width={'90%'}/>
-                <TextInfo title={keys[5]}textContent={data.Commentaires} userStyle={{color:'#88E19D'}} width={'90%'}/>
+                <TextInfo title='Prenom'textContent={prenom} userStyle={{color:'#88E19D'}} width={'43%'}/>
+                <TextInfo title='Nom'textContent={nom} userStyle={{color:'#88E19D'}} width={'43%'}/>
+                <TextInfo title='Jour'textContent={day} userStyle={{color:'#88E19D'}} width={'43%'}/>
+                <TextInfo title='Heure'textContent={hours} userStyle={{color:'#88E19D'}} width={'43%'}/>
+                <TextInfo title="Nombre d'enfant"textContent={enfant} userStyle={{color:'#88E19D'}} width={'90%'}/>
+                <TextInfo title='Commentaire'textContent={comment} userStyle={{color:'#88E19D'}} width={'90%'}/>
             </View>
 
             <View style={styles.mapContainer}>
@@ -149,12 +165,12 @@ export default function PreviewParentScreen({ navigation }) {
             </SafeAreaView>
             
             <View style={styles.mainContent}>
-                <Input name={`${keys[0]}`}setText={setNom} text={nom}  width={'43%'}/>
-                <Input name={keys[1]}setText={setPrenom} text={prenom}  width={'43%'}/>
-                <Input name={keys[2]}setText={setDay} text={day} width={'43%'}/>
-                <Input name={keys[3]}setText={setHours} text={hours}  width={'43%'}/>
-                <Input name={keys[4]+'(s) à garder'}setText={setEnfant} text={enfant} width={'90%'}/>
-                <Input name={keys[5]}setText={setComment} text={comment}width={'90%'}/>
+                <Input name='Prenom'setText={setNom} text={nom}  width={'43%'}/>
+                <Input name='Nom'setText={setPrenom} text={prenom}  width={'43%'}/>
+                <Input name='Jour'setText={setDay} text={day} width={'43%'}/>
+                <Input name='Heure'setText={setHours} text={hours}  width={'43%'}/>
+                <Input name="Nombre d'enfant"setText={setEnfant} text={enfant} width={'90%'}/>
+                <Input name='Commenaire'setText={setComment} text={comment}width={'90%'}/>
             </View>
 
             <View style={styles.mapContainer}>
@@ -167,7 +183,7 @@ export default function PreviewParentScreen({ navigation }) {
                 }}
                 style={styles.map}
             >
-            <Marker coordinate={{ latitude: 44.8643352091005, longitude: -0.5760245233606299 }} title={data.Prenom} />
+            <Marker coordinate={{ latitude: 44.8643352091005, longitude: -0.5760245233606299 }} title={prenom} />
             </MapView>
             </View>
             <View style={styles.buttons}>
