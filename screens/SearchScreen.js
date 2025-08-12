@@ -34,12 +34,9 @@ export default function SearchScreen() {
     const [babysitters, setBabysitters] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const [sortFilter, setSortFilter] = useState('')     // pour trier par ordre croissant ou décroissant.
     
-    // Gestion du chargement des valeurs back pour plus de fluidité (en gros on charge par bloc de 20 babysitters et la suite charge en scrollant, ça évite de tout charger d'un coup et éviter les ralentissements).
-    const [refreshing, setRefreshing] = useState(false); // indique si le rafraichissement complet des données est en cours lors du scroll.
-    const [hasMore, setHasMore] = useState(true);        // dit s'il y a encours des résultats à charger, met à jour les valeurs renvoyé par le back
-    const [nextOffset, setNextOffset] = useState(0);     // mémorise où reprendre la pagination
+    // Localisation du parent
+    const [parentLocation] = useState(parentFalse.location);
 
     // Etats des filtres
     const [noteFilter, setNoteFilter] = useState('');                               // par note
@@ -140,7 +137,6 @@ export default function SearchScreen() {
         loadInitial();
     }, [loadInitial]);
 
-
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.header}>
@@ -186,11 +182,7 @@ export default function SearchScreen() {
                         distance={item.distanceKm ?? ''}
                         btnTitle="Reserver"
                         userColor="#98C2E6"
-                        onPress = {() => 
-                            navigation.navigate('ProfilBook', {
-                                babysitter : item,
-                            })
-                        }
+                        onPress = {() =>navigation.navigate('ProfilBook', { babysitter : item, })}
                     />
                 )}
                 onEndReachedThreshold={0.3}

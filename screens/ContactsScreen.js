@@ -12,6 +12,7 @@ export default function ContactsScreen({ navigation, route }) {
     const [convs, setConvs] = useState([])
     const [propos, setPropos] = useState([])
     const [isVisible, setIsVisible] = useState (false)
+    const [propoId,setPropoId]= useState('')
     const user = useSelector((state) => state.user.value);
 
     useEffect(()=>{
@@ -111,6 +112,10 @@ export default function ContactsScreen({ navigation, route }) {
     const chat = () =>{
         navigation.navigate('Chat', {from: 'Contacts', profil})
     }
+
+    // const preview = () =>{
+    //     navigation.navigate('PreviewParent', {from: 'Contacts', profil, propoId})
+    // }
 
     
 
