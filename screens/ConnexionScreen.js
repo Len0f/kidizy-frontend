@@ -4,7 +4,7 @@ import { useUser } from '../contexts/UserContext';
 import Input from '../components/Input';
 import SignBtn from '../components/signBtn';
 import { useState } from 'react';
-import { useSelector,useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import {url} from '../App'; // Import the API URL from App.js
 
 export default function ConnectionScreen({ navigation }) {
