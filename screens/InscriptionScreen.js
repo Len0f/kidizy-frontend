@@ -18,19 +18,12 @@ export default function InscriptionScreen({ navigation }) {
     const handleInscription = async () => {
         setErrorMessage(''); // pour réinitialiser les erreurs à chaque tentatives.
 
-        
-
         if (password !== samePassword) {
             setErrorMessage("Les mots de passe ne correspondent pas");
             return;
         }
 
-
-
-
         fetch(`${url}users/signup`, {
-
-
             method: 'POST',
             headers: {
                 'Content-Type' : 'application/json'
