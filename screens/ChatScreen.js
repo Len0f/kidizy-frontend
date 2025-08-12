@@ -112,16 +112,8 @@ console.log('payload',payload)
     };
 
     const handleNav = () => {
-      if (profil === 'parent') {
-        navigation.navigate('Garde', {from: 'Contacts', profil})
-      } else {
-        if (isAccepted) {
-          navigation.navigate('Garde', {from: 'Contacts', profil})
-        } else {
-          navigation.navigate('PreviewParent', {from: 'Contacts', profil})
-        }
-      }
-    };
+      navigation.navigate('Garde', {from: 'Contacts', profil})
+    }
 
     const handleAccept = () => {
       setIsAccepted(true)

@@ -12,6 +12,7 @@ export default function ContactsScreen({ navigation, route }) {
     const [convs, setConvs] = useState([])
     const [propos, setPropos] = useState([])
     const [isVisible, setIsVisible] = useState (false)
+    const [propoId,setPropoId]= useState('')
     const user = useSelector((state) => state.user.value);
 
     useEffect(()=>{
@@ -36,9 +37,11 @@ export default function ContactsScreen({ navigation, route }) {
             fetch(`${url}propositions?token=${user.token}&id=${user.id}`)
             .then(response=>response.json())
             .then(data=>{
+                
                 const propositions = data.filteredPropositions.map((propo, i)=>{
-                    console.log(propo.idUserParent)
-                    return <Conversation key={i}firstName={propo.idUserParent.firstName} lastName={propo.idUserParent.lastName} urlImage={propo.idUserParent.avatar}click={goProfil} clickNav={chat}userColor={userColor} btnTitle={<View style={styles.message}><FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/></View>} />
+                 setPropoId(data.propo._id)
+                 console.log('id',propoId)
+                    return <Conversation key={i}firstName={propo.idUserParent.firstName} lastName={propo.idUserParent.lastName} urlImage={propo.idUserParent.avatar}click={goProfil} clickNav={ navigation.navigate('PreviewParent', {from: 'Contacts', profil, propoId})}userColor={userColor} btnTitle={<View style={styles.message}><FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/></View>} />
                 })
                 setPropos(propositions)
                 if (propos.length) {
@@ -65,6 +68,10 @@ export default function ContactsScreen({ navigation, route }) {
     const chat = () =>{
         navigation.navigate('Chat', {from: 'Contacts', profil})
     }
+
+    // const preview = () =>{
+    //     navigation.navigate('PreviewParent', {from: 'Contacts', profil, propoId})
+    // }
 
     
 

@@ -35,6 +35,7 @@ export default function SearchScreen() {
     const [nextOffset, setNextOffset] = useState(0);
     const [error, setError] = useState('');
     
+    
     // Localisation du parent
     const [parentLocation] = useState(parentFalse.location);
 
@@ -126,6 +127,9 @@ export default function SearchScreen() {
         loadInitial();
     }, [loadInitial]);
 
+    
+
+
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.header}>
@@ -168,11 +172,7 @@ export default function SearchScreen() {
                         distance={item.distanceKm ?? ''}
                         btnTitle="Reserver"
                         userColor="#98C2E6"
-                        onPress = {() => 
-                            navigation.navigate('ProfilBook', {
-                                babysitter : item,
-                            })
-                        }
+                        onPress = {() =>navigation.navigate('ProfilBook', { babysitter : item, })}
                     />
                 )}
                 onEndReachedThreshold={0.3}
