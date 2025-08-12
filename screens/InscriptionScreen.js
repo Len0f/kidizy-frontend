@@ -4,7 +4,7 @@ import Input from '../components/Input';
 import SignBtn from '../components/signBtn';
 import { updateInfo } from '../reducers/user';
 import { useDispatch } from 'react-redux';
-import {url} from '../App'; // Import the API URL from App.js
+import {url} from '../App'; 
 
 // Écran d'inscription
 export default function InscriptionScreen({ navigation }) {
