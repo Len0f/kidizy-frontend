@@ -12,81 +12,95 @@ import { useNavigation } from '@react-navigation/native';
 import SearchCard from '../components/searchCard';
 import FilterBar from '../components/filterBar';
 import { url } from '../App';
+import { useUser } from '../contexts/UserContext';
 
 // -----------------------Données en dur pour simulation (à retirer plus tard)
-const parentFalse = {
-  firstName: 'Sophie',
-  lastName: 'Martin',
-  location: {
-    lat: '48.8570',
-    lon: '2.3500',
-    address: 'Paris, France'
-  }
-};
+// const parentFalse = {
+//   firstName: 'Sophie',
+//   lastName: 'Martin',
+//   location: {
+//     lat: '48.8570',
+//     lon: '2.3500',
+//     address: 'Paris, France'
+//   }
+// };
 
 export default function SearchScreen() {
     const navigation = useNavigation();
+    const { user } = useUser();
+    const parentLocation = user?.location;
 
-    // ------------------- Données venant du backend
+    // ------------------- ETATS AVEC DONNEES VENANT DU BACK
     const [babysitters, setBabysitters] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [refreshing, setRefreshing] = useState(false);
-    const [hasMore, setHasMore] = useState(true);
-    const [nextOffset, setNextOffset] = useState(0);
     const [error, setError] = useState('');
+    const [sortFilter, setSortFilter] = useState('')     // pour trier par ordre croissant ou décroissant.
     
-    // Localisation du parent
-    const [parentLocation] = useState(parentFalse.location);
+    // Gestion du chargement des valeurs back pour plus de fluidité (en gros on charge par bloc de 20 babysitters et la suite charge en scrollant, ça évite de tout charger d'un coup et éviter les ralentissements).
+    const [refreshing, setRefreshing] = useState(false); // indique si le rafraichissement complet des données est en cours lors du scroll.
+    const [hasMore, setHasMore] = useState(true);        // dit s'il y a encours des résultats à charger, met à jour les valeurs renvoyé par le back
+    const [nextOffset, setNextOffset] = useState(0);     // mémorise où reprendre la pagination
 
     // Etats des filtres
-    const [noteFilter, setNoteFilter] = useState(''); // par note
-    const [locationFilter, setLocationFilter] = useState(''); // par localisation
-    const [ageFilter, setAgeFilter] = useState(''); // par age
-    const [availabilityDayFilter, setAvailabilityDayFilter] = useState(''); // par jour
-    const [availabilityHoursFilter, setAvailabilityHoursFilter] = useState(''); // par tranches horaires
+    const [noteFilter, setNoteFilter] = useState('');                               // par note
+    const [locationFilter, setLocationFilter] = useState('');                       // par localisation
+    const [ageFilter, setAgeFilter] = useState('');                                 // par tranche d'ages
+    const [availabilityDayFilter, setAvailabilityDayFilter] = useState('');         // par jour
+    const [availabilityHoursFilter, setAvailabilityHoursFilter] = useState('');     // par tranches horaires
 
 // -------------------------- CONSTRUCTION DE L'URL /users/babysitters
-    const buildUrl = useCallback((offset = 0, limit = 20) => {
-        const params = new URLSearchParams();
+    const buildUrl = useCallback((offset = 0, limit = 20) => {                         // useCallBack : mémorise la fonction pou.  //offset/limit : le nombre de babysitter chargé par bloc.
+        const params = new URLSearchParams();                                          // Objet qui permet de créer l'URL
 
+        // Application des filtres : si un ou des filtres sont défini, on l'ajoute dans l'URL comme paramètre GET.
         if (noteFilter) params.set('rating', String(noteFilter));
-        if (ageFilter) params.set('ageRange', ageFilter);
+        if (ageFilter) params.set('ageRange', ageFilter);                              
         if (availabilityDayFilter) params.set('day', availabilityDayFilter);
         if (availabilityHoursFilter) params.set('hours', availabilityHoursFilter);
-
         if (locationFilter && parentLocation?.lat && parentLocation?.lon) {
             params.set('maxDistanceKm', String(locationFilter));
-            params.set('parentLat', String(parentLocation.lat));
+            params.set('parentLat', String(parentLocation.lat));                       // Ajout de la localisation GPS du parent pour le calcul de la distance.
             params.set('parentLon', String(parentLocation.lon));
         }
 
-        params.set('offset', String(offset));
-        params.set('limit', String(limit));
+        // Tri des réponses.
+        if (sortFilter) params.set('sort', sortFilter);
 
-        return `${url}users/babysitters?${params.toString()}`;
+        // Pour la gestion des blocs de chargement.
+        params.set('offset', String(offset));        // s'incrémente avec nextOffSet
+        params.set('limit', String(limit));          // nombre max d'éléments qu'on appelle par requête (20).
+        
+        return `${url}users/babysitters?${params.toString()}`;  // Construction de l'URL.
     }, [
+        // Dépendances qui permet de recharger l'URL que si le filtre change.
         noteFilter,
         ageFilter,
         availabilityDayFilter,
         availabilityHoursFilter,
         locationFilter,
         parentLocation,
+        sortFilter,
     ]);
 
 // -------------------------- CHARGEMENT DES BABYSITTERS
-    // 20 premiers chargement.
-
+    // 20 premiers chargements.
     const loadInitial = useCallback(async () => {
         setRefreshing(true);
         setError('');
-        const response = await fetch(buildUrl(0, 20));
-        const data = await response.json();
-        if (data.result) {
-            setBabysitters(data.babysitters || []);
-            setHasMore(!!data.hasMore);
-            setNextOffset(Number(data.nextOffset || 0));
-        } else {
-            setError(data.error || 'Erreur inconnue');
+        try {const response = await fetch(buildUrl(0, 20));
+            const data = await response.json();
+            if (data.result) {
+                setBabysitters(data.babysitters || []);
+                setHasMore(!!data.hasMore);
+                setNextOffset(Number(data.nextOffset || 0));
+            } else {
+                setError(data.error || 'Erreur inconnue');
+            }
+        } catch (e) {
+            setError('Erreur réseau');
+            console.log('loadInitial error:', e);
+        } finally {
+            setRefreshing(false);
         }
     }, [buildUrl]);
 
@@ -126,6 +140,7 @@ export default function SearchScreen() {
         loadInitial();
     }, [loadInitial]);
 
+
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.header}>
@@ -146,6 +161,9 @@ export default function SearchScreen() {
                 setAvailabilityDayFilter={setAvailabilityDayFilter}
                 availabilityHoursFilter={availabilityHoursFilter}
                 setAvailabilityHoursFilter={setAvailabilityHoursFilter}
+
+                sortFilter={sortFilter}
+                setSortFilter={setSortFilter}
             />
 
             {error ? (

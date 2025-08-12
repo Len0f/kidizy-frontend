@@ -9,9 +9,7 @@ import {
 import UserCard from '../components/userCard';
 import { useNavigation } from '@react-navigation/native';
 import { useUser } from '../contexts/UserContext';
-import { useSelector } from 'react-redux';
 
-const user = useSelector((state)=>state.user.value)
 const gardParentFake = [
     {
         avatar: require('../assets/babysitter1.jpg'),
