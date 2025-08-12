@@ -10,6 +10,7 @@ import {url} from '../App';
 export default function DashboardScreen({ navigation }) {
     const user = useSelector((state) => state.user.value);
     const [avatar, setAvatar] = useState('')
+    const [nextGarde, setNextGarde] = useState(null)
     const { profil } = useUser();
 
     let userColor;
@@ -36,10 +37,17 @@ export default function DashboardScreen({ navigation }) {
         //recuperation de ses propres données grace au token présent dans le reducer
         useEffect(()=>{
             fetch(`${url}users/me/${user.token}`)
-        .then(response=>response.json())
-        .then(data=>{
-            setAvatar(data.user.avatar)
-        })
+            .then(response=>response.json())
+            .then(data=>{
+                setAvatar(data.user.avatar)
+            })
+            fetch(`${url}gardes/${user.token}`)
+            .then(response=>response.json())
+            .then(nextDispoData=>{
+                setNextGarde(nextDispoData.availability)
+                console.log(nextGarde)
+                
+            })
         },[])
         
   
