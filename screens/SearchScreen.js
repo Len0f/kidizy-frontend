@@ -6,27 +6,52 @@ import {
     Text,
     View,
 } from 'react-native';
-import { useCallback, useEffect, useState, useMemo } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import SearchCard from '../components/searchCard';
 import FilterBar from '../components/filterBar';
 import { url } from '../App';
 
 // -----------------------Données en dur pour simulation (à retirer plus tard)
-const parentFalse = {
-  firstName: 'Sophie',
-  lastName: 'Martin',
-  location: {
-    lat: '48.8570',
-    lon: '2.3500',
-    address: 'Paris, France'
-  }
-};
+// const parentFalse = {
+//   firstName: 'Sophie',
+//   lastName: 'Martin',
+//   location: {
+//     lat: '48.8570',
+//     lon: '2.3500',
+//     address: 'Paris, France'
+//   }
+// };
 
 export default function SearchScreen() {
     const navigation = useNavigation();
     
-    const [parentLocation, setParentLocation] = useState(parentFalse.location); // remplacer par null quand fetch du parent.
+    const token = useSelector((state) => state.user.value.token); // récupère le token Redux
+    const [parentLocation, setParentLocation] = useState(null);
+
+// ------------------------- RECUPERATION DE LA LOCALISATION DU PARENT
+useEffect(() => {
+    if (!token) return; // pas de token → rien à faire
+
+    const fetchParentLocation = async () => {
+        const res = await fetch(`${url}users/me/${token}`);
+        const json = await res.json();
+
+        if (json?.result && json?.user?.role === 'PARENT' && json?.user?.location) {
+          const { lat, lon, address } = json.user.location;
+          if (lat != null && lon != null) {
+            setParentLocation({
+              lat: String(lat),
+              lon: String(lon),
+              address: address || '',
+            });
+          }
+        }
+    };
+
+    fetchParentLocation();
+  }, [token]);
 
 // ------------------------- ETATS AVEC DONNEES VENANT DU BACK
     const [babysitters, setBabysitters] = useState([]);
