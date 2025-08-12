@@ -40,6 +40,8 @@ export default function ContactsScreen({ navigation, route }) {
             })
             .then(([conversationsData, propositionsData]) => {
             // Traitement des conversations
+            console.log(conversationsData)
+            console.log(propositionsData)
             const conversations = conversationsData.myConversations.map((conv, i) => {
             return (
                 <Conversation key={i}firstName={conv.idUserParent.firstName} lastName={conv.idUserParent.lastName} urlImage={conv.idUserParent.avatar}click={goProfil} clickNav={chat}userColor={userColor} 
@@ -49,6 +51,7 @@ export default function ContactsScreen({ navigation, route }) {
         setConvs(conversations);
 
     // Traitement des propositions
+   
     const filter = propositionsData.filteredPropositions.filter(proposition =>
         ["PENDING"].includes(proposition.isAccepted)
     );
