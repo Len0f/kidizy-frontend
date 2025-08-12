@@ -190,7 +190,8 @@ export default function InfoInscriptScreen({ navigation }) {
 
   const addEnfant = lastEnfant.map((_, i) => (
     <View key={i} style={styles.containeInput}>
-      <Input style={styles.inputEnfant} width="41%" name="Enfant" setText={(v) => modifEnfant(v, i)} text={lastEnfant[i].firstName} />
+      <I
+      nput style={styles.inputEnfant} width="41%" name="Enfant" setText={(v) => modifEnfant(v, i)} text={lastEnfant[i].firstName} />
       <View style={styles.inputAge}>
         <Input width="100%" name="Age" setText={(v) => modifAge(v, i)} text={lastEnfant[i].age} />
       </View>

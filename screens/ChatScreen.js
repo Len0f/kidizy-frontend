@@ -51,24 +51,25 @@ export default function ChatScreen({ navigation, route }) {
     //connexion pusher
      useEffect(() => {
     (() => {
-      fetch(`${BACKEND_ADDRESS}/messages/${user.token}`, { method: 'PUT' });
+      fetch(`${BACKEND_ADDRESS}messages/${user.token}`, { method: 'PUT' });
 
       const subscription = pusher.subscribe('chat');
       subscription.bind('pusher:subscription_succeeded', () => {
         subscription.bind('message', handleReceiveMessage);
+        
       });
     })();
     return () => fetch(`${url}messages/${user.token}`, { method: 'DELETE' });
-  }, [user.firstName]);
+  }, [user.token]);  
 
-  // recupérations des anciens message
-  useEffect(()=>{
-    fetch(`${url}messages?token=${user.token}&conversation=${conversation}`).then(response=>response.json())
-    .then(data=>{
-        setMessages(messages=>[...messages,data.messagesUser])
+  //recupérations des anciens message
+  // useEffect(()=>{
+  //   fetch(`${url}messages?token=${user.token}&conversation=${conversation}`).then(response=>response.json())
+  //   .then(data=>{
+  //       setMessages(messages=>[...messages,data.messagesUser])
         
-    })
-  },[user.id])
+  //   })
+  // },[user.firstName])
 
   const handleReceiveMessage = (data) => {
     setMessages(messages => [...messages, data]);
@@ -84,19 +85,20 @@ export default function ChatScreen({ navigation, route }) {
       idUser: user.id,
       message: messageText,
       createdAt: new Date(),
-      conversation
+      conversationId: conversation
       
       
     };
 
     
-console.log('payload',payload)
+console.log('messages',messages)
+console.log('conversation',conversation)
+
     fetch(`${BACKEND_ADDRESS}messages`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
-    });
-
+    })
     setMessageText('');
     
   };
