@@ -10,6 +10,8 @@ import {url} from '../App';
 export default function DashboardScreen({ navigation }) {
     const user = useSelector((state) => state.user.value);
     const [avatar, setAvatar] = useState('')
+    const [nextGarde, setNextGarde] = useState(null)
+    const [noReadMessage, setNoReadMessage] = useState([])
     const { profil } = useUser();
 
     let userColor;
@@ -36,13 +38,19 @@ export default function DashboardScreen({ navigation }) {
         //recuperation de ses propres données grace au token présent dans le reducer
         useEffect(()=>{
             fetch(`${url}users/me/${user.token}`)
-        .then(response=>response.json())
-        .then(data=>{
-            setAvatar(data.user.avatar)
-        })
+            .then(response=>response.json())
+            .then(data=>{
+                setAvatar(data.user.avatar)
+            })
+            fetch(`${url}propositions?token=${user.token}&id=${user.id}`)
+            .then(response=>response.json())
+            .then(data=>{
+                const filter = data.filteredPropositions.filter(proposition => 
+                    ["PENDING"].includes(proposition.isAccepted)
+                );
+                setNoReadMessage([...noReadMessage,...filter])
+            })
         },[])
-        
-  
 
     return (
         <View style={styles.container}>
@@ -52,7 +60,7 @@ export default function DashboardScreen({ navigation }) {
             </View>
             <View style={styles.content}>
                     <GuardComponent click={clickGuard}title={'Gardes'} colorCount={userColor}guardStyle={{width:'43%', borderColor:userColor}} count={0}/>
-                    <GuardComponent click={clickMessages} title={'Messages'} colorCount={userColor} guardStyle={{width:'43%', borderColor:userColor}} count={1}/>
+                    <GuardComponent click={clickMessages} title={'Messages'} colorCount={userColor} guardStyle={{width:'43%', borderColor:userColor}} count={noReadMessage.length}/>
                     <NextGuardComponent click={clickNextGuard}title={'Prochaine garde'} content={'DD/MM/YYYY à XXhXX'}guardStyle={{width:'91%', borderColor:userColor}} dateStyle={{backgroundColor:userColor}}/>
                 </View>
 

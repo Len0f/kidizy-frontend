@@ -11,42 +11,31 @@ export default function ConnectionScreen({ navigation }) {
 
     const [email, setEmail] = useState('')
     const [mdp, setMdp] = useState('')
-    const { setProfil } = useUser();
-
+    const { setProfil, setUser } = useUser();
 
     const dispatch= useDispatch()
 
-
     const connection = () =>{
-
         fetch(`${url}users/signin`,{
-
-
-             method: 'POST',
-
-        headers: { 'Content-Type': 'application/json' },
-
-
-        body: JSON.stringify({email, password:mdp})
-
-    }).then(response=>response.json()).then(data=>{
-        dispatch(updateInfo({token:data.user.token, id: data.user._id}))
-        if(data.user.role==="BABYSITTER"){
-            setProfil('babysitter')
-            navigation.navigate('TabNavigator')
-        } else if(data.user.role==="PARENT"){
-            setProfil('parent')
-            navigation.navigate('TabNavigator')
-        } else {
-            navigation.navigate('SelectProfil')
-        }
-    })
-
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({email, password:mdp})
+        }).then(response=>response.json()).then(data=>{
+            dispatch(updateInfo({token:data.user.token, id: data.user._id}))
+            if(data.user.role==="BABYSITTER"){
+                setProfil('babysitter')
+                navigation.navigate('TabNavigator')
+            } else if(data.user.role==="PARENT"){
+                setProfil('parent')
+                navigation.navigate('TabNavigator')
+            } else {
+                navigation.navigate('SelectProfil')
+            }
+        })
     }
 
-
     return (
-     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>  
+        <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>  
 
             <Image style={styles.logo}source={require('../assets/KidizyLogo.png')} />
             <View style={styles.inputContainer}>

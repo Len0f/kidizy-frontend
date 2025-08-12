@@ -9,8 +9,6 @@ import {
 import UserCard from '../components/userCard';
 import { useNavigation } from '@react-navigation/native';
 import { useUser } from '../contexts/UserContext';
-import { useSelector } from 'react-redux';
-
 
 const gardParentFake = [
     {

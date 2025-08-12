@@ -26,31 +26,72 @@ export default function ContactsScreen({ navigation, route }) {
                 setConvs(conversations)
             })
         }else{
-            fetch(`${url}conversations?token=${user.token}&id=${user.id}`)
-            .then(response=>response.json())
-            .then(data=>{
-                const conversations = data.myConversations.map((conv, i)=>{
-                    return <Conversation key={i}firstName={conv.idUserParent.firstName} lastName={conv.idUserParent.lastName} urlImage={conv.idUserParent.avatar}click={goProfil} clickNav={chat}userColor={userColor} btnTitle={<View style={styles.message}><FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/></View>} />
-                })
-                setConvs(conversations)
-            })
-            fetch(`${url}propositions?token=${user.token}&id=${user.id}`)
-            .then(response=>response.json())
-            .then(data=>{
-                
-                const propositions = data.filteredPropositions.map((propo, i)=>{
-                 setPropoId(data.propo._id)
-                 console.log('id',propoId)
-                    return <Conversation key={i}firstName={propo.idUserParent.firstName} lastName={propo.idUserParent.lastName} urlImage={propo.idUserParent.avatar}click={goProfil} clickNav={ navigation.navigate('PreviewParent', {from: 'Contacts', profil, propoId})}userColor={userColor} btnTitle={<View style={styles.message}><FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/></View>} />
-                })
-                setPropos(propositions)
-                if (propos.length) {
-                    setIsVisible(true)
-                } else {
-                    setIsVisible(false)
-
+            Promise.all([
+                fetch(`${url}conversations?token=${user.token}&id=${user.id}`),
+                fetch(`${url}propositions?token=${user.token}&id=${user.id}`)
+            ])
+            .then(responses => {
+            // Vérifier que toutes les réponses sont OK
+            return Promise.all(responses.map(response => {
+                if (!response.ok) {
+                    throw new Error(`Erreur HTTP: ${response.status}`);
                 }
+                return response.json();
+            }));
             })
+            .then(([conversationsData, propositionsData]) => {
+            // Traitement des conversations
+            const conversations = conversationsData.myConversations.map((conv, i) => {
+            return (
+                <Conversation key={i}firstName={conv.idUserParent.firstName} lastName={conv.idUserParent.lastName} urlImage={conv.idUserParent.avatar}click={goProfil} clickNav={chat}userColor={userColor} 
+                          btnTitle={<View style={styles.message}><FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/></View>} />
+            );
+        });
+        setConvs(conversations);
+
+    // Traitement des propositions
+    const filter = propositionsData.filteredPropositions.filter(proposition =>
+        ["PENDING"].includes(proposition.isAccepted)
+    );
+    
+    const propositions = filter.map((propo, i) => {
+        console.log(propo)
+        return <Conversation key={i}firstName={propo.idUserParent.firstName} lastName={propo.idUserParent.lastName} urlImage={propo.idUserParent.avatar}click={goProfil} clickNav={chat}userColor={userColor} 
+                              btnTitle={<View style={styles.message}><FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/></View>}/>;
+    });
+    setPropos(propositions);
+    // Gestion de la visibilité basée sur les propositions filtrées
+    if (filter.length > 0) {
+        setIsVisible(true);
+    } else {
+        setIsVisible(false);
+        
+    }
+})
+            // fetch(`${url}conversations?token=${user.token}&id=${user.id}`)
+            // .then(response=>response.json())
+            // .then(data=>{
+            //     const conversations = data.myConversations.map((conv, i)=>{
+            //         return <Conversation key={i}firstName={conv.idUserParent.firstName} lastName={conv.idUserParent.lastName} urlImage={conv.idUserParent.avatar}click={goProfil} clickNav={chat}userColor={userColor} btnTitle={<View style={styles.message}><FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/></View>} />
+            //     })
+            //     setConvs(conversations)
+            // })
+            // fetch(`${url}propositions?token=${user.token}&id=${user.id}`)
+            // .then(response=>response.json())
+            // .then(data=>{           
+            //      const filter = data.filteredPropositions.filter(proposition => 
+            //         ["PENDING"].includes(proposition.isAccepted)
+            //     );
+            //     const propositions = filter.map((propo, i)=>{
+            //         return <Conversation key={i}firstName={propo.idUserParent.firstName} lastName={propo.idUserParent.lastName} urlImage={propo.idUserParent.avatar}click={goProfil} clickNav={chat}userColor={userColor} btnTitle={<View style={styles.message}><FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/></View>} />
+            //     })
+            //     setPropos(propositions)
+            //     if (propos.length) {
+            //         setIsVisible(true)
+            //     } else {
+            //         setIsVisible(false)
+            //     }
+            // })
         }               
     },[])
     
