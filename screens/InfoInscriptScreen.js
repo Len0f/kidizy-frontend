@@ -25,6 +25,8 @@ export default function InfoInscriptScreen({ navigation }) {
   const [casierUrl, setCasierUrl] = useState(null);
   const [cniLocal, setCniLocal] = useState(null);
   const [casierLocal, setCasierLocal] = useState(null);
+  const [Biographie, setBiographie] = useState('');
+  const [Interest, setInterest] = useState('');
   const [addressSuggestions, setAddressSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const debounceRef = useRef(null);
@@ -260,7 +262,7 @@ export default function InfoInscriptScreen({ navigation }) {
                     renderItem={renderAddressSuggestion}
                     keyExtractor={(item) => item.id}
                     style={styles.suggestionsList}
-                    scrollEnabled
+                    scrollEnabled={false}
                     keyboardShouldPersistTaps="always"
                   />
                 </View>
@@ -306,7 +308,7 @@ export default function InfoInscriptScreen({ navigation }) {
                     renderItem={renderAddressSuggestion}
                     keyExtractor={(item) => item.id}
                     style={styles.suggestionsList}
-                    scrollEnabled
+                    scrollEnabled={false}
                     keyboardShouldPersistTaps="always"
                   />
                 </View>

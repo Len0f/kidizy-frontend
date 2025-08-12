@@ -187,15 +187,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20
   },
   logo: {
-    flex: 0.4,
-    width: '30%',
+    flex: 0.1,
+    width: '90%',
     objectFit: 'contain'
   },
   title: {
-    fontSize: 18,
+    fontSize: 20,
+    fontWeight: 'bold',
     color: '#010101ff',
-    marginBottom: 66,
+    marginBottom: 10,
     marginTop: 1
+
   },
   form: {
     width: '80%',
@@ -252,8 +254,8 @@ const styles = StyleSheet.create({
   },
   hourBlock: {
     flexDirection: 'row',
-    alignItems: 'center',
-    marginLeft: 5,
+    alignItems: 'flex-end',
+    marginLeft: 95,
     gap: 2
   },
   hourLabel: {
