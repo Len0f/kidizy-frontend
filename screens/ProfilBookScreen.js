@@ -121,7 +121,7 @@ export default function ProfilBookScreen({ navigation }) {
                     </ScrollView>  
 
                     <SafeAreaView style={styles.btnContactContainer}>
-                        <MainBtn clickNav={goChat}style={styles.contactBtn} btnTitle='Contacter' userStyle={{backgroundColor : userColor}}/>
+                        <MainBtn convId={userInfo} clickNav={goChat}style={styles.contactBtn} btnTitle='Contacter' userStyle={{backgroundColor : userColor}}/>
                     </SafeAreaView>
                 </>
             ) : ( //ecran profil baysitter vu par un parent

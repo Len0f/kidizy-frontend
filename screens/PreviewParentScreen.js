@@ -6,7 +6,7 @@ import TextInfo from '../components/TextInfo';
 import Input from '../components/Input';
 import MapView, {Marker} from 'react-native-maps';
 import * as Location from 'expo-location';
-import { useEffect, useState } from 'react';
+import { Profiler, useEffect, useState } from 'react';
 import { useUser } from '../contexts/UserContext';
 import { useSelector } from 'react-redux';
 import {url} from '../App'; // Import the API URL from App.js
@@ -16,7 +16,10 @@ import Conversation from '../components/conversation';
 export default function PreviewParentScreen({ navigation, route }) {
     const user=useSelector((state)=>state.user.value)
     const { profil } = useUser();
-    const {proposition} =route.params|| ('')
+    const {proposition} =route.params|| ('');
+
+    console.log('profbaby',profilBaby)
+   
 
     
 
@@ -46,7 +49,7 @@ useEffect(()=>{
             setComment(data.propo.comment)
             setAvatar(data.propo.avatar)
         })
-    }else{console.log('fail')}
+    }
 },[])
     
     
@@ -92,11 +95,10 @@ useEffect(()=>{
              })
             })
             const resConv = await newConversation.json()
-           
-            if(resConv.result){
-                console.log(resConv)
+            
+                
             navigation.navigate('Chat', {conversation:resConv.newConversation._id})
-            }
+            
         }
     }
 

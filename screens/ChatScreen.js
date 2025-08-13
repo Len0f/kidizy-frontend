@@ -26,7 +26,7 @@ const pusher = new Pusher('92055fe186a81018cec0', { cluster: 'eu' });
 export default function ChatScreen({ navigation, route }) {
   const { profil } = useUser();
   const isParent = profil === 'parent';
-  const {from, conversation } = route.params || {};
+  const {from, conversation} = route.params || {};
   const user = useSelector((state) => state.user.value);
 
   const [messages, setMessages] = useState([]);
@@ -37,6 +37,7 @@ export default function ChatScreen({ navigation, route }) {
   // 🎯 Couleur selon profil
   const color = profil === 'parent' ? "#98C2E6" : "#88E19D";
 
+  
   // 📡 Abonnement Pusher
   useEffect(() => {
     
