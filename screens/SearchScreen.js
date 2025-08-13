@@ -15,15 +15,15 @@ import { url } from '../App';
 import { selectedId } from '../reducers/user';
 
 // -----------------------Données en dur pour simulation (à retirer plus tard)
-// const parentFalse = {
-//   firstName: 'Sophie',
-//   lastName: 'Martin',
-//   location: {
-//     lat: '48.8570',
-//     lon: '2.3500',
-//     address: 'Paris, France'
-//   }
-// };
+const parentFalse = {
+  firstName: 'Sophie',
+  lastName: 'Martin',
+  location: {
+    lat: '48.8570',
+    lon: '2.3500',
+    address: 'Paris, France'
+  }
+};
 
 export default function SearchScreen() {
     const navigation = useNavigation();
