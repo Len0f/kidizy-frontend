@@ -40,7 +40,7 @@ export default function ContactsScreen({ navigation, route }) {
             })
             .then(([conversationsData, propositionsData]) => {
             // Traitement des conversations
-            
+
             const conversations = conversationsData.myConversations.map((conv, i) => {
                 console.log('conv',conv)
                
@@ -52,6 +52,7 @@ export default function ContactsScreen({ navigation, route }) {
         setConvs(conversations);
 
     // Traitement des propositions
+   
     const filter = propositionsData.filteredPropositions.filter(proposition =>
         ["PENDING"].includes(proposition.isAccepted)
     );

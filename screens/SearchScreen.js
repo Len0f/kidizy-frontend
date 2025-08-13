@@ -13,19 +13,21 @@ import SearchCard from '../components/searchCard';
 import FilterBar from '../components/filterBar';
 import { url } from '../App';
 
+
 // -----------------------Données en dur pour simulation (à retirer plus tard)
-// const parentFalse = {
-//   firstName: 'Sophie',
-//   lastName: 'Martin',
-//   location: {
-//     lat: '48.8570',
-//     lon: '2.3500',
-//     address: 'Paris, France'
-//   }
-// };
+const parentFalse = {
+  firstName: 'Sophie',
+  lastName: 'Martin',
+  location: {
+    lat: '48.8570',
+    lon: '2.3500',
+    address: 'Paris, France'
+  }
+};
 
 
 export default function SearchScreen() {
+
     const navigation = useNavigation();
     
     const token = useSelector((state) => state.user.value.token); // récupère le token Redux
@@ -67,7 +69,26 @@ useEffect(() => {
     const [availabilityHoursFilter, setAvailabilityHoursFilter] = useState('');     // par tranches horaires
     const [sortFilter, setSortFilter] = useState('')     // pour trier par ordre croissant ou décroissant.
 
+
+// ------------------- Données venant du backend
+const [babysitters, setBabysitters] = useState([]);
+const [loading, setLoading] = useState(false);
+const [refreshing, setRefreshing] = useState(false);
+const [hasMore, setHasMore] = useState(true);
+const [nextOffset, setNextOffset] = useState(0);
+const [error, setError] = useState('');
+
+// Localisation du parent
+const [parentLocation] = useState(parentFalse.location);
+
+// Etats des filtres
+const [noteFilter, setNoteFilter] = useState(''); // par note
+const [locationFilter, setLocationFilter] = useState(''); // par localisation
+const [ageFilter, setAgeFilter] = useState(''); // par age
+const [availabilityDayFilter, setAvailabilityDayFilter] = useState(''); // par jour
+const [availabilityHoursFilter, setAvailabilityHoursFilter] = useState(''); // par tranches horaires
 // -------------------------- CONSTRUCTION DE L'URL /users/babysitters
+
     const buildUrl = useCallback(() => {                         // useCallBack : mémorise la fonction pou.  //offset/limit : le nombre de babysitter chargé par bloc.
         const params = new URLSearchParams();                                          // Objet qui permet de créer l'URL
 
@@ -118,6 +139,7 @@ useEffect(() => {
         load();
     }, [load, locationFilter, parentLocation]);
 
+
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.header}>
@@ -139,8 +161,6 @@ useEffect(() => {
                 availabilityHoursFilter={availabilityHoursFilter}
                 setAvailabilityHoursFilter={setAvailabilityHoursFilter}
 
-                sortFilter={sortFilter}
-                setSortFilter={setSortFilter}
             />
 
             {error ? (
@@ -151,7 +171,7 @@ useEffect(() => {
             <FlatList
                 data={babysitters}
                 keyExtractor={(item) => item._id}
-                renderItem={({item}) => (
+                renderItem={({item}) => ( 
 
                     <SearchCard
                         avatar={item.avatar}
@@ -163,7 +183,8 @@ useEffect(() => {
                         distance={item.distanceKm ?? ''}
                         btnTitle="Reserver"
                         userColor="#98C2E6"
-                        onPress = {() =>navigation.navigate('ProfilBook', { babysitter : item, })}
+                        onPress = {() =>recupId(item)}
+
                     />
                 )}
                 

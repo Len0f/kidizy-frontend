@@ -16,7 +16,7 @@ import Conversation from '../components/conversation';
 export default function PreviewParentScreen({ navigation, route }) {
     const user=useSelector((state)=>state.user.value)
     const { profil } = useUser();
-    const { propoId }= route.params
+    // const { propoId }= route.params
 //     useEffect(() => {
 //     (async () => {
 //       const { status } = await Location.requestForegroundPermissionsAsync();
@@ -90,7 +90,8 @@ useEffect(()=>{
             const resConv = await newConversation.json()
            
             if(resConv.result){
-        navigation.navigate('Chat', {conversation:resConv.conversationId._id})
+                console.log(resConv)
+            navigation.navigate('Chat', {conversation:resConv.newConversation._id})
             }
         }
     }
