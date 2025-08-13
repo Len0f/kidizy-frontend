@@ -1,5 +1,4 @@
 import { 
-    ActivityIndicator,
     FlatList, 
     Image, 
     StyleSheet, 
@@ -8,13 +7,12 @@ import {
     View,
 } from 'react-native';
 import { useCallback, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import SearchCard from '../components/searchCard';
 import FilterBar from '../components/filterBar';
 import { url } from '../App';
-import { useUser } from '../contexts/UserContext';
-import { useDispatch } from 'react-redux';
-import { updateInfo, selectedId } from '../reducers/user';
+
 
 // -----------------------Données en dur pour simulation (à retirer plus tard)
 const parentFalse = {
@@ -29,8 +27,47 @@ const parentFalse = {
 
 export default function SearchScreen() {
 
-    const dispatch = useDispatch()
     const navigation = useNavigation();
+    
+    const token = useSelector((state) => state.user.value.token); // récupère le token Redux
+    const [parentLocation, setParentLocation] = useState(null);
+
+// ------------------------- RECUPERATION DE LA LOCALISATION DU PARENT
+useEffect(() => {
+    if (!token) return; // pas de token → rien à faire
+
+    const fetchParentLocation = async () => {
+        const res = await fetch(`${url}users/me/${token}`);
+        const json = await res.json();
+
+        if (json?.result && json?.user?.role === 'PARENT' && json?.user?.location) {
+          const { lat, lon, address } = json.user.location;
+          if (lat != null && lon != null) {
+            setParentLocation({
+              lat: String(lat),
+              lon: String(lon),
+              address: address || '',
+            });
+          }
+        }
+    };
+
+    fetchParentLocation();
+  }, [token]);
+
+// ------------------------- ETATS AVEC DONNEES VENANT DU BACK
+    const [babysitters, setBabysitters] = useState([]);
+    const [error, setError] = useState('');
+    const [refreshing, setRefreshing] = useState(false); // indique si le rafraichissement complet des données est en cours lors du scroll.
+    
+    // Etats des filtres
+    const [noteFilter, setNoteFilter] = useState('');                               // par note
+    const [locationFilter, setLocationFilter] = useState('');                       // par localisation
+    const [ageFilter, setAgeFilter] = useState('');                                 // par tranche d'ages
+    const [availabilityDayFilter, setAvailabilityDayFilter] = useState('');         // par jour
+    const [availabilityHoursFilter, setAvailabilityHoursFilter] = useState('');     // par tranches horaires
+    const [sortFilter, setSortFilter] = useState('')     // pour trier par ordre croissant ou décroissant.
+
 
 // ------------------- Données venant du backend
 const [babysitters, setBabysitters] = useState([]);
@@ -50,90 +87,58 @@ const [ageFilter, setAgeFilter] = useState(''); // par age
 const [availabilityDayFilter, setAvailabilityDayFilter] = useState(''); // par jour
 const [availabilityHoursFilter, setAvailabilityHoursFilter] = useState(''); // par tranches horaires
 // -------------------------- CONSTRUCTION DE L'URL /users/babysitters
-    const buildUrl = useCallback((offset = 0, limit = 20) => {
-        const params = new URLSearchParams();
 
-    if (noteFilter) params.set('rating', String(noteFilter));
-    if (ageFilter) params.set('ageRange', ageFilter);
-    if (availabilityDayFilter) params.set('day', availabilityDayFilter);
-    if (availabilityHoursFilter) params.set('hours', availabilityHoursFilter);
+    const buildUrl = useCallback(() => {                         // useCallBack : mémorise la fonction pou.  //offset/limit : le nombre de babysitter chargé par bloc.
+        const params = new URLSearchParams();                                          // Objet qui permet de créer l'URL
 
-    if (locationFilter && parentLocation?.lat && parentLocation?.lon) {
-        params.set('maxDistanceKm', String(locationFilter));
-        params.set('parentLat', String(parentLocation.lat));
-        params.set('parentLon', String(parentLocation.lon));
-    }
+        // Application des filtres : si un ou des filtres sont défini, on l'ajoute dans l'URL comme paramètre GET.
+        if (noteFilter) params.set('rating', String(noteFilter));
+        if (ageFilter) params.set('ageRange', ageFilter);
+        if (availabilityDayFilter) params.set('day', availabilityDayFilter);
+        if (availabilityHoursFilter) params.set('hours', availabilityHoursFilter);
+        
+        if (locationFilter && parentLocation?.lat && parentLocation?.lon) {
+          params.set('maxDistanceKm', String(locationFilter));
+          params.set('parentLat', String(parentLocation.lat));
+          params.set('parentLon', String(parentLocation.lon));
+        }
+      
+        if (sortFilter) params.set('sort', sortFilter);
+        
+        return `${url}users/babysitters?${params.toString()}`;  // Construction de l'URL.
+    }, [
+        // Dépendances qui permet de recharger l'URL que si le filtre change.
+        noteFilter,
+        ageFilter,
+        availabilityDayFilter,
+        availabilityHoursFilter,
+        locationFilter,
+        parentLocation,
+        sortFilter]);
 
-    params.set('offset', String(offset));
-    params.set('limit', String(limit));
 
-    return `${url}users/babysitters?${params.toString()}`;
-}, [
-    noteFilter,
-    ageFilter,
-    availabilityDayFilter,
-    availabilityHoursFilter,
-    locationFilter,
-    parentLocation,
-]);
 // -------------------------- CHARGEMENT DES BABYSITTERS
-    // 20 premiers chargement.
-
-const loadInitial = useCallback(async () => {
-    setRefreshing(true);
-    setError('');
-    const response = await fetch(buildUrl(0, 20));
-    const data = await response.json();
-    if (data.result) {
-        setBabysitters(data.babysitters || []);
-        setHasMore(!!data.hasMore);
-        setNextOffset(Number(data.nextOffset || 0));
-    } else {
-        setError(data.error || 'Erreur inconnue');
-    }
-}, [buildUrl]);
-
-// chargement de la suite.
-const loadMore = useCallback(async () => {
-    if (loading || !hasMore) return;
-    try {
-      setLoading(true);
-      const response = await fetch(buildUrl(nextOffset, 20));
-      const data = await response.json();
-      if (data.result) {
-          setBabysitters(prev => {
-            const merged = [...prev, ...(data.babysitters || [])];
-            const seen = new Set();
-            return merged.filter(item => {
-              if (!item?._id) return false;
-              if (seen.has(item._id)) return false;
-              seen.add(item._id);
-              return true;
-            });
-          });
-        setHasMore(!!data.hasMore);
-        setNextOffset(Number(data.nextOffset || nextOffset));
-      } else {
-        setError(data.error || 'Erreur inconnue');
-      }
-    } catch (e) {
-      setError('Erreur réseau');
-      console.log('Erreur réseau:', e);
-    } finally {
-      setLoading(false);
-    }
-}, [buildUrl, hasMore, loading, nextOffset]);
-
-// Recharger à chaque changement de filtres
-useEffect(() => {
-    loadInitial();
-}, [loadInitial]);
-
-const recupId = (item) =>{
-    dispatch(selectedId(item._id))
-    navigation.navigate('ProfilBook', { babysitter : item })
+    const load = useCallback(() => {
+        setRefreshing(true);
+        setError('');
+        fetch(buildUrl())
+        .then(response => response.json())
+        .then(data => {
+            setBabysitters(data.result ? (data.babysitters || []) : []);
+        })
+        .catch(() => {
+          setError('Impossible de charger les résultats. Réessaie.');
+          setBabysitters([]);
+        })
+        .finally(() => setRefreshing(false));
+    }, [buildUrl]);
     
-}
+    // Recharger quand token/user/filtre changent
+    useEffect(() => {
+        load();
+    }, [load, locationFilter, parentLocation]);
+
+
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.header}>
@@ -181,13 +186,9 @@ const recupId = (item) =>{
 
                     />
                 )}
-                onEndReachedThreshold={0.3}
-                onEndReached={loadMore}
+                
                 refreshing={refreshing}
-                onRefresh={loadInitial}
-                ListFooterComponent={
-                    loading ? <ActivityIndicator style={{ marginVertical: 12 }} /> : null
-                }
+                onRefresh={load}
                 ListEmptyComponent={
                     !refreshing && !error ? (
                         <Text style={{ textAlign: 'center', marginTop: 24 }}>
@@ -196,6 +197,7 @@ const recupId = (item) =>{
                         ) : null
                     }
                 contentContainerStyle={{ paddingBottom: 24 }}
+
             />
         </SafeAreaView>
   );

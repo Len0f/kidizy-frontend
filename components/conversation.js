@@ -22,7 +22,7 @@ export default function Conversation(props){
 
             <View style={styles.userFooter}>
                 <MainBtn 
-                clickNav={props.clickNav}
+                  clickNav={() => props.clickNav(props.convId)}
                   style={styles.button}
                   btnTitle={props.btnTitle}
                   userStyle={{

@@ -4,7 +4,7 @@ import Input from '../components/Input';
 import SignBtn from '../components/signBtn';
 import { updateInfo } from '../reducers/user';
 import { useDispatch } from 'react-redux';
-import {url} from '../App'; // Import the API URL from App.js
+import {url} from '../App'; 
 
 // Écran d'inscription
 export default function InscriptionScreen({ navigation }) {
@@ -18,19 +18,12 @@ export default function InscriptionScreen({ navigation }) {
     const handleInscription = async () => {
         setErrorMessage(''); // pour réinitialiser les erreurs à chaque tentatives.
 
-        
-
         if (password !== samePassword) {
             setErrorMessage("Les mots de passe ne correspondent pas");
             return;
         }
 
-
-
-
         fetch(`${url}users/signup`, {
-
-
             method: 'POST',
             headers: {
                 'Content-Type' : 'application/json'

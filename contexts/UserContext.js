@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useCallback } from 'react';
 
 // On crée un context utilisateur.
 const UserContext = createContext();
@@ -7,7 +7,7 @@ const UserContext = createContext();
 export const UserProvider = ({ children }) => {
     // Pour stocker le type de profil.
     const [profil, setProfil] = useState(null); // 'parent' ou 'babysitter'
-
+    
     return (
         // Le provider permet de rendre les données disponibles à tous les composants enfants.
         <UserContext.Provider value={{ profil, setProfil }}>
