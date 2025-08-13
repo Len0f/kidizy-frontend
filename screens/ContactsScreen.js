@@ -110,7 +110,7 @@ export default function ContactsScreen({ navigation, route }) {
     }
     
      const goPreviewParent = (propo)=>{
-        navigation.navigate('PreviewParent', {from:'Contacts', profil,propoId:propo})
+        navigation.navigate('PreviewParent', {from:'Contacts', profil,})
     }
     const chat = (conv) =>{
         navigation.navigate('Chat', {from: 'Contacts', profil,conversation: conv})
