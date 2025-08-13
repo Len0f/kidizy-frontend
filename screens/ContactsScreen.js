@@ -1,126 +1,155 @@
-import { StyleSheet, Text, View, Image, ScrollView } from 'react-native';
-import { useUser } from '../contexts/UserContext';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  ScrollView,
+  RefreshControl,
+} from "react-native";
+import { useUser } from "../contexts/UserContext";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import Conversation from '../components/conversation';
-import { useSelector } from 'react-redux';
-import { useEffect, useState, useMemo, useCallback } from 'react';
-import { url } from '../App';
+import Conversation from "../components/conversation";
+import { useSelector } from "react-redux";
+import { useCallback, useEffect, useState } from "react";
+import { url } from "../App";
+
+// J'ai mis un système de refresh manuel, le soucis c'est qu'avec un fetch normal, les profils apparaissent pas tant qu'on refresh pas. Donc je fetch autrement.
+// Une fonction qui permet d'éviter de répéter if(!response.json()) partout.
+const fetchJsonOk = (input, init) =>
+  fetch(input, init).then((res) => {
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return res.json();
+  });
 
 export default function ContactsScreen({ navigation }) {
   const { profil } = useUser();
   const [convs, setConvs] = useState([]);
   const [propos, setPropos] = useState([]);
-  const [isVisible, setIsVisible] = useState(false);
-  const [refreshing, setRefreshing] = useState(false); // pull-to-refresh visuel
+  const [isVisible, setIsVisible] = useState(false); // Contrôle l'affichage du bloc "demandes de chat"
+  const [refreshing, setRefreshing] = useState(false); // permettra de refresh en tirant l'écran vers le bas, car l'auto était trop lent.
 
   const user = useSelector((state) => state.user.value);
 
-  const userColor = profil === 'parent' ? '#98C2E6' : '#88E19D';
+  const userColor = profil === "parent" ? "#98C2E6" : "#88E19D";
 
+  // Navigation : ouvre l'écran de chat.
   const goChat = (extra = {}) => {
-    navigation.navigate('Chat', { from: 'Contacts', profil, ...extra });
+    // extra permet de passer des info' complémentaires : (id de conversation, etc.)
+    navigation.navigate("Chat", { from: "Contacts", profil, ...extra });
   };
 
-  // Ouvre ProfilBook avec la fiche du contact (objet OU id string)
+  // Navigation : ouvre ProfilBook du contact sélectionné.
   const goProfil = (target) => {
-    const userObj = target && typeof target === 'object' ? target : undefined;
-    const userId  = userObj?._id || userObj?.id || (typeof target === 'string' ? target : undefined);
+    // target : objet user complet ou juste un id, augmente la posibilité de trouver les profils.
+    const userObj = target && typeof target === "object" ? target : undefined; // Si target est un objet ou non.
+    const userId =
+      userObj?._id ||
+      userObj?.id ||
+      (typeof target === "string" ? target : undefined); // sinon on cherche l'id.
 
-    navigation.navigate('ProfilBook', {
-      from: 'Contacts',
+    navigation.navigate("ProfilBook", {
+      from: "Contacts",
       profil,
-      user: userObj,     // si on a l’objet complet
-      userId,            // fallback si on n’a qu’un id
+      user: userObj, // si on a l’objet complet
+      userId, // fallback si on n’a qu’un id
     });
   };
 
+  // NAVIGATION : ouvre l'aperçu d'une proposition (par id
   const goPreviewPropo = (propositionId) => {
-    navigation.navigate('Proposition', {
-      from: 'Contacts',
+    navigation.navigate("Proposition", {
+      from: "Contacts",
       profil,
       proposition: propositionId,
       viewOnly: false,
     });
   };
 
-  useEffect(() => {
-    if (!user?.token || !user?.id) return;
+  // Effet principal : on charge les conversations ouvertes et les propositions pour les profils bb.
+  const loadData = useCallback(() => {
+    if (!user?.token || !user?.id) return; // si pas d'authentification valide, ça bloque (utile ? C'est un reflexe de le mettre au cas où).
+    setRefreshing(true);
 
-    if (profil === 'parent') {
-      // ----- Parent : chats ouverts (contacts = babysitters)
-      fetch(`${url}conversations?token=${user.token}&id=${user.id}`)
-        .then((reponse) => reponse.json())
+    if (profil === "parent") {
+      // ----- PARENT : chats ouverts (contacts = babysitters)
+      fetchJsonOk(`${url}conversations?token=${user.token}&id=${user.id}`)
         .then((data) => {
           const conversations = (data?.myConversations ?? []).map((conv, i) => {
-            const convId = conv?._id || conv?.id || i;
-            const otherUser = conv?.idUserBabysitter ?? {}; // CONTACT = babysitter
+            // ?? [] : sécurise pour éviter les erreurs si undefined
+            const convId = conv?._id || conv?.id || i; // key unique : priorité à _id, sinon index(i)
+            const baby = conv?.idUserBabysitter ?? {}; // CONTACT = babysitter
 
             return (
               <Conversation
                 key={convId}
-                firstName={otherUser?.firstName}
-                lastName={otherUser?.lastName}
-                urlImage={otherUser?.avatar}
-                // avatar -> Profil du contact (babysitter)
-                click={() => goProfil(otherUser)}
-                // mainBtn -> Chat
-                clickNav={() => goChat({ conversation: convId })}
+                firstName={baby?.firstName}
+                lastName={baby?.lastName}
+                urlImage={baby?.avatar}
+                click={() => goProfil(baby)} // avatar -> Profil du contact (babysitter)
+                clickNav={() => goChat({ conversation: convId })} // mainBtn -> Chat
                 userColor={userColor}
                 btnTitle={
                   <View style={styles.message}>
-                    <FontAwesome style={styles.icon} name="paper-plane" size={12} color={'#323232'} />
+                    <FontAwesome
+                      style={styles.icon}
+                      name="paper-plane"
+                      size={12}
+                      color={"#323232"}
+                    />
                   </View>
                 }
               />
             );
           });
-          setConvs(conversations);
+          setConvs(conversations); // enregistrement du JRX dans l'état (pour réutiliser plus tard)
+          setPropos([]); // parent : pas de proposition.
+          setIsVisible(false);
         })
-        .catch(console.warn);
+        .finally(() => setRefreshing(false));
     } else {
-      // ----- Babysitter : chats ouverts (contacts = parents) + propositions (contacts = parents)
+      // ----- BABYSITTER : chats ouverts (contacts = parents) + propositions (contacts = parents)
       Promise.all([
-        fetch(`${url}conversations?token=${user.token}&id=${user.id}`),
-        fetch(`${url}propositions?token=${user.token}&id=${user.id}`),
+        // Permet de faire 2 fetchs en parallèle.
+        fetchJsonOk(`${url}conversations?token=${user.token}&id=${user.id}`),
+        fetchJsonOk(`${url}propositions?token=${user.token}&id=${user.id}`),
       ])
-        .then((responses) =>
-          Promise.all(
-            responses.map((response) => {
-              if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
-              return response.json();
-            })
-          )
-        )
         .then(([conversationsData, propositionsData]) => {
           // Chats ouverts (contacts = parents)
-          const conversations = (conversationsData?.myConversations ?? []).map((conv, i) => {
-            const convId = conv?._id || conv?.id || i;
-            const otherUser = conv?.idUserParent ?? {}; // CONTACT = parent
+          const conversations = (conversationsData?.myConversations ?? []).map(
+            (conv, i) => {
+              const convId = conv?._id || conv?.id || i;
+              const otherUser = conv?.idUserParent ?? {}; // CONTACT = parent
 
-            return (
-              <Conversation
-                key={convId}
-                firstName={otherUser?.firstName}
-                lastName={otherUser?.lastName}
-                urlImage={otherUser?.avatar}
-                // avatar -> Profil du contact (parent)
-                click={() => goProfil(otherUser)}
-                // mainBtn -> Chat
-                clickNav={() => goChat({ conversation: convId })}
-                userColor={userColor}
-                btnTitle={
-                  <View style={styles.message}>
-                    <FontAwesome style={styles.icon} name="paper-plane" size={12} color={'#323232'} />
-                  </View>
-                }
-              />
-            );
-          });
-          setConvs(conversations);
+              return (
+                <Conversation
+                  key={convId}
+                  firstName={otherUser?.firstName}
+                  lastName={otherUser?.lastName}
+                  urlImage={otherUser?.avatar}
+                  // avatar -> Profil du contact (parent)
+                  click={() => goProfil(otherUser)}
+                  // mainBtn -> Chat
+                  clickNav={() => goChat({ conversation: convId })}
+                  userColor={userColor}
+                  btnTitle={
+                    <View style={styles.message}>
+                      <FontAwesome
+                        style={styles.icon}
+                        name="paper-plane"
+                        size={12}
+                        color={"#323232"}
+                      />
+                    </View>
+                  }
+                />
+              );
+            }
+          );
 
-          // Propositions PENDING (contacts = parents)
+          // Propositions PENDING ou en attente (contacts = parents)
           const pending = (propositionsData?.filteredPropositions ?? []).filter(
-            (p) => p?.isAccepted === 'PENDING'
+            // on filtre en liste les proposition (isAccepted === "PENDING")
+            (propo) => propo?.isAccepted === "PENDING"
           );
 
           const propositions = pending.map((propo, i) => {
@@ -140,85 +169,102 @@ export default function ContactsScreen({ navigation }) {
                 userColor={userColor}
                 btnTitle={
                   <View style={styles.message}>
-                    <FontAwesome style={styles.icon} name="paper-plane" size={12} color={'#323232'} />
+                    <FontAwesome
+                      style={styles.icon}
+                      name="paper-plane"
+                      size={12}
+                      color={"#323232"}
+                    />
                   </View>
                 }
               />
             );
           });
 
+          setConvs(conversations); // petit enregistrement JRX
           setPropos(propositions);
-          setIsVisible(pending.length > 0);
+          setIsVisible(pending.length > 0); // Et on contrôle l'affichage du bloc "Demande de chat", si =0, il apparait pas.
         })
-        .catch(console.warn);
+        .finally(() => setRefreshing(false));
     }
   }, [profil, user?.id, user?.token]);
 
+  // Déclenchement initial (et quand profil/token changent)
+  // Sans ça, l’écran reste vide jusqu’au premier refresh manuel (j'ai fais pareil dans searchScreen).
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+
   return (
     <View style={styles.container}>
-      <Image style={styles.logo} source={require('../assets/KidizyLogo.png')} />
-    
-    <ScrollView contentContainerStyle={{ alignItems: 'center', paddingBottom: 20 }}>
-      {profil === 'babysitter' ? (
-        <>
-          {isVisible && (
-            <View style={styles.newConvContainer}>
-              <View style={styles.screenTitleContainer}>
-                <Text style={styles.screenTitle}>Demande de chat :</Text>
-              </View>
-              {propos}
-            </View>
-          )}
+      <Image style={styles.logo} source={require("../assets/KidizyLogo.png")} />
 
-          <View style={styles.previousConvContainer}>
-            <View style={styles.screenTitleContainer}>
-              <Text style={styles.screenTitle}>Chats ouverts :</Text>
+      <ScrollView
+        contentContainerStyle={{ alignItems: "center", paddingBottom: 20 }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={loadData} />
+        }
+      >
+        {profil === "babysitter" ? (
+          <>
+            {isVisible && (
+              <View style={styles.newConvContainer}>
+                <View style={styles.screenTitleContainer}>
+                  <Text style={styles.screenTitle}>Demande de chat :</Text>
+                </View>
+                {propos}
+              </View>
+            )}
+
+            <View style={styles.previousConvContainer}>
+              <View style={styles.screenTitleContainer}>
+                <Text style={styles.screenTitle}>Chats ouverts :</Text>
+              </View>
+              {convs}
             </View>
-            {convs}
-          </View>
-        </>
-      ) : (
-        <View style={styles.previousConvContainer}>{convs}</View>
-      )}
+          </>
+        ) : (
+          <View style={styles.previousConvContainer}>{convs}</View>
+        )}
       </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#FFFBF0',
-        alignItems: 'center',
-    },
-    logo:{
-        marginTop:40,
-        height:'10%',
-        width:'80%',
-        objectFit:'contain'
-    },
-    screenTitleContainer:{
-        marginVertical:30,
-        justifyContent:'center'
-    },
-    screenTitle:{
-        fontFamily:'Montserrat',
-        fontSize:20,
-        fontWeight:'700'
-    },
-    newConvContainer:{
-        alignItems:'center',
-        paddingBottom:10,
-        borderBottomWidth:1
-    },
-    previousConvContainer:{
-        alignItems: 'center',
-        paddingTop: 20
-    },
-    message:{
-        padding:5,
-    },
-    icon:{
-        fontSize:20,
-    }
-})
+  container: {
+    flex: 1,
+    backgroundColor: "#FFFBF0",
+    alignItems: "center",
+  },
+  logo: {
+    marginTop: 40,
+    height: "10%",
+    width: "80%",
+    objectFit: "contain",
+  },
+  screenTitleContainer: {
+    marginVertical: 30,
+    justifyContent: "center",
+  },
+  screenTitle: {
+    fontFamily: "Montserrat",
+    fontSize: 20,
+    fontWeight: "700",
+  },
+  newConvContainer: {
+    alignItems: "center",
+    paddingBottom: 10,
+    borderBottomWidth: 1,
+  },
+  previousConvContainer: {
+    alignItems: "center",
+    paddingTop: 20,
+  },
+  message: {
+    padding: 5,
+  },
+  icon: {
+    fontSize: 20,
+  },
+});
