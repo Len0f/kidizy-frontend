@@ -13,130 +13,127 @@ import SearchCard from '../components/searchCard';
 import FilterBar from '../components/filterBar';
 import { url } from '../App';
 import { useUser } from '../contexts/UserContext';
+import { useDispatch } from 'react-redux';
+import { updateInfo, selectedId } from '../reducers/user';
 
 // -----------------------Données en dur pour simulation (à retirer plus tard)
-// const parentFalse = {
-//   firstName: 'Sophie',
-//   lastName: 'Martin',
-//   location: {
-//     lat: '48.8570',
-//     lon: '2.3500',
-//     address: 'Paris, France'
-//   }
-// };
+const parentFalse = {
+  firstName: 'Sophie',
+  lastName: 'Martin',
+  location: {
+    lat: '48.8570',
+    lon: '2.3500',
+    address: 'Paris, France'
+  }
+};
 
 export default function SearchScreen() {
+
+    const dispatch = useDispatch()
     const navigation = useNavigation();
-    const { user } = useUser();
-    const parentLocation = user?.location;
 
-    // ------------------- ETATS AVEC DONNEES VENANT DU BACK
-    const [babysitters, setBabysitters] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
-    
-    // Localisation du parent
-    const [parentLocation] = useState(parentFalse.location);
+// ------------------- Données venant du backend
+const [babysitters, setBabysitters] = useState([]);
+const [loading, setLoading] = useState(false);
+const [refreshing, setRefreshing] = useState(false);
+const [hasMore, setHasMore] = useState(true);
+const [nextOffset, setNextOffset] = useState(0);
+const [error, setError] = useState('');
 
-    // Etats des filtres
-    const [noteFilter, setNoteFilter] = useState('');                               // par note
-    const [locationFilter, setLocationFilter] = useState('');                       // par localisation
-    const [ageFilter, setAgeFilter] = useState('');                                 // par tranche d'ages
-    const [availabilityDayFilter, setAvailabilityDayFilter] = useState('');         // par jour
-    const [availabilityHoursFilter, setAvailabilityHoursFilter] = useState('');     // par tranches horaires
+// Localisation du parent
+const [parentLocation] = useState(parentFalse.location);
 
+// Etats des filtres
+const [noteFilter, setNoteFilter] = useState(''); // par note
+const [locationFilter, setLocationFilter] = useState(''); // par localisation
+const [ageFilter, setAgeFilter] = useState(''); // par age
+const [availabilityDayFilter, setAvailabilityDayFilter] = useState(''); // par jour
+const [availabilityHoursFilter, setAvailabilityHoursFilter] = useState(''); // par tranches horaires
 // -------------------------- CONSTRUCTION DE L'URL /users/babysitters
-    const buildUrl = useCallback((offset = 0, limit = 20) => {                         // useCallBack : mémorise la fonction pou.  //offset/limit : le nombre de babysitter chargé par bloc.
-        const params = new URLSearchParams();                                          // Objet qui permet de créer l'URL
+    const buildUrl = useCallback((offset = 0, limit = 20) => {
+        const params = new URLSearchParams();
 
-        // Application des filtres : si un ou des filtres sont défini, on l'ajoute dans l'URL comme paramètre GET.
-        if (noteFilter) params.set('rating', String(noteFilter));
-        if (ageFilter) params.set('ageRange', ageFilter);                              
-        if (availabilityDayFilter) params.set('day', availabilityDayFilter);
-        if (availabilityHoursFilter) params.set('hours', availabilityHoursFilter);
-        if (locationFilter && parentLocation?.lat && parentLocation?.lon) {
-            params.set('maxDistanceKm', String(locationFilter));
-            params.set('parentLat', String(parentLocation.lat));                       // Ajout de la localisation GPS du parent pour le calcul de la distance.
-            params.set('parentLon', String(parentLocation.lon));
-        }
+    if (noteFilter) params.set('rating', String(noteFilter));
+    if (ageFilter) params.set('ageRange', ageFilter);
+    if (availabilityDayFilter) params.set('day', availabilityDayFilter);
+    if (availabilityHoursFilter) params.set('hours', availabilityHoursFilter);
 
-        // Tri des réponses.
-        if (sortFilter) params.set('sort', sortFilter);
+    if (locationFilter && parentLocation?.lat && parentLocation?.lon) {
+        params.set('maxDistanceKm', String(locationFilter));
+        params.set('parentLat', String(parentLocation.lat));
+        params.set('parentLon', String(parentLocation.lon));
+    }
 
-        // Pour la gestion des blocs de chargement.
-        params.set('offset', String(offset));        // s'incrémente avec nextOffSet
-        params.set('limit', String(limit));          // nombre max d'éléments qu'on appelle par requête (20).
-        
-        return `${url}users/babysitters?${params.toString()}`;  // Construction de l'URL.
-    }, [
-        // Dépendances qui permet de recharger l'URL que si le filtre change.
-        noteFilter,
-        ageFilter,
-        availabilityDayFilter,
-        availabilityHoursFilter,
-        locationFilter,
-        parentLocation,
-        sortFilter,
-    ]);
+    params.set('offset', String(offset));
+    params.set('limit', String(limit));
 
+    return `${url}users/babysitters?${params.toString()}`;
+}, [
+    noteFilter,
+    ageFilter,
+    availabilityDayFilter,
+    availabilityHoursFilter,
+    locationFilter,
+    parentLocation,
+]);
 // -------------------------- CHARGEMENT DES BABYSITTERS
-    // 20 premiers chargements.
-    const loadInitial = useCallback(async () => {
-        setRefreshing(true);
-        setError('');
-        try {const response = await fetch(buildUrl(0, 20));
-            const data = await response.json();
-            if (data.result) {
-                setBabysitters(data.babysitters || []);
-                setHasMore(!!data.hasMore);
-                setNextOffset(Number(data.nextOffset || 0));
-            } else {
-                setError(data.error || 'Erreur inconnue');
-            }
-        } catch (e) {
-            setError('Erreur réseau');
-            console.log('loadInitial error:', e);
-        } finally {
-            setRefreshing(false);
-        }
-    }, [buildUrl]);
+    // 20 premiers chargement.
 
-    // chargement de la suite.
-    const loadMore = useCallback(async () => {
-        if (loading || !hasMore) return;
-        try {
-          setLoading(true);
-          const response = await fetch(buildUrl(nextOffset, 20));
-          const data = await response.json();
-          if (data.result) {
-              setBabysitters(prev => {
-                const merged = [...prev, ...(data.babysitters || [])];
-                const seen = new Set();
-                return merged.filter(item => {
-                  if (!item?._id) return false;
-                  if (seen.has(item._id)) return false;
-                  seen.add(item._id);
-                  return true;
-                });
-              });
-            setHasMore(!!data.hasMore);
-            setNextOffset(Number(data.nextOffset || nextOffset));
-          } else {
-            setError(data.error || 'Erreur inconnue');
-          }
-        } catch (e) {
-          setError('Erreur réseau');
-          console.log('Erreur réseau:', e);
-        } finally {
-          setLoading(false);
-        }
-    }, [buildUrl, hasMore, loading, nextOffset]);
+const loadInitial = useCallback(async () => {
+    setRefreshing(true);
+    setError('');
+    const response = await fetch(buildUrl(0, 20));
+    const data = await response.json();
+    if (data.result) {
+        setBabysitters(data.babysitters || []);
+        setHasMore(!!data.hasMore);
+        setNextOffset(Number(data.nextOffset || 0));
+    } else {
+        setError(data.error || 'Erreur inconnue');
+    }
+}, [buildUrl]);
+
+// chargement de la suite.
+const loadMore = useCallback(async () => {
+    if (loading || !hasMore) return;
+    try {
+      setLoading(true);
+      const response = await fetch(buildUrl(nextOffset, 20));
+      const data = await response.json();
+      if (data.result) {
+          setBabysitters(prev => {
+            const merged = [...prev, ...(data.babysitters || [])];
+            const seen = new Set();
+            return merged.filter(item => {
+              if (!item?._id) return false;
+              if (seen.has(item._id)) return false;
+              seen.add(item._id);
+              return true;
+            });
+          });
+        setHasMore(!!data.hasMore);
+        setNextOffset(Number(data.nextOffset || nextOffset));
+      } else {
+        setError(data.error || 'Erreur inconnue');
+      }
+    } catch (e) {
+      setError('Erreur réseau');
+      console.log('Erreur réseau:', e);
+    } finally {
+      setLoading(false);
+    }
+}, [buildUrl, hasMore, loading, nextOffset]);
+
+// Recharger à chaque changement de filtres
+useEffect(() => {
+    loadInitial();
+}, [loadInitial]);
+
+const recupId = (item) =>{
+    dispatch(selectedId(item._id))
+    navigation.navigate('ProfilBook', { babysitter : item })
     
-    // Recharger à chaque changement de filtres
-    useEffect(() => {
-        loadInitial();
-    }, [loadInitial]);
-
+}
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.header}>
@@ -158,8 +155,6 @@ export default function SearchScreen() {
                 availabilityHoursFilter={availabilityHoursFilter}
                 setAvailabilityHoursFilter={setAvailabilityHoursFilter}
 
-                sortFilter={sortFilter}
-                setSortFilter={setSortFilter}
             />
 
             {error ? (
@@ -170,7 +165,7 @@ export default function SearchScreen() {
             <FlatList
                 data={babysitters}
                 keyExtractor={(item) => item._id}
-                renderItem={({item}) => (
+                renderItem={({item}) => ( 
 
                     <SearchCard
                         avatar={item.avatar}
@@ -182,7 +177,8 @@ export default function SearchScreen() {
                         distance={item.distanceKm ?? ''}
                         btnTitle="Reserver"
                         userColor="#98C2E6"
-                        onPress = {() =>navigation.navigate('ProfilBook', { babysitter : item, })}
+                        onPress = {() =>recupId(item)}
+
                     />
                 )}
                 onEndReachedThreshold={0.3}
