@@ -15,12 +15,12 @@ export default function ContactsScreen({ navigation, route }) {
     const user = useSelector((state) => state.user.value);
 
     useEffect(()=>{
-        if(profil === 'PARENT'){
+        if(profil === 'parent'){
             fetch(`${url}conversations?token=${user.token}&id=${user.id}`)
             .then(response=>response.json())
             .then(data=>{
                 const conversations = data.myConversations.map((conv, i)=>{
-                    return <Conversation key={i}firstName={conv.idUserBabysitter.firstName} lastName={conv.idUserBabysitter.lastName} urlImage={conv.idUserBabysitter.avatar}click={goProfil} clickNav={chat(conv._id)}userColor={userColor} btnTitle={<View style={styles.message}><FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/></View>} />
+                    return <Conversation key={i}firstName={conv.idUserBabysitter.firstName} convId={conv._id} lastName={conv.idUserBabysitter.lastName} urlImage={conv.idUserBabysitter.avatar}click={goProfil} clickNav={(id) => chat(id)}userColor={userColor} btnTitle={<View style={styles.message}><FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/></View>} />
                 })
                 setConvs(conversations)
             })
@@ -42,7 +42,7 @@ export default function ContactsScreen({ navigation, route }) {
             // Traitement des conversations
 
             const conversations = conversationsData.myConversations.map((conv, i) => {
-                console.log('conv',conv)
+                
                
             return (
                 <Conversation key={i}firstName={conv.idUserParent.firstName} convId={conv._id} lastName={conv.idUserParent.lastName} urlImage={conv.idUserParent.avatar}click={goProfil} clickNav={(id) => chat(id)} userColor={userColor} 
@@ -59,7 +59,7 @@ export default function ContactsScreen({ navigation, route }) {
     
     const propositions = filter.map((propo, i) => {
        
-        return <Conversation key={i}firstName={propo.idUserParent.firstName} lastName={propo.idUserParent.lastName} urlImage={propo.idUserParent.avatar}click={goProfil} clickNav={goPreviewParent(propo._id)}userColor={userColor} 
+        return <Conversation key={i}firstName={propo.idUserParent.firstName} convId={propo._id} lastName={propo.idUserParent.lastName} urlImage={propo.idUserParent.avatar}click={goProfil} clickNav={(id)=>goPreviewParent(id)} userColor={userColor} 
                               btnTitle={<View style={styles.message}><FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/></View>}/>;
     });
     setPropos(propositions);
@@ -110,7 +110,7 @@ export default function ContactsScreen({ navigation, route }) {
     }
     
      const goPreviewParent = (propo)=>{
-        navigation.navigate('PreviewParent', {from:'Contacts', profil,})
+        navigation.navigate('PreviewParent', {from:'Contacts', profil, proposition: propo})
     }
     const chat = (conv) =>{
         navigation.navigate('Chat', {from: 'Contacts', profil,conversation: conv})
