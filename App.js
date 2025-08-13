@@ -8,22 +8,20 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
-import {useEffect} from 'react';
+import { useEffect } from 'react';
 
-//redux
+// redux
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import user from './reducers/user';
-import {getDevApiUrl}  from './utils/constants';
+import { getDevApiUrl } from './utils/constants';
 export const url = getDevApiUrl();
-
 
 const store = configureStore({
   reducer: { user },
 });
 
 SplashScreen.preventAutoHideAsync();
-
 
 // Écrans de connexion / inscription
 import ConnexionScreen from './screens/ConnexionScreen';
@@ -54,12 +52,10 @@ import PropositionScreen from './screens/PropositionScreen';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-
 // Stack imbriqué dans le tab dashboard
 const DashboardStack = createNativeStackNavigator();
 
 const DashboardStackScreen = () => {
- 
   return (
     <DashboardStack.Navigator screenOptions={{ headerShown: false }}>
       <DashboardStack.Screen name="DashboardHome" component={DashboardScreen} />
@@ -68,68 +64,70 @@ const DashboardStackScreen = () => {
   );
 };
 
-// On fait un routeur pour avoir les bons onglets selon le profil.
+// Router avec onglets dynamiques selon le profil
 const TabsRouter = () => {
-  const { profil } = useUser();
-  let userColor;
-    if(profil==='parent'){
-        userColor='#98C2E6'
-    }else{
-        userColor='#88E19D'
-    }
+  const { profil } = useUser(); // 'parent' ou 'babysitter'
+
+  const userColor = profil === 'parent' ? '#98C2E6' : '#88E19D';
 
   return (
-    <Tab.Navigator screenOptions={({ route }) => ({
-      tabBarIcon: ({ color, size }) => {
-        let iconName = '';
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ color, size }) => {
+          let iconName = '';
 
-        if (route.name === 'Dashboard') {
-          iconName = 'home';
-        } else if (route.name === 'Calendar') {
-          iconName = 'calendar';
-        } else if (route.name === 'ProfilUser') {
-          iconName = 'user';
-        } else if (route.name === 'Contacts') {
-          iconName = 'comment';
-        } else if (route.name === 'Search') {
-          iconName = 'tag';
-        } 
+          if (route.name === 'Dashboard') {
+            iconName = 'home';
+          } else if (route.name === 'Calendar') {
+            iconName = 'calendar';
+          } else if (route.name === 'ProfilUser') {
+            iconName = 'user';
+          } else if (route.name === 'Contacts') {
+            iconName = 'comment';
+          } else if (route.name === 'Search') {
+            iconName = 'tag';
+          }
 
-        return <FontAwesome name={iconName} size={size} color={color} />;
-      },
-      tabBarStyle:{borderTopWidth:0},
-      tabBarActiveTintColor: userColor,
-      tabBarInactiveTintColor: '#979797',
-      tabBarActiveBackgroundColor:'#FFFBF0',
-      tabBarInactiveBackgroundColor:'#EBE6DA',
-      tabBarLabelStyle:{fontFamily:'Montserrat', fontWeight:'500', fontSize:14},
-      headerShown: false,
-     
-    })}>
-      <Tab.Screen name="Dashboard" component={DashboardStackScreen} options={{title:'Dashboard'}}/>
-      <Tab.Screen name="Calendar" component={CalendarScreen} options={{title:'Calendrier'}}/>
+          return <FontAwesome name={iconName} size={size} color={color} />;
+        },
+        tabBarStyle: { borderTopWidth: 0 },
+        tabBarActiveTintColor: userColor,
+        tabBarInactiveTintColor: '#979797',
+        tabBarActiveBackgroundColor: '#FFFBF0',
+        tabBarInactiveBackgroundColor: '#EBE6DA',
+        tabBarLabelStyle: { fontFamily: 'Montserrat', fontWeight: '500', fontSize: 14 },
+        headerShown: false,
+      })}
+    >
+      <Tab.Screen name="Dashboard" component={DashboardStackScreen} options={{ title: 'Dashboard' }} />
+
+      {/* ➜ Calendrier visible uniquement si le profil n'est PAS parent */}
+      {profil !== 'parent' && (
+        <Tab.Screen name="Calendar" component={CalendarScreen} options={{ title: 'Calendrier' }} />
+      )}
+
       {profil === 'parent' ? (
         <>
-          <Tab.Screen name="Search" component={SearchScreen} options={{title:'Recherche'}}/>
-          <Tab.Screen name="Contacts" component={ContactsScreen} options={{title:'Messagerie'}}/>
+          <Tab.Screen name="Search" component={SearchScreen} options={{ title: 'Recherche' }} />
+          <Tab.Screen name="Contacts" component={ContactsScreen} options={{ title: 'Messagerie' }} />
         </>
       ) : (
         <>
-          <Tab.Screen name="ProfilUser" component={ProfilScreen} options={{title:'Votre profil'}}/>
-          <Tab.Screen name="Contacts" component={ContactsScreen} options={{title:'Messagerie'}}/>
+          <Tab.Screen name="ProfilUser" component={ProfilScreen} options={{ title: 'Votre profil' }} />
+          <Tab.Screen name="Contacts" component={ContactsScreen} options={{ title: 'Messagerie' }} />
         </>
       )}
     </Tab.Navigator>
-
-  )
-}
+  );
+};
 
 export default function App() {
-console.log('API URL:', url); // Log the API URL to verify it's correct
+  console.log('API URL:', url); // Log the API URL to verify it's correct
 
   const [loaded, error] = useFonts({
     'Montserrat': require('./assets/fonts/Montserrat-VariableFont_wght.ttf'),
   });
+
   useEffect(() => {
     if (loaded || error) {
       SplashScreen.hideAsync();
@@ -139,20 +137,20 @@ console.log('API URL:', url); // Log the API URL to verify it's correct
   if (!loaded && !error) {
     return null;
   }
+
   return (
     <Provider store={store}>
-    <UserProvider>
+      <UserProvider>
+        <NavigationContainer>
+          <Stack.Navigator screenOptions={{ headerShown: false }}>
+            {/* Connection/Inscription */}
+            <Stack.Screen name="Connexion" component={ConnexionScreen} />
+            <Stack.Screen name="Inscription" component={InscriptionScreen} />
+            <Stack.Screen name="SelectProfil" component={SelectProfilScreen} />
+            <Stack.Screen name="InfoInscript" component={InfoInscriptScreen} />
 
-      <NavigationContainer>
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
-          {/* Connection/Inscription */}
-          <Stack.Screen name="Connexion" component={ConnexionScreen} />
-          <Stack.Screen name="Inscription" component={InscriptionScreen} />
-          <Stack.Screen name="SelectProfil" component={SelectProfilScreen} />
-          <Stack.Screen name="InfoInscript" component={InfoInscriptScreen} />
-
-          {/* Tab */}
-          <Stack.Screen name="TabNavigator" component={TabsRouter} />
+            {/* Tab */}
+            <Stack.Screen name="TabNavigator" component={TabsRouter} />
 
           {/* Screens communs. */}
           <Stack.Screen name="Chat" component={ChatScreen}/>

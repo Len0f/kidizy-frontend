@@ -28,7 +28,7 @@ export default function PropositionScreen({ navigation, route }) {
     const isBabysitter = profil === 'babysitter';
 
     const { 
-        propoId, // pour les baby (lecture)
+        proposition, // pour les baby (lecture)
         firstName: firstNameParam, // pour parent
         lastName: lastNameParam,
         day: dayParam,
@@ -69,8 +69,8 @@ export default function PropositionScreen({ navigation, route }) {
 
 // ------------------ BABYSITTER : Chargement de la proposition existante.
     useEffect(() => {
-        if (isBabysitter && propoId) {
-          fetch(`${url}propositions/id?token=${user.token}&id=${propoId}`)
+        if (isBabysitter && proposition) {
+          fetch(`${url}propositions/id?token=${user.token}&id=${proposition}`)
           .then(response => response.json())
           .then(data => {
               setNom(data.propo.lastName || '');
@@ -85,7 +85,7 @@ export default function PropositionScreen({ navigation, route }) {
               setBabysitterId(data.propo.idUserBabysitter?._id || data.propo.idUserBabysitter || babysitterId);
             })
         }
-    }, [isBabysitter, propoId, user.token]);
+    }, [isBabysitter, proposition, user.token]);
 
     
     const returnScreen = () => {
@@ -156,7 +156,7 @@ export default function PropositionScreen({ navigation, route }) {
 
 // ------------------ BABYSITTER : MISE A JOUR DE LA PROPOSITION : ACCEPTED
     const accept = async () => {
-        if (!propoId) return;
+        if (!proposition) return;
         
         try {
             setLoading(true);
@@ -167,7 +167,7 @@ export default function PropositionScreen({ navigation, route }) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     token: user.token,
-                    id: propoId,
+                    id: proposition,
                     status: 'ACCEPTED',
                 })
             });
@@ -180,40 +180,18 @@ export default function PropositionScreen({ navigation, route }) {
         }
     };
 
-            
-// ------------------ BABYSITTER : MISE A JOUR DE LA PROPOSITION : NEGOCIATING
-    const negotiate = async () => {
-        if (!propoId) return;
-        
-        try {
-            setLoading(true);
-        
-            await fetch(`${url}propositions/id`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ token: user.token, id: propoId, status: 'NEGOCIATING' }),
-            });
-
-            await newConversation();
-        } catch (e) {
-            Alert.alert('Erreur', 'Impossible de passer en négociation.');
-        } finally {
-            setLoading(false);
-        }
-    };
-
 
 // ------------------ BABYSITTER : MISE A JOUR DE LA PROPOSITION : REFUSED
     const refuse = async () => {
-    if (!propoId) returnScreen();
+    if (!proposition) returnScreen();
     try {
         setLoading(true);
-        const del = await fetch(`${url}propositions/${propoId}?token=${user.token}`, { method: 'DELETE' });
+        const del = await fetch(`${url}propositions/${proposition}?token=${user.token}`, { method: 'DELETE' });
         if (!del.ok) {
         await fetch(`${url}propositions/id`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ token: user.token, id: propoId, status: 'REFUSED' }),
+            body: JSON.stringify({ token: user.token, id: proposition, status: 'REFUSED' }),
         });
         }
     } catch (e) {
@@ -310,19 +288,13 @@ export default function PropositionScreen({ navigation, route }) {
                     <View style={[styles.buttons, { gap: 12, paddingHorizontal: 20 }]}>
                         <MainBtn
                         btnTitle={loading ? '...' : 'Accepter'}
-                        userStyle={{ width: '33%', backgroundColor: '#88E19D' }}
+                        userStyle={{ width: '50%', backgroundColor: '#88E19D' }}
                         clickNav={accept}
                         disabled={loading}
                         />
                         <MainBtn
-                        btnTitle={'Négocier'}
-                        userStyle={{ width: '33%', backgroundColor: '#EBE6DA' }}
-                        clickNav={negotiate}
-                        disabled={loading}
-                        />
-                        <MainBtn
                         btnTitle={'Refuser'}
-                        userStyle={{ width: '33%', backgroundColor: '#EBE6DA' }}
+                        userStyle={{ width: '50%', backgroundColor: '#EBE6DA' }}
                         clickNav={refuse}
                         disabled={loading}
                         />

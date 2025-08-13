@@ -29,7 +29,7 @@ export default function UserCard(props){
                     paddingHorizontal: 12,
                     width:'auto'
                     }}
-                  onPress={props.onPress}
+                   clickNav={props.onPress}
                   />
             </View>
           </View>

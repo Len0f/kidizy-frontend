@@ -4,53 +4,31 @@ import ReturnBtn from '../components/returnBtn';
 import MainBtn from '../components/mainBtn'
 import TextInfo from '../components/TextInfo'
 import FontAwesome from "react-native-vector-icons/FontAwesome";
+import { useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
+import {url} from '../App';
 
 export default function ProfilBookScreen({ navigation }) {
+    
+    const [userInfo, setUserInfo] = useState(null)
+    const user = useSelector((state)=>state.user.value)
+   const { profil } = useUser();
 
-    const data = {  firstName:"polo",
-    _id: "6891dc1d47776bb23dba4f25",
-    lastName:"coco",
-    phone:"066652587894",
-    location:{"address":"3 rue plus loin","lat":"2","lon":"3"},
-    token:"ewNGgpQEyINlPcpwszeb_aX6_NICb9G8",
-   babysitterInfos:{
-    age: "25",
-    price: "15",
-    bio: "Etudiant en licence 3 pallette en bois",
-    availability: [{
-        day:"06/08/2025",
-        startHour: "16h",
-        endHour: "23h"
-    }],
-    interest:"barbecue, satan et les petits chat",
-    isDocOk:true,
-    situation: "etudiant",
-    jackpot:"45"}
- }
-
-
- const dataParents = {  firstName:"tocar",
-    _id: "6891dc1d47776bb23dba4f25",
-    lastName:"coco",
-    phone:"066652587894",
-    location:{"address":"3 rue plus loin","lat":"2","lon":"3"},
-    token:"ewNGgpQEyINlPcpwszeb_aX6_NICb9G8",
-    parentInfosSchema:{
-        kids:[{"firstName":"relou1","age":"5"},{"firstName":"relou2","age":"2"}],
-        subscription:"true"
-                }
- }
-
-
-
-    const { profil } = useUser();
     let userColor;
     if(profil==='parent'){
         userColor='#98C2E6'
+        useEffect(()=>{
+        fetch(`${url}users/id/${user.selectedBabysitterId}`)
+        .then(response=>response.json())
+        .then(data=>{ 
+            setUserInfo(data)                
+        })
+    },[])
     }else{
         userColor='#88E19D'
     }
-
+ 
+    //gestion des boutons de navigation
     const returnScreen = ()=>{
         navigation.navigate('TabNavigator')
     }
@@ -62,46 +40,44 @@ export default function ProfilBookScreen({ navigation }) {
         navigation.navigate('Proposition')
     }
 
-    let avis = <><View style={styles.avis}>
-                    <View style={styles.avisHeader}>
-                        <View style={styles.avisEditor}>
-                            <Image style={styles.avisAvatar} source={require('../assets/babysitter1.jpg')} width={30} height={30} borderRadius={50}/>
-                            <Text style={styles.avisName}>Josiane Pichet</Text>
-                        </View>
+    // let avis = <><View style={styles.avis}>
+    //                 <View style={styles.avisHeader}>
+    //                     <View style={styles.avisEditor}>
+    //                         <Image style={styles.avisAvatar} source={require('../assets/babysitter1.jpg')} width={30} height={30} borderRadius={50}/>
+    //                         <Text style={styles.avisName}>Josiane Pichet</Text>
+    //                     </View>
                         
-                        <View style={styles.avisRating}>
-                            <View style={styles.avisStars}>
-                                <FontAwesome name="star" size={12} color={'#323232'}/>
-                                <FontAwesome name="star" size={12} color={'#323232'}/>
-                                <FontAwesome name="star" size={12} color={'#323232'}/>
-                            </View>
-                            <Text style={styles.avisDate}> - il y a longtemps</Text>
-                        </View>
-                    </View>
-                    <Text style={styles.avisContent}>
-                        Tout est super génial ! cnzjbcmzcnomcbnmolblECOkeneznezvnezvnezovnzeovnzeùokvnezk
-                    </Text>
-               </View>
-               </>
+    //                     <View style={styles.avisRating}>
+    //                         <View style={styles.avisStars}>
+    //                             <FontAwesome name="star" size={12} color={'#323232'}/>
+    //                             <FontAwesome name="star" size={12} color={'#323232'}/>
+    //                             <FontAwesome name="star" size={12} color={'#323232'}/>
+    //                         </View>
+    //                         <Text style={styles.avisDate}> - il y a longtemps</Text>
+    //                     </View>
+    //                 </View>
+    //                 <Text style={styles.avisContent}>
+    //                     Tout est super génial ! cnzjbcmzcnomcbnmolblECOkeneznezvnezvnezovnzeovnzeùokvnezk
+    //                 </Text>
+    //            </View>
+    //            </>
+
+    
+   
+    if(!userInfo){
+         return <Text>Recuperation des données...</Text>
+    }
+    // affichage du nombre d'étoiles en fonction du rating
+    let stars = []
+    for(let i=0;i<userInfo.user.rating;i++){
+        stars.push(<FontAwesome key={i} name="star" size={18} color={'#323232'}/>)
+    }
 
 
-    const enfants = dataParents.parentInfosSchema.kids
-    console.log(enfants)
-    const infoenfant = enfants.map((data,i)=>{
-        return `${data.firstName}, ${data.age} ans\n`
-    })
-
-
-    return (
+        return (
         <SafeAreaView style={styles.container}>
             
-            
-
-            
-            {/* <Text>Profil {profil === 'parent' ? 'Babysitter' : 'Parent'} Book Screen</Text> */}
-            
             {profil === 'babysitter' ? (
-
                 //ecran profil parent vu par un babysitter
                 <>
                 <SafeAreaView style={styles.btnReturnContainer}>
@@ -110,10 +86,10 @@ export default function ProfilBookScreen({ navigation }) {
 
                     <ScrollView>
                         <View style={styles.avatarContainer}>    
-                            <Image style={styles.avatar} source={require('../assets/babysitter2.png')}/>
+                            <Image style={styles.avatar}/>
                             <View style={styles.userInfos}>
                                 <View style={styles.userNameOld}>
-                                    <Text style={styles.firstName}>{data.firstName}</Text>
+                                    <Text style={styles.firstName}>cqqs</Text>
                                 </View>
                                 <View style={styles.userPriceDistance}>
                                     <View style={styles.locationPrice}>
@@ -131,16 +107,16 @@ export default function ProfilBookScreen({ navigation }) {
                                     <FontAwesome name="star" size={18} color={'#323232'}/>
                                     <FontAwesome name="star" size={18} color={'#323232'}/>
                                 </View>
-                                <Text style={styles.ratingText}>(11)</Text>
+                                <Text style={styles.ratingText}></Text>
                             </View>
-                            <Text style={styles.ratingText}>Gardes demandées : 11</Text>
+                            <Text style={styles.ratingText}>Gardes demandées : </Text>
                         </View>
                     
 
                         <View style={styles.mainContent}>
-                            <TextInfo style={styles.textInfo} userStyle={{color:userColor}} title={"Enfant(s) à garder"} textContent={infoenfant} />
+                            {/* <TextInfo style={styles.textInfo} userStyle={{color:userColor}} title={"Enfant(s) à garder"} textContent={infoenfant} />
                             <TextInfo style={styles.textInfo} userStyle={{color:userColor}} title={"Informations complémentaires"} textContent={""}/>
-                            <TextInfo style={styles.textInfo} userStyle={{color:userColor}} title={"Avis"} textContent={avis}/>
+                            <TextInfo style={styles.textInfo} userStyle={{color:userColor}} title={"Avis"} textContent={avis}/> */}
                         </View>
                     </ScrollView>  
 
@@ -156,16 +132,16 @@ export default function ProfilBookScreen({ navigation }) {
 
                     <ScrollView>
                         <View style={styles.avatarContainer}>    
-                            <Image style={styles.avatar} source={require('../assets/babysitter2.png')}/>
+                            <Image style={styles.avatar} source={{uri:userInfo.user.avatar}}/>
                             <View style={styles.userInfos}>
                                 <View style={styles.userNameOld}>
-                                    <Text style={styles.firstName}>{data.firstName}</Text>
-                                 <Text style={styles.avatarText}>{data.babysitterInfos.age} ans</Text>
+                                    <Text style={styles.firstName}>{userInfo.user.firstName}</Text>
+                                 <Text style={styles.avatarText}>{userInfo.user.babysitterInfos.age} ans</Text>
                                 </View>
                                 <View style={styles.userPriceDistance}>
                                     <View style={styles.locationPrice}>
                                         <FontAwesome name="money" size={20} color={'#FFFBF0'} />
-                                        <Text style={styles.avatarText}>   {data.babysitterInfos.price}€/h</Text>
+                                        <Text style={styles.avatarText}>  {userInfo.user.babysitterInfos.price} €/h</Text>
                                     </View>
                                     <View style={styles.locationPrice}>
                                         <FontAwesome name="location-arrow" size={20} color={'#FFFBF0'}/>
@@ -178,20 +154,18 @@ export default function ProfilBookScreen({ navigation }) {
                         <View style={styles.userReview}>
                             <View style={styles.userRating}>
                                 <View style={styles.stars}>
-                                    <FontAwesome name="star" size={18} color={'#323232'}/>
-                                    <FontAwesome name="star" size={18} color={'#323232'}/>
-                                    <FontAwesome name="star" size={18} color={'#323232'}/>
+                                    {stars}
                                 </View>
-                                <Text style={styles.ratingText}>(11)</Text>
+                                <Text style={styles.ratingText}></Text>
                             </View>
                             <Text style={styles.ratingText}>Gardes effectuées : 11</Text>
                         </View>
                     
 
                         <View style={styles.mainContent}>
-                            <TextInfo style={styles.textInfo} title={"Biographie"} textContent={data.babysitterInfos.bio}/>
-                            <TextInfo style={styles.textInfo} title={"Centre d'intérêts"} textContent={data.babysitterInfos.interest}/>
-                            <TextInfo style={styles.textInfo} title={"Avis"} textContent={avis}/>
+                            <TextInfo style={styles.textInfo} title={"Biographie"} textContent={userInfo.user.bio}/>
+                            <TextInfo style={styles.textInfo} title={"Centre d'intérêts"} textContent={userInfo.user.interest}/>
+                            <TextInfo style={styles.textInfo} title={"Avis"} />
                         </View>
                     </ScrollView>  
 
@@ -203,7 +177,10 @@ export default function ProfilBookScreen({ navigation }) {
             
         </SafeAreaView>
     );
+
+    
 }
+
 
 const styles = StyleSheet.create({
     container: {
