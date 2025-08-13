@@ -38,6 +38,7 @@ export default function ChatScreen({ navigation, route }) {
   const color = profil === 'parent' ? "#98C2E6" : "#88E19D";
 
   
+  
   // 📡 Abonnement Pusher
   useEffect(() => {
     
