@@ -15,12 +15,13 @@ export default function ContactsScreen({ navigation, route }) {
     const user = useSelector((state) => state.user.value);
 
     useEffect(()=>{
-        if(profil === 'PARENT'){
+        if(profil === 'parent'){
             fetch(`${url}conversations?token=${user.token}&id=${user.id}`)
             .then(response=>response.json())
             .then(data=>{
+                
                 const conversations = data.myConversations.map((conv, i)=>{
-                    return <Conversation key={i}firstName={conv.idUserBabysitter.firstName} lastName={conv.idUserBabysitter.lastName} urlImage={conv.idUserBabysitter.avatar}click={goProfil} clickNav={chat(conv._id)}userColor={userColor} btnTitle={<View style={styles.message}><FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/></View>} />
+                    return <Conversation key={i} convId={conv._id} firstName={conv.idUserBabysitter.firstName} lastName={conv.idUserBabysitter.lastName} urlImage={conv.idUserBabysitter.avatar}click={goProfil} clickNav={(id) => chat(id)}userColor={userColor} btnTitle={<View style={styles.message}><FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/></View>} />
                 })
                 setConvs(conversations)
             })
@@ -71,32 +72,8 @@ export default function ContactsScreen({ navigation, route }) {
         
     }
 })
-            // fetch(`${url}conversations?token=${user.token}&id=${user.id}`)
-            // .then(response=>response.json())
-            // .then(data=>{
-            //     const conversations = data.myConversations.map((conv, i)=>{
-            //         return <Conversation key={i}firstName={conv.idUserParent.firstName} lastName={conv.idUserParent.lastName} urlImage={conv.idUserParent.avatar}click={goProfil} clickNav={chat}userColor={userColor} btnTitle={<View style={styles.message}><FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/></View>} />
-            //     })
-            //     setConvs(conversations)
-            // })
-            // fetch(`${url}propositions?token=${user.token}&id=${user.id}`)
-            // .then(response=>response.json())
-            // .then(data=>{           
-            //      const filter = data.filteredPropositions.filter(proposition => 
-            //         ["PENDING"].includes(proposition.isAccepted)
-            //     );
-            //     const propositions = filter.map((propo, i)=>{
-            //         return <Conversation key={i}firstName={propo.idUserParent.firstName} lastName={propo.idUserParent.lastName} urlImage={propo.idUserParent.avatar}click={goProfil} clickNav={chat}userColor={userColor} btnTitle={<View style={styles.message}><FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/></View>} />
-            //     })
-            //     setPropos(propositions)
-            //     if (propos.length) {
-            //         setIsVisible(true)
-            //     } else {
-            //         setIsVisible(false)
-            //     }
-            // })
-        }               
-    },[])
+}               
+},[])
     
 
     let userColor;
