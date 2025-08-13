@@ -24,6 +24,7 @@ import { url } from '../App';
 //   }
 // };
 
+
 export default function SearchScreen() {
     const navigation = useNavigation();
     
