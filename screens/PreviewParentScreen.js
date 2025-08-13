@@ -16,6 +16,7 @@ import Conversation from '../components/conversation';
 export default function PreviewParentScreen({ navigation, route }) {
     const user=useSelector((state)=>state.user.value)
     const { profil } = useUser();
+    const {proposition} =route.params
 
     // const { propoId }= route.params
 
@@ -32,19 +33,19 @@ export default function PreviewParentScreen({ navigation, route }) {
 //     })();
 //   }, []);
 
-useEffect(()=>{
+useEffect(()=>{ console.log('propos',proposition)
     if(profil==='babysitter'){
-        fetch(`${url}proposition/id?token=${user.token}&id=${propoId}`).then(response=>response.json())
-        .then(data=>{
+        fetch(`${url}propositions/id?token=${user.token}&id=${proposition}`).then(response=>response.json())
+        .then(data=>{console.log('datala',data)
             
-            setNom(data.propo.firstName)
-            setPrenom(data.propo.lastName)
+            setNom(data.propo.lastName)
+            setPrenom(data.propo.firstName)
             setDay(data.propo.day)
             setHours(data.propo.propoStart)
             setEnfant(data.propo.kids)
             setComment(data.propo.comment)
         })
-    }
+    }else{console.log('fail')}
 },[])
     
     
@@ -124,7 +125,8 @@ useEffect(()=>{
             </SafeAreaView>
             <SafeAreaView style={styles.avatarContainer}>
                 <Image style={styles.avatar} source={require('../assets/babysitter2.png')}/>
-                <Text style={styles.avatarName}>Prenom</Text>
+                <Text style={styles.avatarName}>{prenom
+                    }</Text>
             </SafeAreaView>
             
             <View style={styles.mainContent}>
@@ -146,7 +148,7 @@ useEffect(()=>{
                 }}
                 style={styles.map}
             >
-            <Marker coordinate={{ latitude: 44.8643352091005, longitude: -0.5760245233606299 }} title={data.Prenom} />
+            <Marker coordinate={{ latitude: 44.8643352091005, longitude: -0.5760245233606299 }} title={prenom} />
             </MapView>
             </View>
             <View style={styles.buttons}>
