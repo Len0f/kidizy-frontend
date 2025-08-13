@@ -37,7 +37,7 @@ export default function ProfilBookScreen({ navigation }) {
     }
 
         const goChat = ()=>{
-        navigation.navigate('PreviewParent')
+        navigation.navigate('Proposition')
     }
 
     // let avis = <><View style={styles.avis}>
