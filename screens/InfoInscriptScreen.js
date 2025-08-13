@@ -25,6 +25,8 @@ export default function InfoInscriptScreen({ navigation }) {
   const [casierUrl, setCasierUrl] = useState(null);
   const [cniLocal, setCniLocal] = useState(null);
   const [casierLocal, setCasierLocal] = useState(null);
+  const [Biographie, setBiographie] = useState('');
+  const [Interest, setInterest] = useState('');
   const [addressSuggestions, setAddressSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const debounceRef = useRef(null);
@@ -188,7 +190,8 @@ export default function InfoInscriptScreen({ navigation }) {
 
   const addEnfant = lastEnfant.map((_, i) => (
     <View key={i} style={styles.containeInput}>
-      <Input style={styles.inputEnfant} width="41%" name="Enfant" setText={(v) => modifEnfant(v, i)} text={lastEnfant[i].firstName} />
+      <I
+      nput style={styles.inputEnfant} width="41%" name="Enfant" setText={(v) => modifEnfant(v, i)} text={lastEnfant[i].firstName} />
       <View style={styles.inputAge}>
         <Input width="100%" name="Age" setText={(v) => modifAge(v, i)} text={lastEnfant[i].age} />
       </View>
@@ -259,7 +262,7 @@ export default function InfoInscriptScreen({ navigation }) {
                     renderItem={renderAddressSuggestion}
                     keyExtractor={(item) => item.id}
                     style={styles.suggestionsList}
-                    scrollEnabled
+                    scrollEnabled={false}
                     keyboardShouldPersistTaps="always"
                   />
                 </View>
@@ -305,7 +308,7 @@ export default function InfoInscriptScreen({ navigation }) {
                     renderItem={renderAddressSuggestion}
                     keyExtractor={(item) => item.id}
                     style={styles.suggestionsList}
-                    scrollEnabled
+                    scrollEnabled={false}
                     keyboardShouldPersistTaps="always"
                   />
                 </View>

@@ -12,7 +12,6 @@ export default function ContactsScreen({ navigation, route }) {
     const [convs, setConvs] = useState([])
     const [propos, setPropos] = useState([])
     const [isVisible, setIsVisible] = useState (false)
-    const [propoId,setPropoId]= useState('')
     const user = useSelector((state) => state.user.value);
 
     useEffect(()=>{
@@ -21,7 +20,7 @@ export default function ContactsScreen({ navigation, route }) {
             .then(response=>response.json())
             .then(data=>{
                 const conversations = data.myConversations.map((conv, i)=>{
-                    return <Conversation key={i}firstName={conv.idUserBabysitter.firstName} lastName={conv.idUserBabysitter.lastName} urlImage={conv.idUserBabysitter.avatar}click={goProfil} clickNav={chat}userColor={userColor} btnTitle={<View style={styles.message}><FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/></View>} />
+                    return <Conversation key={i}firstName={conv.idUserBabysitter.firstName} lastName={conv.idUserBabysitter.lastName} urlImage={conv.idUserBabysitter.avatar}click={goProfil} clickNav={chat(conv._id)}userColor={userColor} btnTitle={<View style={styles.message}><FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/></View>} />
                 })
                 setConvs(conversations)
             })
@@ -41,11 +40,17 @@ export default function ContactsScreen({ navigation, route }) {
             })
             .then(([conversationsData, propositionsData]) => {
             // Traitement des conversations
+<<<<<<< HEAD
             console.log(conversationsData)
             console.log(propositionsData)
+=======
+            
+>>>>>>> 48ca28991b92145b9df30a31e63b3b5d942da9aa
             const conversations = conversationsData.myConversations.map((conv, i) => {
+                console.log('conv',conv)
+               
             return (
-                <Conversation key={i}firstName={conv.idUserParent.firstName} lastName={conv.idUserParent.lastName} urlImage={conv.idUserParent.avatar}click={goProfil} clickNav={chat}userColor={userColor} 
+                <Conversation key={i}firstName={conv.idUserParent.firstName} convId={conv._id} lastName={conv.idUserParent.lastName} urlImage={conv.idUserParent.avatar}click={goProfil} clickNav={(id) => chat(id)} userColor={userColor} 
                           btnTitle={<View style={styles.message}><FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/></View>} />
             );
         });
@@ -58,8 +63,8 @@ export default function ContactsScreen({ navigation, route }) {
     );
     
     const propositions = filter.map((propo, i) => {
-        console.log(propo)
-        return <Conversation key={i}firstName={propo.idUserParent.firstName} lastName={propo.idUserParent.lastName} urlImage={propo.idUserParent.avatar}click={goProfil} clickNav={chat}userColor={userColor} 
+       
+        return <Conversation key={i}firstName={propo.idUserParent.firstName} lastName={propo.idUserParent.lastName} urlImage={propo.idUserParent.avatar}click={goProfil} clickNav={goPreviewParent(propo._id)}userColor={userColor} 
                               btnTitle={<View style={styles.message}><FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/></View>}/>;
     });
     setPropos(propositions);
@@ -106,16 +111,17 @@ export default function ContactsScreen({ navigation, route }) {
         userColor='#88E19D'
     }
     const goProfil = ()=>{
-        navigation.navigate('ProfilBook', {from:'Contacts', profil})
+        navigation.navigate('ProfilBook', {from:'Contacts', profil,})
+    }
+    
+     const goPreviewParent = (propo)=>{
+        navigation.navigate('PreviewParent', {from:'Contacts', profil,propoId:propo})
+    }
+    const chat = (conv) =>{
+        navigation.navigate('Chat', {from: 'Contacts', profil,conversation: conv})
     }
 
-    const chat = () =>{
-        navigation.navigate('Chat', {from: 'Contacts', profil})
-    }
-
-    // const preview = () =>{
-    //     navigation.navigate('PreviewParent', {from: 'Contacts', profil, propoId})
-    // }
+   
 
     
 
