@@ -24,6 +24,9 @@ export const userSlice = createSlice({
       }
       
     },
+    selectedId:(state, action) =>{
+        state.value.selectedBabysitterId = action.payload
+    },
     
     resetInfo: (state) => {
       state.value = { firstName: 'utilisateur', token: null };
@@ -32,5 +35,5 @@ export const userSlice = createSlice({
   },
 });
 
-export const { updateInfo, resetInfo } = userSlice.actions;
+export const { updateInfo, resetInfo, selectedId } = userSlice.actions;
 export default userSlice.reducer;

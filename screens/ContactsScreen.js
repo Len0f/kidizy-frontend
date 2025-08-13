@@ -40,12 +40,7 @@ export default function ContactsScreen({ navigation, route }) {
             })
             .then(([conversationsData, propositionsData]) => {
             // Traitement des conversations
-<<<<<<< HEAD
-            console.log(conversationsData)
-            console.log(propositionsData)
-=======
-            
->>>>>>> 48ca28991b92145b9df30a31e63b3b5d942da9aa
+
             const conversations = conversationsData.myConversations.map((conv, i) => {
                 console.log('conv',conv)
                
