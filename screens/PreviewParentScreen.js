@@ -16,9 +16,9 @@ import Conversation from '../components/conversation';
 export default function PreviewParentScreen({ navigation, route }) {
     const user=useSelector((state)=>state.user.value)
     const { profil } = useUser();
-    const {proposition} =route.params
+    const {proposition} =route.params|| ('')
 
-    // const { propoId }= route.params
+    
 
 //     useEffect(() => {
 //     (async () => {
@@ -33,7 +33,7 @@ export default function PreviewParentScreen({ navigation, route }) {
 //     })();
 //   }, []);
 
-useEffect(()=>{ console.log('propos',proposition)
+useEffect(()=>{
     if(profil==='babysitter'){
         fetch(`${url}propositions/id?token=${user.token}&id=${proposition}`).then(response=>response.json())
         .then(data=>{console.log('datala',data)
@@ -44,6 +44,7 @@ useEffect(()=>{ console.log('propos',proposition)
             setHours(data.propo.propoStart)
             setEnfant(data.propo.kids)
             setComment(data.propo.comment)
+            setAvatar(data.propo.avatar)
         })
     }else{console.log('fail')}
 },[])
@@ -111,6 +112,7 @@ useEffect(()=>{ console.log('propos',proposition)
     const [hours, setHours] = useState('')
     const [enfant, setEnfant] = useState('')
     const [comment, setComment] = useState('')
+    const [avatar, setAvatar]=useState('')
     
     return (
         
@@ -124,7 +126,7 @@ useEffect(()=>{ console.log('propos',proposition)
                 <InfoBtn style={styles.returnBtn} returnScreen={goParentProfil}/>
             </SafeAreaView>
             <SafeAreaView style={styles.avatarContainer}>
-                <Image style={styles.avatar} source={require('../assets/babysitter2.png')}/>
+                <Image style={styles.avatar} source={{uri:avatar}}/>
                 <Text style={styles.avatarName}>{prenom
                     }</Text>
             </SafeAreaView>

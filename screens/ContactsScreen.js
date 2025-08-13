@@ -15,12 +15,12 @@ export default function ContactsScreen({ navigation, route }) {
     const user = useSelector((state) => state.user.value);
 
     useEffect(()=>{
-        if(profil === 'PARENT'){
+        if(profil === 'parent'){
             fetch(`${url}conversations?token=${user.token}&id=${user.id}`)
             .then(response=>response.json())
             .then(data=>{
                 const conversations = data.myConversations.map((conv, i)=>{
-                    return <Conversation key={i}firstName={conv.idUserBabysitter.firstName} lastName={conv.idUserBabysitter.lastName} urlImage={conv.idUserBabysitter.avatar}click={goProfil} clickNav={chat(conv._id)}userColor={userColor} btnTitle={<View style={styles.message}><FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/></View>} />
+                    return <Conversation key={i}firstName={conv.idUserBabysitter.firstName} convId={conv._id} lastName={conv.idUserBabysitter.lastName} urlImage={conv.idUserBabysitter.avatar}click={goProfil} clickNav={(id) => chat(id)}userColor={userColor} btnTitle={<View style={styles.message}><FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/></View>} />
                 })
                 setConvs(conversations)
             })
