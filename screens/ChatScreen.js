@@ -88,9 +88,7 @@ export default function ChatScreen({ navigation, route }) {
 
   // 🔙 Retour
   const handleBack = () => {
-    if (from === 'Contacts') navigation.navigate('Contacts');
-    else if (from === 'ProfilBabyBook') navigation.navigate('ProfilBabyBook');
-    else navigation.goBack();
+    navigation.navigate('Contacts');
   };
 
   return (
