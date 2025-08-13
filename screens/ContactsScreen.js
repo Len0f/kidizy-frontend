@@ -1,10 +1,9 @@
-import { Button, StyleSheet, Text, View, Image } from 'react-native';
+import { StyleSheet, Text, View, Image } from 'react-native';
 import { useUser } from '../contexts/UserContext';
-import UserCard from '../components/userCard';
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Conversation from '../components/conversation';
 import { useSelector } from 'react-redux';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import {url} from '../App';
 
 export default function ContactsScreen({ navigation, route }) {
@@ -12,110 +11,131 @@ export default function ContactsScreen({ navigation, route }) {
     const [convs, setConvs] = useState([])
     const [propos, setPropos] = useState([])
     const [isVisible, setIsVisible] = useState (false)
-    const [propoId,setPropoId]= useState('')
     const user = useSelector((state) => state.user.value);
 
+    const userColor = profil === 'parent' ? '#98C2E6' : '#88E19D';
+
+    const goChat = (extra = {}) => {  // pour prendre en compte les params
+        navigation.navigate('Chat', { from: 'Contacts', profil, ...extra})
+    };
+
+    const goProfil = () => {
+        navigation.navigate('ProfilBook', { from: 'Contacts', profil
+        });
+    }
+
+    // Ouvrir le prewiew du parent en cliquant sur la photo
+    const goProposition = (parentObj) => { // parent Obj provient de conv.idUserParent
+        navigation.navigate('Proposition', {
+            from: 'Contacts',
+            profil,
+            viewOnly: true,       // Cache Accepter/refuser
+            parent: parentObj     // On passe l'objet parent pour remplir l'écran.
+        });
+    };
+
+    // Ouvrir le preview de la proposition depuis le mainBtn
+    const goPreviewPropo = (propoId) => {
+        navigation.navigate('Proposition', {
+            from: 'Contacts',
+            profil,
+            propoId,
+            viewOnly: false
+        });
+    };
+
+// ---------------- AFFICHAGE DES CONTACTS
     useEffect(()=>{
-        if(profil === 'PARENT'){
+        if(profil === 'parent'){
             fetch(`${url}conversations?token=${user.token}&id=${user.id}`)
             .then(response=>response.json())
             .then(data=>{
                 const conversations = data.myConversations.map((conv, i)=>{
-                    return <Conversation key={i}firstName={conv.idUserBabysitter.firstName} lastName={conv.idUserBabysitter.lastName} urlImage={conv.idUserBabysitter.avatar}click={goProfil} clickNav={chat}userColor={userColor} btnTitle={<View style={styles.message}><FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/></View>} />
+                    return (
+                        <Conversation
+                            key={i}
+                            firstName={conv.idUserBabysitter.firstName}
+                            lastName={conv.idUserBabysitter.lastName}
+                            urlImage={conv.idUserBabysitter.avatar}
+                            click={() => goProfil()}                                                // click photo = profil parent.
+                            clickNav={() => goChat({conversation: conv?._id || conv?.id})}       // clicl mainBtn = chat
+                            userColor={userColor}
+                            btnTitle={
+                                <View style={styles.message}>
+                                    <FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/>
+                                </View>}
+                        />
+                    )
                 })
                 setConvs(conversations)
             })
-        }else{
+        } else {
             Promise.all([
                 fetch(`${url}conversations?token=${user.token}&id=${user.id}`),
                 fetch(`${url}propositions?token=${user.token}&id=${user.id}`)
             ])
-            .then(responses => {
-            // Vérifier que toutes les réponses sont OK
-            return Promise.all(responses.map(response => {
-                if (!response.ok) {
-                    throw new Error(`Erreur HTTP: ${response.status}`);
-                }
-                return response.json();
-            }));
-            })
+            .then((responses) => 
+                // Vérifier que toutes les réponses sont OK
+                Promise.all(
+                    responses.map((response) => {
+                        if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+                        return response.json();
+                    })
+                )
+            )
             .then(([conversationsData, propositionsData]) => {
-            // Traitement des conversations
-            const conversations = conversationsData.myConversations.map((conv, i) => {
-            return (
-                <Conversation key={i}firstName={conv.idUserParent.firstName} lastName={conv.idUserParent.lastName} urlImage={conv.idUserParent.avatar}click={goProfil} clickNav={chat}userColor={userColor} 
-                          btnTitle={<View style={styles.message}><FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/></View>} />
-            );
-        });
-        setConvs(conversations);
+                // Traitement des conversations
+                // Chat ouvert des babysitters.
+                const conversations = conversationsData.myConversations.map((conv, i) => (
+                    <Conversation
+                        key={i}
+                        firstName={conv.idUserParent.firstName}
+                        lastName={conv.idUserParent.lastName}
+                        urlImage={conv.idUserParent.avatar}
+                        click={() => goProfil()}
+                        clickNav={() => goChat({ conversation: conv?._id || conv?.id })}
+                        userColor={userColor} 
+                        btnTitle={
+                            <View style={styles.message}>
+                                <FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/>
+                                </View>
+                            }
+                    />
+                ));
+                setConvs(conversations);
 
-    // Traitement des propositions
-    const filter = propositionsData.filteredPropositions.filter(proposition =>
-        ["PENDING"].includes(proposition.isAccepted)
-    );
-    
-    const propositions = filter.map((propo, i) => {
-        console.log(propo)
-        return <Conversation key={i}firstName={propo.idUserParent.firstName} lastName={propo.idUserParent.lastName} urlImage={propo.idUserParent.avatar}click={goProfil} clickNav={chat}userColor={userColor} 
-                              btnTitle={<View style={styles.message}><FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/></View>}/>;
-    });
-    setPropos(propositions);
-    // Gestion de la visibilité basée sur les propositions filtrées
-    if (filter.length > 0) {
-        setIsVisible(true);
-    } else {
-        setIsVisible(false);
-        
-    }
-})
-            // fetch(`${url}conversations?token=${user.token}&id=${user.id}`)
-            // .then(response=>response.json())
-            // .then(data=>{
-            //     const conversations = data.myConversations.map((conv, i)=>{
-            //         return <Conversation key={i}firstName={conv.idUserParent.firstName} lastName={conv.idUserParent.lastName} urlImage={conv.idUserParent.avatar}click={goProfil} clickNav={chat}userColor={userColor} btnTitle={<View style={styles.message}><FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/></View>} />
-            //     })
-            //     setConvs(conversations)
-            // })
-            // fetch(`${url}propositions?token=${user.token}&id=${user.id}`)
-            // .then(response=>response.json())
-            // .then(data=>{           
-            //      const filter = data.filteredPropositions.filter(proposition => 
-            //         ["PENDING"].includes(proposition.isAccepted)
-            //     );
-            //     const propositions = filter.map((propo, i)=>{
-            //         return <Conversation key={i}firstName={propo.idUserParent.firstName} lastName={propo.idUserParent.lastName} urlImage={propo.idUserParent.avatar}click={goProfil} clickNav={chat}userColor={userColor} btnTitle={<View style={styles.message}><FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/></View>} />
-            //     })
-            //     setPropos(propositions)
-            //     if (propos.length) {
-            //         setIsVisible(true)
-            //     } else {
-            //         setIsVisible(false)
-            //     }
-            // })
+                
+                // Demandes (propositions)
+                const filter = propositionsData.filteredPropositions.filter(
+                    (proposition) => proposition.isAccepted === 'PENDING'
+                );
+                
+                const propositions = filter.map((propo, i) => (
+                    <Conversation
+                        key={i}
+                        firstName={propo.idUserParent.firstName}
+                        lastName={propo.idUserParent.lastName}
+                        urlImage={propo.idUserParent.avatar}
+                        click={() => goProfil()}
+                        clickNav={() => goPreviewPropo(propo._id)}
+                        userColor={userColor} 
+                        btnTitle={
+                            <View style={styles.message}>
+                                <FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/>
+                            </View>}
+                    />
+                ));
+                setPropos(propositions);
+                // Gestion de la visibilité basée sur les propositions filtrées
+                if (filter.length > 0) {
+                    setIsVisible(true);
+                } else {
+                    setIsVisible(false);
+                }
+            })
         }               
-    },[])
+    }, [profil, user.id, user.token])
     
-
-    let userColor;
-    if(profil==='parent'){
-        userColor='#98C2E6'
-    }else{
-        userColor='#88E19D'
-    }
-    const goProfil = ()=>{
-        navigation.navigate('ProfilBook', {from:'Contacts', profil})
-    }
-
-    const chat = () =>{
-        navigation.navigate('Chat', {from: 'Contacts', profil})
-    }
-
-    // const preview = () =>{
-    //     navigation.navigate('PreviewParent', {from: 'Contacts', profil, propoId})
-    // }
-
-    
-
     return (
         <View style={styles.container}>
             <Image style={styles.logo}source={require('../assets/KidizyLogo.png')} />
@@ -129,27 +149,16 @@ export default function ContactsScreen({ navigation, route }) {
                         </View>
                         {propos}
                     </View>}
-                    <View style={styles.previousConvContainer}>
-                        {convs}
-                    </View>
-            
-                   
-                </>
-            ):(<>
 
                     <View style={styles.previousConvContainer}>
                         {convs}
-                    </View>
-                    {/* <Text>Nouvelles demandes</Text>
-                    <Button
-                        title="Voir le profil"
-                        onPress={() => navigation.navigate('PreviewParent', {from: 'Contacts', profil})}
-                    />
-                    <Text>En cours</Text> */}
+                    </View>     
                 </>
-            )}
-
-            
+            ) : (
+                    <View style={styles.previousConvContainer}>
+                        {convs}
+                    </View>
+            )}       
         </View>
     );
 }
@@ -167,21 +176,22 @@ const styles = StyleSheet.create({
         objectFit:'contain'
     },
     screenTitleContainer:{
-        marginVertical:50,
+        marginVertical:30,
         justifyContent:'center'
     },
     screenTitle:{
         fontFamily:'Montserrat',
-        fontSize:28,
+        fontSize:20,
         fontWeight:'700'
     },
     newConvContainer:{
         alignItems:'center',
-        paddingBottom:15,
+        paddingBottom:10,
         borderBottomWidth:1
     },
     previousConvContainer:{
-        paddingTop:27
+        alignItems: 'center',
+        paddingTop: 0
     },
     message:{
         padding:5,

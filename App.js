@@ -48,7 +48,7 @@ import PayScreen from './screens/PayScreen';
 import SearchScreen from './screens/SearchScreen';
 
 // Screens Baby.
-import PreviewParentScreen from './screens/PreviewParentScreen';
+import PropositionScreen from './screens/PropositionScreen';
 
 
 const Stack = createNativeStackNavigator();
@@ -160,13 +160,10 @@ console.log('API URL:', url); // Log the API URL to verify it's correct
           <Stack.Screen name="Notation" component={NotationScreen}/>
           <Stack.Screen name="ProfilUser" component={ProfilScreen}/>
           <Stack.Screen name="ProfilBook" component={ProfilBookScreen}/>
+          <Stack.Screen name="Proposition" component={PropositionScreen}/>
 
           {/* Screen Parents */}
           <Stack.Screen name="Pay" component={PayScreen}/>
-
-          {/* Screen Baby */}
-          <Stack.Screen name="PreviewParent" component={PreviewParentScreen}/>
-
 
         </Stack.Navigator>
       </NavigationContainer>
