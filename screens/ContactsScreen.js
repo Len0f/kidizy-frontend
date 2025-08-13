@@ -16,7 +16,6 @@ export default function ContactsScreen({ navigation, route }) {
 
     useEffect(()=>{
         if(profil === 'parent'){
-        if(profil === 'parent'){
             fetch(`${url}conversations?token=${user.token}&id=${user.id}`)
             .then(response=>response.json())
             .then(data=>{
