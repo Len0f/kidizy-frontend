@@ -1,15 +1,24 @@
 import { StyleSheet, ScrollView, SafeAreaView, Text, View, Image, KeyboardAvoidingView, Platform  } from 'react-native';
 import { useUser } from '../contexts/UserContext';
-import { useState } from 'react';
+
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Input from "../components/InputLarge";
 import MainBtn from '../components/mainBtn';
+import { useSelector } from 'react-redux';
+import { url } from '../App';
+import { useEffect, useState } from 'react';
 
 export default function NotationScreen({ navigation }) {
     const { profil } = useUser();
     const [personalStar, setPersonalStar] = useState(0);
     const [ text, setText] = useState('');
+    const [nom, setNom] = useState('');
+    const [prenom, setPrenom]= useState('');
+    const [avatar, setAvatar] = useState('');
 
+    const user=useSelector((state)=>state.user.value)
+
+    
     const handleSubmit = () => {
         navigation.navigate('TabNavigator');
     }
