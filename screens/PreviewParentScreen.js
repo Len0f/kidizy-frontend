@@ -16,7 +16,7 @@ import Conversation from '../components/conversation';
 export default function PreviewParentScreen({ navigation, route }) {
     const user=useSelector((state)=>state.user.value)
     const { profil } = useUser();
-    const { propoId }= route.params
+    
 //     useEffect(() => {
 //     (async () => {
 //       const { status } = await Location.requestForegroundPermissionsAsync();
