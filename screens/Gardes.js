@@ -8,6 +8,9 @@ import { useUser } from '../contexts/UserContext';
 import { useSelector } from 'react-redux';
 import { url } from '../App';
 
+// Lire la route get
+// remplir les champs nécéssaire.
+
 export default function GardeScreen({ navigation, route }) {
   const { profil } = useUser();
   const token = useSelector((state) => state.user.value.token);
