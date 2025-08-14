@@ -20,8 +20,8 @@ export default function ContactsScreen({ navigation, route }) {
             .then(response=>response.json())
             .then(data=>{
                 
-                const conversations = data.myConversations.map((conv, i)=>{
-                    return <Conversation key={i}firstName={conv.idUserBabysitter.firstName} convId={conv._id} lastName={conv.idUserBabysitter.lastName} urlImage={conv.idUserBabysitter.avatar}click={goProfil} clickNav={(id) => chat(id)}userColor={userColor} btnTitle={<View style={styles.message}><FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/></View>} />
+                const conversations = data.myConversations.map((conv, i)=>{console.log(conv)
+                    return <Conversation key={i}firstName={conv.idUserBabysitter.firstName} convId={conv._id} lastName={conv.idUserBabysitter.lastName} urlImage={conv.idUserBabysitter.avatar}click={()=>goProfil(conv.idUserBabysitter._id)} clickNav={(id) => chat(id)}userColor={userColor} btnTitle={<View style={styles.message}><FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/></View>} />
                 })
                 setConvs(conversations)
             })
@@ -46,7 +46,7 @@ export default function ContactsScreen({ navigation, route }) {
                 
                
             return (
-                <Conversation key={i}firstName={conv.idUserParent.firstName} convId={conv._id} lastName={conv.idUserParent.lastName} urlImage={conv.idUserParent.avatar}click={goProfil} clickNav={(id) => chat(id)} userColor={userColor} 
+                <Conversation key={i}firstName={conv.idUserParent.firstName} convId={conv._id} lastName={conv.idUserParent.lastName} urlImage={conv.idUserParent.avatar}click={()=>goProfil(conv.idUserParent._id)} clickNav={(id) => chat(id)} userColor={userColor} 
                           btnTitle={<View style={styles.message}><FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/></View>} />
             );
         });
@@ -60,7 +60,7 @@ export default function ContactsScreen({ navigation, route }) {
     
     const propositions = filter.map((propo, i) => {
        
-        return <Conversation key={i}firstName={propo.idUserParent.firstName} convId={propo._id} lastName={propo.idUserParent.lastName} urlImage={propo.idUserParent.avatar}click={goProfil} clickNav={(id)=>goPreviewParent(id)} userColor={userColor} 
+        return <Conversation key={i}firstName={propo.idUserParent.firstName} convId={propo._id} lastName={propo.idUserParent.lastName} urlImage={propo.idUserParent.avatar}click={()=>goProfil(propo.idUserParent._id)} clickNav={(id)=>goPreviewParent(id)} userColor={userColor} 
                               btnTitle={<View style={styles.message}><FontAwesome style={styles.icon}name="paper-plane" size={12} color={'#323232'}/></View>}/>;
     });
     setPropos(propositions);
@@ -82,8 +82,8 @@ export default function ContactsScreen({ navigation, route }) {
     }else{
         userColor='#88E19D'
     }
-    const goProfil = ()=>{
-        navigation.navigate('ProfilBook', {from:'Contacts', profil,})
+    const goProfil = (id)=>{
+        navigation.navigate('ProfilBook', {from:'Contacts', profil , idUser:id})
     }
     
      const goPreviewParent = (propo)=>{
