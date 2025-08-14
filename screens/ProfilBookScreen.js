@@ -8,11 +8,12 @@ import { useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import {url} from '../App';
 
-export default function ProfilBookScreen({ navigation }) {
+export default function ProfilBookScreen({ navigation, route }) {
     
     const [userInfo, setUserInfo] = useState(null)
     const user = useSelector((state)=>state.user.value)
-   const { profil } = useUser();
+    const { profil } = useUser();
+    const { idUser } = route.params || {};
 
     let userColor;
     if(profil==='parent'){
@@ -20,7 +21,7 @@ export default function ProfilBookScreen({ navigation }) {
         useEffect(()=>{
         fetch(`${url}users/id/${user.selectedBabysitterId}`)
         .then(response=>response.json())
-        .then(data=>{ 
+        .then(data=>{ console.log('datauser',data)
             setUserInfo(data)                
         })
     },[])
@@ -37,7 +38,7 @@ export default function ProfilBookScreen({ navigation }) {
     }
 
         const goChat = ()=>{
-        navigation.navigate('PreviewParent')
+        navigation.navigate('Proposition')
     }
 
     // let avis = <><View style={styles.avis}>
@@ -121,7 +122,7 @@ export default function ProfilBookScreen({ navigation }) {
                     </ScrollView>  
 
                     <SafeAreaView style={styles.btnContactContainer}>
-                        <MainBtn clickNav={goChat}style={styles.contactBtn} btnTitle='Contacter' userStyle={{backgroundColor : userColor}}/>
+                        <MainBtn convId={userInfo} clickNav={goChat}style={styles.contactBtn} btnTitle='Contacter' userStyle={{backgroundColor : userColor}}/>
                     </SafeAreaView>
                 </>
             ) : ( //ecran profil baysitter vu par un parent
@@ -163,8 +164,8 @@ export default function ProfilBookScreen({ navigation }) {
                     
 
                         <View style={styles.mainContent}>
-                            <TextInfo style={styles.textInfo} title={"Biographie"} textContent={userInfo.user.bio}/>
-                            <TextInfo style={styles.textInfo} title={"Centre d'intérêts"} textContent={userInfo.user.interest}/>
+                            <TextInfo style={styles.textInfo} title={"Biographie"} textContent={userInfo.user.babysitterInfos.bio}/>
+                            <TextInfo style={styles.textInfo} title={"Centre d'intérêts"} textContent={userInfo.user.babysitterInfos.interest}/>
                             <TextInfo style={styles.textInfo} title={"Avis"} />
                         </View>
                     </ScrollView>  

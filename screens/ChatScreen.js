@@ -26,17 +26,23 @@ const pusher = new Pusher('92055fe186a81018cec0', { cluster: 'eu' });
 export default function ChatScreen({ navigation, route }) {
   const { profil } = useUser();
   const isParent = profil === 'parent';
-  const {from, conversation } = route.params || {};
+  const {from, conversation} = route.params || {};
   const user = useSelector((state) => state.user.value);
-
+  //useState pusher
   const [messages, setMessages] = useState([]);
   const [messageText, setMessageText] = useState('');
+  //useSate info contact
+  const [firstName, setFirstName]=useState('')
+  const [lastName,setLastname]=useState('')
+  const [avatar, setAvatar]=useState('')
 
   const scrollViewRef = useRef(null);
 
   // 🎯 Couleur selon profil
   const color = profil === 'parent' ? "#98C2E6" : "#88E19D";
 
+  
+  
   // 📡 Abonnement Pusher
   useEffect(() => {
     
@@ -52,10 +58,28 @@ export default function ChatScreen({ navigation, route }) {
     fetch(`${BACKEND_ADDRESS}messages?token=${user.token}&conversationId=${conversation}`)
       .then(res => res.json())
       .then(data => {
-        console.log('data',data)
+        
         setMessages([...messages,...data.messagesUser])
       })
       .catch(err => console.error("Erreur récupération messages:", err));
+      // info contact
+
+
+      fetch(`${BACKEND_ADDRESS}conversations/id?token=${user.token}&id=${conversation}`)
+      .then(response=>response.json())
+      .then(user=>{
+          if(profil==='babysitter'){
+            const {lastName,firstName,avatar}= user.conversationInfo.idUserParent
+            setFirstName(firstName)
+            setLastname(lastName)
+            setAvatar(avatar)
+          } else if(profil==='parent'){
+            const {firstName,lastName,avatar}=user.conversationInfo.idUserBabysitter
+             setFirstName(firstName)
+            setLastname(lastName)
+            setAvatar(avatar)
+          }
+      })
 
     return () => {
       channel.unbind_all();
@@ -96,8 +120,8 @@ export default function ChatScreen({ navigation, route }) {
       {/* 🔹 Header */}
       <View style={styles.banner}>
         <ReturnBtn returnScreen={handleBack} />
-        <Image style={styles.image} source={require('../assets/babysitter2.png')} />
-        <Text style={styles.greetingText}>Prénom Nom</Text>
+        <Image style={styles.image} source={{uri:avatar}} />
+        <Text style={styles.greetingText}>{firstName} {lastName}</Text>
       </View>
 
       {/* 🔹 Zone messages */}

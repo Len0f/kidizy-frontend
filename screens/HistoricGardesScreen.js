@@ -9,6 +9,9 @@ import {
 import UserCard from '../components/userCard';
 import { useNavigation } from '@react-navigation/native';
 import { useUser } from '../contexts/UserContext';
+import { useEffect, useState } from 'react';
+import {url} from '../App';
+import { useSelector } from 'react-redux';
 
 const gardParentFake = [
     {
@@ -58,47 +61,69 @@ const gardBabyFake = [
     },
 ]
 
-
 export default function HistoricGardesScreen(navigate) {
     const navigation = useNavigation();
+    const user = useSelector((state) => state.user.value);
 
-    
+const [Gardes, setGardes] = useState([])
 
+// Data et Couleur change selon le type de profil
+const { profil } = useUser();
+const datatoDisplay = profil === 'parent' ? gardParentFake : gardBabyFake;
+const buttonColor = profil === 'parent' ? '#98C2E6' : '#88E19D';
 
-    // Data et Couleur change selon le type de profil
-    const { profil } = useUser();
-    const datatoDisplay = profil === 'parent' ? gardParentFake : gardBabyFake;
-    const buttonColor = profil === 'parent' ? '#98C2E6' : '#88E19D';
+useEffect(()=>{
+    fetch(`${url}gardes/new/id?token=${user.token}&id=${user.id}`)
+    .then(response=>response.json())
+    .then(data=>{
 
-    return (
-        <SafeAreaView style={styles.container}>
-            <View style={styles.header}>
-                <Image 
-                    style={styles.logo}
-                    source={require('../assets/KidizyLogo.png')}
-                />
-                <Text style={styles.screenTitle}>Gardes</Text>
-            </View>
-
-            <FlatList
-                data={datatoDisplay}
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={({item}) => (
-                    <UserCard
-                        avatar={item.avatar}
-                        name={`${item.firstName} ${item.lastName}`}
-                        age={item.age}
-                        guards={item.guards}
-                        btnTitle="Voir"
-                        userColor={buttonColor}
-                        onPress = {() =>
-                            navigation.navigate('Gardes')
-                        }
+        const garde = data.garde.map((g, i)=>{
+            if(profil === 'parent'){
+                    return <UserCard
+                    key={i}
+                    avatar={g.idUserBabysitter.avatar}
+                    name={`${g.idUserBabysitter.firstName} ${g.idUserBabysitter.lastName}`}
+                    age={g.idUserBabysitter.babysitterInfos.age}
+                    guards={'0'}
+                    btnTitle="Voir"
+                    userColor={buttonColor}
+                    onPress = {() =>
+                        navigation.navigate('Garde', {from: 'Contacts', profil, infoGarde: g})
+                    }
                     />
-                )}
+                } else {
+                    return <UserCard
+                    key={i}
+                    avatar={g.idUserParent.avatar}
+                    name={`${g.idUserParent.firstName} ${g.idUserParent.lastName}`}
+                    guards={'0'}
+                    btnTitle="Voir"
+                    userColor={buttonColor}
+                    onPress = {() =>
+                        navigation.navigate('Garde', {from: 'Contacts', profil, infoGarde: g})
+                    }
+                    />
+                }
+                })
+                setGardes(garde)
+            })
+},[])
+
+return (
+    <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+            <Image 
+                style={styles.logo}
+                source={require('../assets/KidizyLogo.png')}
             />
-        </SafeAreaView>
-    );
+            <Text style={styles.screenTitle}>Gardes</Text>
+        </View>
+
+    <View>
+        {Gardes}
+    </View>
+</SafeAreaView>
+);
 }
 
 const styles = StyleSheet.create({
@@ -108,21 +133,21 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFFBF0',
     },
 
-    header: {
-        alignItems: "center",
-        marginBottom:16,
-    },
+header: {
+    alignItems: "center",
+    marginBottom:16,
+},
 
-    logo: {
-        marginTop: 50,
-        height: 50,
-        resizeMode: "contain"
-    },
+logo: {
+    marginTop: 50,
+    height: 50,
+    resizeMode: "contain"
+},
 
-    screenTitle:{
-        fontFamily:'Montserrat',
-        fontSize:25,
-        fontWeight:'700',
-        marginTop: 30,
-    },
+screenTitle:{
+    fontFamily:'Montserrat',
+    fontSize:25,
+    fontWeight:'700',
+    marginTop: 30,
+},
 })

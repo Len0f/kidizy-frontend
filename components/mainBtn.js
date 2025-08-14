@@ -4,21 +4,25 @@ import {Text, TouchableOpacity, StyleSheet} from 'react-native';
 export default function MainBtn(props){
 
 const handleClick = () => {
-  props.clickNav()
-}; 
+  // Condition pour gérer les icons dans le bouton, sinon ça plante (icon dans un text ?).
+  if (props.disabled) return;
+  if (typeof props.clickNav === 'function') props.clickNav();
+};
 
+const content = typeof props.btnTitle === 'string' ?
+  <Text style={[styles.text, props.textStyle]}>{props.btnTitle}</Text>
+  : props.btnTitle    // pour faire <view>FontAwersome.../></view>
+  
     return (
-            
-          <TouchableOpacity disabled={props.disabled}style={[styles.btnContainer, props.userStyle ]}
-            onPress={()=>handleClick()}
-          >
-            <Text style={styles.text}>{props.btnTitle}</Text>
-          </TouchableOpacity>
-        
+      <TouchableOpacity
+        disabled={props.disabled}
+        style={[styles.btnContainer, props.userStyle ]}
+        onPress={()=>handleClick()}
+        accessibilityRole='button'
+      >
+        {content}
+      </TouchableOpacity>     
      );
-
-     
-
 }
 
 const styles = StyleSheet.create({
@@ -35,4 +39,4 @@ const styles = StyleSheet.create({
     fontWeight:'800',
     fontFamily:'Montserrat'
   },
-})
+});

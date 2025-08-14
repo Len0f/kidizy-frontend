@@ -3,16 +3,18 @@ import { useUser } from '../contexts/UserContext';
 import NextGuardComponent from '../components/nextGuardComponent'
 import GuardComponent from '../components/guardComponent';
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState} from 'react';
 import { useSelector } from 'react-redux';
+import { useFocusEffect } from '@react-navigation/native';
 import {url} from '../App';
 
-export default function DashboardScreen({ navigation }) {
+export default function DashboardScreen({ navigation, route }) {
     const user = useSelector((state) => state.user.value);
     const [avatar, setAvatar] = useState('')
     const [nextGarde, setNextGarde] = useState(null)
     const [noReadMessage, setNoReadMessage] = useState([])
     const { profil } = useUser();
+    
 
     let userColor;
     if(profil==='parent'){
@@ -36,13 +38,14 @@ export default function DashboardScreen({ navigation }) {
     }
 
         //recuperation de ses propres données grace au token présent dans le reducer
-        useEffect(()=>{
+        useFocusEffect(useCallback(()=>{
             fetch(`${url}users/me/${user.token}`)
             .then(response=>response.json())
             .then(data=>{
                 setAvatar(data.user.avatar)
             })
-            fetch(`${url}propositions?token=${user.token}&id=${user.id}`)
+            if(profil === 'babysitter'){
+                fetch(`${url}propositions?token=${user.token}&id=${user.id}`)
             .then(response=>response.json())
             .then(data=>{
                 const filter = data.filteredPropositions.filter(proposition => 
@@ -50,7 +53,9 @@ export default function DashboardScreen({ navigation }) {
                 );
                 setNoReadMessage([...noReadMessage,...filter])
             })
-        },[])
+            }
+            
+        },[]))
 
     return (
         <View style={styles.container}>
