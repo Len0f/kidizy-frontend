@@ -67,15 +67,17 @@ export default function ChatScreen({ navigation, route }) {
 
       fetch(`${BACKEND_ADDRESS}conversations/id?token=${user.token}&id=${conversation}`)
       .then(response=>response.json())
-      .then(user=>{console.log('user',user)
+      .then(user=>{
           if(profil==='babysitter'){
-            setFirstName(user.conversationInfo.idUserParent.firstName)
-            setLastname(user.conversationInfo.idUserParent.lastName)
-            setAvatar(user.conversationInfo.idUserParent.avatar)
+            const {lastName,firstName,avatar}= user.conversationInfo.idUserParent
+            setFirstName(firstName)
+            setLastname(lastName)
+            setAvatar(avatar)
           } else if(profil==='parent'){
-             setFirstName(user.conversationInfo.idUserBabysitter.firstName)
-            setLastname(user.conversationInfo.idUserBabysitter.lastName)
-            setAvatar(user.conversationInfo.idUserBabysitter.avatar)
+            const {firstName,lastName,avatar}=user.conversationInfo.idUserBabysitter
+             setFirstName(firstName)
+            setLastname(lastName)
+            setAvatar(avatar)
           }
       })
 
