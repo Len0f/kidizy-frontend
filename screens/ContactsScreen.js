@@ -13,73 +13,83 @@ import { useSelector } from "react-redux";
 import { useCallback, useEffect, useState } from "react";
 import { url } from "../App";
 
-// J'ai mis un système de refresh manuel, le soucis c'est qu'avec un fetch normal, les profils apparaissent pas tant qu'on refresh pas. Donc je fetch autrement.
-// Une fonction qui permet d'éviter de répéter if(!response.json()) partout.
-const fetchJsonOk = (input, init) =>
-  fetch(input, init).then((res) => {
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return res.json();
-  });
 
 export default function ContactsScreen({ navigation }) {
-  const { profil } = useUser();
-  const [convs, setConvs] = useState([]);
-  const [propos, setPropos] = useState([]);
-  const [isVisible, setIsVisible] = useState(false); // Contrôle l'affichage du bloc "demandes de chat"
-  const [refreshing, setRefreshing] = useState(false); // permettra de refresh en tirant l'écran vers le bas, car l'auto était trop lent.
+    // PAS TOUCHER
+    const { profil } = useUser();
+    const [convs, setConvs] = useState([]);
+    const [propos, setPropos] = useState([]);
+    const [isVisible, setIsVisible] = useState(false); // Contrôle l'affichage du bloc "demandes de chat"
+  
+    // AJOUT
+    const [refreshing, setRefreshing] = useState(false); // permettra de refresh en tirant l'écran vers le bas, car l'auto était trop lent.
+  
+    // PAS TOUCHE
+    const user = useSelector((state) => state.user.value);
+    
+    // PAS TOUCHE JUSTE REMONTE
+    const userColor = profil === "parent" ? "#98C2E6" : "#88E19D";
 
-  const user = useSelector((state) => state.user.value);
+    // AMELIORATION
+    // Navigation : ouvre l'écran de chat.
+    const goChat = (extra = {}) => {
+      // extra permet de passer des info' complémentaires : (id de conversation, etc.)
+      navigation.navigate("Chat", { from: "Contacts", profil, ...extra });
+    };
 
-  const userColor = profil === "parent" ? "#98C2E6" : "#88E19D";
 
-  // Navigation : ouvre l'écran de chat.
-  const goChat = (extra = {}) => {
-    // extra permet de passer des info' complémentaires : (id de conversation, etc.)
-    navigation.navigate("Chat", { from: "Contacts", profil, ...extra });
-  };
+    // AJOUT
+    // Navigation : ouvre ProfilBook du contact sélectionné.
+    const goProfil = (target) => {
+      // target : objet user complet ou juste un id, augmente la posibilité de trouver les profils.
+      const userObj = target && typeof target === "object" ? target : undefined; // Si target est un objet ou non.
+      const userId =
+        userObj?._id ||
+        userObj?.id ||
+        (typeof target === "string" ? target : undefined); // sinon on cherche l'id.
+  
+      navigation.navigate("ProfilBook", {
+        from: "Contacts",
+        profil,
+        user: userObj, // si on a l’objet complet
+        userId, // fallback si on n’a qu’un id
+      });
+    };
 
-  // Navigation : ouvre ProfilBook du contact sélectionné.
-  const goProfil = (target) => {
-    // target : objet user complet ou juste un id, augmente la posibilité de trouver les profils.
-    const userObj = target && typeof target === "object" ? target : undefined; // Si target est un objet ou non.
-    const userId =
-      userObj?._id ||
-      userObj?.id ||
-      (typeof target === "string" ? target : undefined); // sinon on cherche l'id.
-
-    navigation.navigate("ProfilBook", {
-      from: "Contacts",
-      profil,
-      user: userObj, // si on a l’objet complet
-      userId, // fallback si on n’a qu’un id
-    });
-  };
-
-  // NAVIGATION : ouvre l'aperçu d'une proposition (par id
-  const goPreviewPropo = (propositionId) => {
-    navigation.navigate("Proposition", {
-      from: "Contacts",
-      profil,
-      proposition: propositionId,
-      viewOnly: false,
-    });
-  };
+    //AJOUT
+    // NAVIGATION : ouvre l'aperçu d'une proposition (par id)
+    const goPreviewPropo = (propositionId) => {
+      navigation.navigate("Proposition", {
+        from: "Contacts",
+        profil,
+        proposition: propositionId,
+        viewOnly: false,
+      });
+    };
 
   // Effet principal : on charge les conversations ouvertes et les propositions pour les profils bb.
-  const loadData = useCallback(() => {
+  const loadData = useCallback(() => {     // MODIFICATION : callback = useEffect mais permet de gérer le loading, LA LOGIQUE EST PAREIL !!!!!!
     if (!user?.token || !user?.id) return; // si pas d'authentification valide, ça bloque (utile ? C'est un reflexe de le mettre au cas où).
     setRefreshing(true);
 
     if (profil === "parent") {
       // ----- PARENT : chats ouverts (contacts = babysitters)
-      fetchJsonOk(`${url}conversations?token=${user.token}&id=${user.id}`)
+      fetch(`${url}conversations?token=${user.token}&id=${user.id}`)
+        .then(response => {
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            return response.json();
+          }
+        )
         .then((data) => {
           const conversations = (data?.myConversations ?? []).map((conv, i) => {
             // ?? [] : sécurise pour éviter les erreurs si undefined
+
+            // MODIF : Juste fait des variables réutilisable !
             const convId = conv?._id || conv?.id || i; // key unique : priorité à _id, sinon index(i)
             const baby = conv?.idUserBabysitter ?? {}; // CONTACT = babysitter
 
             return (
+                // MODIF : Uniquement sur les click
               <Conversation
                 key={convId}
                 firstName={baby?.firstName}
@@ -105,14 +115,21 @@ export default function ContactsScreen({ navigation }) {
           setPropos([]); // parent : pas de proposition.
           setIsVisible(false);
         })
+        // AJOUT : Permet le rafraichissement.
         .finally(() => setRefreshing(false));
     } else {
-      // ----- BABYSITTER : chats ouverts (contacts = parents) + propositions (contacts = parents)
-      Promise.all([
-        // Permet de faire 2 fetchs en parallèle.
-        fetchJsonOk(`${url}conversations?token=${user.token}&id=${user.id}`),
-        fetchJsonOk(`${url}propositions?token=${user.token}&id=${user.id}`),
-      ])
+        // ----- BABYSITTER : chats ouverts (contacts = parents) + propositions (contacts = parents)
+        Promise.all([
+          // Permet de faire 2 fetchs en parallèle.
+            fetch(`${url}conversations?token=${user.token}&id=${user.id}`).then(response => {
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                return response.json();
+            }),
+            fetch(`${url}propositions?token=${user.token}&id=${user.id}`).then(response => {
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                return response.json();
+            })
+        ])
         .then(([conversationsData, propositionsData]) => {
           // Chats ouverts (contacts = parents)
           const conversations = (conversationsData?.myConversations ?? []).map(
@@ -189,6 +206,7 @@ export default function ContactsScreen({ navigation }) {
     }
   }, [profil, user?.id, user?.token]);
 
+  // AJOUT
   // Déclenchement initial (et quand profil/token changent)
   // Sans ça, l’écran reste vide jusqu’au premier refresh manuel (j'ai fais pareil dans searchScreen).
   useEffect(() => {
@@ -199,6 +217,7 @@ export default function ContactsScreen({ navigation }) {
     <View style={styles.container}>
       <Image style={styles.logo} source={require("../assets/KidizyLogo.png")} />
 
+        {/* AJOUT : scroll */}
       <ScrollView
         contentContainerStyle={{ alignItems: "center", paddingBottom: 20 }}
         refreshControl={
