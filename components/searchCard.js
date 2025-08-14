@@ -9,7 +9,7 @@ export default function SearchCard(props){
           <View style={styles.userContainer}>
 
             <View style={styles.userHeader}>
-                <Image style={styles.avatar} source={props.avatar}/>
+                <Image style={styles.avatar} source={{uri:props.avatar}}/>
 
                 <View style={styles.infoContainer}>
 
