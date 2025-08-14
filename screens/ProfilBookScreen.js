@@ -19,9 +19,9 @@ export default function ProfilBookScreen({ navigation, route }) {
     if(profil==='parent'){
         userColor='#98C2E6'
         useEffect(()=>{
-        fetch(`${url}users/id/${idUser}`)
+        fetch(`${url}users/id/${user.selectedBabysitterId}`)
         .then(response=>response.json())
-        .then(data=>{ 
+        .then(data=>{ console.log('datauser',data)
             setUserInfo(data)                
         })
     },[])
@@ -164,8 +164,8 @@ export default function ProfilBookScreen({ navigation, route }) {
                     
 
                         <View style={styles.mainContent}>
-                            <TextInfo style={styles.textInfo} title={"Biographie"} textContent={userInfo.user.bio}/>
-                            <TextInfo style={styles.textInfo} title={"Centre d'intérêts"} textContent={userInfo.user.interest}/>
+                            <TextInfo style={styles.textInfo} title={"Biographie"} textContent={userInfo.user.babysitterInfos.bio}/>
+                            <TextInfo style={styles.textInfo} title={"Centre d'intérêts"} textContent={userInfo.user.babysitterInfos.interest}/>
                             <TextInfo style={styles.textInfo} title={"Avis"} />
                         </View>
                     </ScrollView>  
