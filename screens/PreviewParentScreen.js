@@ -18,7 +18,7 @@ export default function PreviewParentScreen({ navigation, route }) {
     const { profil } = useUser();
     const {proposition} =route.params|| ('');
 
-    console.log('profbaby',profilBaby)
+    
    
 
     
