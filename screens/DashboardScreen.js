@@ -42,7 +42,8 @@ export default function DashboardScreen({ navigation }) {
             .then(data=>{
                 setAvatar(data.user.avatar)
             })
-            fetch(`${url}propositions?token=${user.token}&id=${user.id}`)
+            if(profil === 'babysitter'){
+                fetch(`${url}propositions?token=${user.token}&id=${user.id}`)
             .then(response=>response.json())
             .then(data=>{
                 const filter = data.filteredPropositions.filter(proposition => 
@@ -50,6 +51,8 @@ export default function DashboardScreen({ navigation }) {
                 );
                 setNoReadMessage([...noReadMessage,...filter])
             })
+            }
+            
         },[])
 
     return (

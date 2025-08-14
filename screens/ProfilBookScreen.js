@@ -8,17 +8,18 @@ import { useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import {url} from '../App';
 
-export default function ProfilBookScreen({ navigation }) {
+export default function ProfilBookScreen({ navigation, route }) {
     
     const [userInfo, setUserInfo] = useState(null)
     const user = useSelector((state)=>state.user.value)
-   const { profil } = useUser();
+    const { profil } = useUser();
+    const { idUser } = route.params || {};
 
     let userColor;
     if(profil==='parent'){
         userColor='#98C2E6'
         useEffect(()=>{
-        fetch(`${url}users/id/${user.selectedBabysitterId}`)
+        fetch(`${url}users/id/${idUser}`)
         .then(response=>response.json())
         .then(data=>{ 
             setUserInfo(data)                
