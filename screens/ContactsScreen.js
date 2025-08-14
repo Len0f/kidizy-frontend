@@ -210,9 +210,9 @@ export default function ContactsScreen({ navigation }) {
   // AJOUT
   // Déclenchement initial (et quand profil/token changent)
   // Sans ça, l’écran reste vide jusqu’au premier refresh manuel (j'ai fais pareil dans searchScreen).
-  useEffect(() => {
+  useFocusEffect(useCallback(() => {
     loadData();
-  }, [loadData]);
+  }, [loadData]));
 
   return (
     <View style={styles.container}>

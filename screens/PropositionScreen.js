@@ -181,32 +181,10 @@ export default function PropositionScreen({ navigation, route }) {
     }
   };
 
-  // ------------------ UTILITAIRE : CREATION DE LA CONVERSATION
-  const newConversation = async () => {
-    const resp = await fetch(`${url}conversations`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        token: user.token,
-        idUserParent: parentId,
-        idUserBabysitter: user.selectedBabysitterId,
-        updatedAt: new Date(),
-      }),
-    });
-
-    const resConv = await resp.json();
-    navigation.navigate("Chat", {
-      conversation: resConv.conversationId._id,
-      from: "Contacts",
-      profil,
-    });
-
-  };
-
   // ------------------ BABYSITTER : MISE A JOUR DE LA PROPOSITION : ACCEPTED
   const accept = async () => {
     
-   const accepted =await fetch(`${url}propositions/id`, {
+   const accepted = await fetch(`${url}propositions/id`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -216,19 +194,30 @@ export default function PropositionScreen({ navigation, route }) {
         })
       });
       const acceptRes= await accepted.json()
+      
       if (acceptRes.result){
-        const newConv= await fetch(`${url}conversations`, {
+        fetch(`${url}conversations`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         token: user.token,
         idUserParent: parentId,
-        idUserBabysitter: user.selectedBabysitterId,
+        idUserBabysitter: user.id,
         updatedAt: new Date(),
-      }),
+      })
     })
-    const newConvRes= await newConv.json()
-    navigation.navigate('Dashboard')
+        fetch(`${url}gardes/new`,{
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+          token: user.token,
+          idUserParent: parentId,
+          idUserBabysitter: user.id,
+          proposition,
+          updatedAt: new Date(),
+      }),
+      })
+      navigation.navigate('Dashboard')
       }
     }
       // On marque la proposition comme acceptée
