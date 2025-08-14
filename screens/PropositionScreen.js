@@ -201,7 +201,7 @@ export default function PropositionScreen({ navigation, route }) {
         updatedAt: new Date(),
       })
     })
-        fetch(`${url}gardes/new/id`,{
+        fetch(`${url}gardes/new`,{
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
