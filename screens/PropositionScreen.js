@@ -99,8 +99,8 @@ export default function PropositionScreen({ navigation, route }) {
           );
           setBabysitterId(
             data.propo.idUserBabysitter?._id ||
-              data.propo.idUserBabysitter ||
-              babysitterId
+            data.propo.idUserBabysitter ||
+            babysitterId
           );
         });
     }
@@ -168,39 +168,46 @@ export default function PropositionScreen({ navigation, route }) {
     });
 
     const resConv = await resp.json();
-      navigation.navigate("Chat", {
-        conversation: resConv.conversationId._id,
-        from: "Contacts",
-        profil,
-      });
-    
+    navigation.navigate("Chat", {
+      conversation: resConv.conversationId._id,
+      from: "Contacts",
+      profil,
+    });
+
   };
 
   // ------------------ BABYSITTER : MISE A JOUR DE LA PROPOSITION : ACCEPTED
   const accept = async () => {
-    if (!proposition) return;
-
-    try {
-      setLoading(true);
-
-      // On marque la proposition comme acceptée
-      await fetch(`${url}propositions/id`, {
+    
+   const accepted =await fetch(`${url}propositions/id`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           token: user.token,
           id: proposition,
           status: "ACCEPTED",
-        }),
+        })
       });
-
-      navigation.navigate('Dashboard',{actualisation: Math.random()});
-    } catch (e) {
-      Alert.alert("Erreur", `Impossible de finaliser l'acceptation.`);
-    } finally {
-      setLoading(false);
+      const acceptRes= await accepted.json()
+      if (acceptRes.result){
+        const newConv= await fetch(`${url}conversations`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        token: user.token,
+        idUserParent: parentId,
+        idUserBabysitter: user.selectedBabysitterId,
+        updatedAt: new Date(),
+      }),
+    })
+    const newConvRes= await newConv.json()
+    navigation.navigate('Dashboard')
+      }
     }
-  };
+      // On marque la proposition comme acceptée
+      
+       
+  
 
   // ------------------ BABYSITTER : MISE A JOUR DE LA PROPOSITION : REFUSED + SUPPRESSION
   const refuse = async () => {
