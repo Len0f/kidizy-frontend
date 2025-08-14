@@ -154,28 +154,6 @@ export default function PropositionScreen({ navigation, route }) {
     }
   };
 
-  // ------------------ UTILITAIRE : CREATION DE LA CONVERSATION
-  const newConversation = async () => {
-    const resp = await fetch(`${url}conversations`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        token: user.token,
-        idUserParent: parentId,
-        idUserBabysitter: user.selectedBabysitterId,
-        updatedAt: new Date(),
-      }),
-    });
-
-    const resConv = await resp.json();
-    navigation.navigate("Chat", {
-      conversation: resConv.conversationId._id,
-      from: "Contacts",
-      profil,
-    });
-
-  };
-
   // ------------------ BABYSITTER : MISE A JOUR DE LA PROPOSITION : ACCEPTED
   const accept = async () => {
     
@@ -197,7 +175,7 @@ export default function PropositionScreen({ navigation, route }) {
       body: JSON.stringify({
         token: user.token,
         idUserParent: parentId,
-        idUserBabysitter: user.selectedBabysitterId,
+        idUserBabysitter: user.id,
         updatedAt: new Date(),
       })
     })
