@@ -220,7 +220,7 @@ export default function ProfilScreen({ navigation }) {
       });
       const res = await sendinfo.json();
       if (res.result) {
-        navigation.navigate('TabNavigator');
+        navigation.navigate('Dashboard');
       } else {
         Alert.alert('Erreur', res.error || 'Sauvegarde impossible');
       }
@@ -234,7 +234,7 @@ export default function ProfilScreen({ navigation }) {
   if (profil === 'parent') color = "#98C2E6";
   else color = "#88E19D";
 
-  const returnScreen = () => navigation.navigate('TabNavigator');
+  const returnScreen = () => navigation.navigate('Dashboard');
 
   const handleAdd = () => setLastEnfant([...lastEnfant, { firstName: '', age: '' }]);
   const modifAge = (v, i) => setLastEnfant(lastEnfant.map((p, t) => (t === i ? { firstName: p.firstName, age: v } : p)));

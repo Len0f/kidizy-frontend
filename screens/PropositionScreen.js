@@ -125,7 +125,7 @@ export default function PropositionScreen({ navigation, route }) {
         body: JSON.stringify({
           token: user.token,
           idUserParent: parentId,
-          idUserBabysitter: babysitterId,
+          idUserBabysitter: user.selectedBabysitterId,
           firstName: prenom,
           lastName: nom,
           kids: Number.isNaN(Number(enfant)) ? enfant : Number(enfant),
@@ -162,21 +162,18 @@ export default function PropositionScreen({ navigation, route }) {
       body: JSON.stringify({
         token: user.token,
         idUserParent: parentId,
-        idUserBabysitter: babysitterId,
+        idUserBabysitter: user.selectedBabysitterId,
         updatedAt: new Date(),
       }),
     });
 
     const resConv = await resp.json();
-    if (resConv?.result) {
       navigation.navigate("Chat", {
         conversation: resConv.conversationId._id,
         from: "Contacts",
         profil,
       });
-    } else {
-      returnScreen();
-    }
+    
   };
 
   // ------------------ BABYSITTER : MISE A JOUR DE LA PROPOSITION : ACCEPTED
@@ -197,7 +194,7 @@ export default function PropositionScreen({ navigation, route }) {
         }),
       });
 
-      await newConversation();
+      navigation.navigate('Dashboard',{actualisation: Math.random()});
     } catch (e) {
       Alert.alert("Erreur", `Impossible de finaliser l'acceptation.`);
     } finally {
