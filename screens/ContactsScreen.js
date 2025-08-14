@@ -236,9 +236,6 @@ export default function ContactsScreen({ navigation }) {
             )}
 
             <View style={styles.previousConvContainer}>
-              <View style={styles.screenTitleContainer}>
-                <Text style={styles.screenTitle}>Chats ouverts :</Text>
-              </View>
               {convs}
             </View>
           </>
