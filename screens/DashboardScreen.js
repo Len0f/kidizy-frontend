@@ -37,6 +37,23 @@ export default function DashboardScreen({ navigation, route }) {
         navigation.navigate('Calendar')
     }
 
+    // Affichage de prochaines dates.
+    const formatNextGuard = (b) => {
+        if (!b?.proposition?.day) return "Aucune garde planifiée";
+        const d = new Date(b.proposition.day);
+        const pad = (n) => String(n).padStart(2, "0");
+        const dateStr = `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}`;
+        
+        // si on a une heure de proposition (ex: "12h" ou "12h30"), on l'utilise
+        const h = b.proposition.propoStart;
+        if (h && typeof h === "string") return `${dateStr} à ${h}`;
+        
+        // fallback sur l'heure de la date si jamais
+        const timeStr = `${pad(d.getHours())}h${d.getMinutes() ? pad(d.getMinutes()) : ""}`;
+        return `${dateStr} à ${timeStr}`;
+    };
+
+
         //recuperation de ses propres données grace au token présent dans le reducer
         useFocusEffect(useCallback(()=>{
             fetch(`${url}users/me/${user.token}`)
@@ -53,9 +70,17 @@ export default function DashboardScreen({ navigation, route }) {
                 );
                 setNoReadMessage([...noReadMessage,...filter])
             })
-            }
-            
-        },[]))
+        }
+        
+            // AJOUT : prochaine garde
+            fetch(`${url}babysits/next/by-token?token=${user.token}&userId=${user.id}&profil=${profil}`)
+            .then((r) => r.json())
+            .then((d) => setNextGarde(d.babysit || null))
+            .catch(() => setNextGarde(null));
+        }, [user.token, user.id, profil])
+);
+    //},[]))
+
 
     return (
         <View style={styles.container}>
@@ -66,7 +91,14 @@ export default function DashboardScreen({ navigation, route }) {
             <View style={styles.content}>
                     <GuardComponent click={clickGuard}title={'Gardes'} colorCount={userColor}guardStyle={{width:'43%', borderColor:userColor}} count={0}/>
                     <GuardComponent click={clickMessages} title={'Messages'} colorCount={userColor} guardStyle={{width:'43%', borderColor:userColor}} count={noReadMessage.length}/>
-                    <NextGuardComponent click={clickNextGuard}title={'Prochaine garde'} content={'DD/MM/YYYY à XXhXX'}guardStyle={{width:'91%', borderColor:userColor}} dateStyle={{backgroundColor:userColor}}/>
+                    {/* <NextGuardComponent click={clickNextGuard}title={'Prochaine garde'} content={'DD/MM/YYYY à XXhXX'}guardStyle={{width:'91%', borderColor:userColor}} dateStyle={{backgroundColor:userColor}}/> */}
+                    <NextGuardComponent
+                        click={clickNextGuard}
+                        title={'Prochaine garde'}
+                        content={formatNextGuard(nextGarde)}
+                        guardStyle={{width:'91%', borderColor:userColor}}
+                        dateStyle={{backgroundColor:userColor}}
+                    />
                 </View>
 
 
