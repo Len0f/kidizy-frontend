@@ -39,7 +39,7 @@ export default function PreviewParentScreen({ navigation, route }) {
 useEffect(()=>{
     if(profil==='babysitter'){
         fetch(`${url}propositions/id?token=${user.token}&id=${proposition}`).then(response=>response.json())
-        .then(data=>{console.log('datala',data)
+        .then(data=>{
             
             setNom(data.propo.lastName)
             setPrenom(data.propo.firstName)

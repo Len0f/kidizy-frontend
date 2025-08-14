@@ -46,7 +46,8 @@ import PayScreen from './screens/PayScreen';
 import SearchScreen from './screens/SearchScreen';
 
 // Screens Baby.
-import PreviewParentScreen from './screens/PreviewParentScreen';
+import PropositionScreen from './screens/PropositionScreen';
+
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -151,21 +152,21 @@ export default function App() {
             {/* Tab */}
             <Stack.Screen name="TabNavigator" component={TabsRouter} />
 
-            {/* Screens communs. */}
-            <Stack.Screen name="Chat" component={ChatScreen} />
-            <Stack.Screen name="Garde" component={GardeScreen} />
-            <Stack.Screen name="Notation" component={NotationScreen} />
-            <Stack.Screen name="ProfilUser" component={ProfilScreen} />
-            <Stack.Screen name="ProfilBook" component={ProfilBookScreen} />
+          {/* Screens communs. */}
+          <Stack.Screen name="Chat" component={ChatScreen}/>
+          <Stack.Screen name="Garde" component={GardeScreen}/>
+          <Stack.Screen name="Notation" component={NotationScreen}/>
+          <Stack.Screen name="ProfilUser" component={ProfilScreen}/>
+          <Stack.Screen name="ProfilBook" component={ProfilBookScreen}/>
+          <Stack.Screen name="Proposition" component={PropositionScreen}/>
 
-            {/* Screen Parents */}
-            <Stack.Screen name="Pay" component={PayScreen} />
+          {/* Screen Parents */}
+          <Stack.Screen name="Pay" component={PayScreen}/>
 
-            {/* Screen Baby */}
-            <Stack.Screen name="PreviewParent" component={PreviewParentScreen} />
-          </Stack.Navigator>
-        </NavigationContainer>
-      </UserProvider>
+        </Stack.Navigator>
+      </NavigationContainer>
+      
+    </UserProvider>
     </Provider>
   );
 }
