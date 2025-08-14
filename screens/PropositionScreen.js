@@ -374,7 +374,8 @@ export default function PropositionScreen({ navigation, route }) {
               btnTitle={"Refuser"}
               userStyle={{ width: "50%", backgroundColor: "#EBE6DA" }}
               clickNav={() => {
-                if (loading) return; // évite un deuxième tap pendant le traitement
+                if (loading) return;
+                // Popup de conformation de suppression.
                 Alert.alert(
                   "Refuser la proposition ?",
                   "Cette action supprime la demande.",
