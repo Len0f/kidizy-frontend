@@ -102,7 +102,7 @@ export default function PropositionScreen({ navigation, route }) {
           setComment(data.propo.comment || "");
           setLat(data.propo.idUserParent.location.lat);
           setLon(data.propo.idUserParent.location.lon)
-          console.log(data.propo.idUserParent.location.lat)
+          
 
           // ids utiles pour ChatScreen si besoin
           setParentId(
@@ -350,8 +350,8 @@ export default function PropositionScreen({ navigation, route }) {
           <View style={styles.mapContainer}>
             <MapView
               region={{
-                latitude: 15.000,
-                longitude: 47.06,
+                latitude: parseFloat(lat),
+                longitude: parseFloat(lat),
                 latitudeDelta: 0.0022,
                 longitudeDelta: 0.0021,
               }}
@@ -359,8 +359,8 @@ export default function PropositionScreen({ navigation, route }) {
             >
               <Marker
                 coordinate={{
-                  latitude: 15.0000,
-                  longitude: 12.0000,
+                  latitude: parseFloat(lat),
+                  longitude: parseFloat(lon),
                 }}
                 title={prenom || ""}
               />
