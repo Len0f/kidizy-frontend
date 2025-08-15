@@ -48,6 +48,9 @@ export default function PropositionScreen({ navigation, route }) {
   const [comment, setComment] = useState("");
   const [lat, setLat]=useState('');
   const [lon, setLon]=useState('')
+  const [avatar, setAvatar] = useState('');
+  const [nomUser, setNomUser] = useState('');
+  const [prenomUser, setPrenomUser] = useState('');
  
 
   // Ids pour créer la conversation après acceptation
@@ -75,13 +78,17 @@ export default function PropositionScreen({ navigation, route }) {
   useEffect(() => {
     if (!isParent) return;
     fetch(`${url}users/me/${user.token}`)
-        .then(response=>response.json())
-        .then(data=>{
-            setLat(data.user.location.lat)
-            setLon(data.user.location.lon)
-        })
-    setNom(lastNameParam || "");
-    setPrenom(firstNameParam || "");
+    .then(response=>response.json())
+    .then(data=>{
+      setAvatar(data.user.avatar);
+      setNomUser(data.user.firstName);
+      setPrenomUser(data.user.lastName);
+      setLat(data.user.location.lat);
+      setLon(data.user.location.lon);
+    })
+    // clé nom prénom inversé : non corrigé pour éviter les oublies et bugs (trop de changement pour un truc qui marche). 
+    setNom(firstNameParam || "");
+    setPrenom(lastNameParam || "");
     setDay(dayParam || "");
     setHours(hoursParam || "");
     setEnfant(String(kidsParam ?? ""));
@@ -91,6 +98,7 @@ export default function PropositionScreen({ navigation, route }) {
       (prev) => prev || babysitterFromParams || user.selectedBabysitterId || ""
     );
   }, [
+    avatar,
     isParent,
     firstNameParam,
     lastNameParam,
@@ -109,8 +117,9 @@ export default function PropositionScreen({ navigation, route }) {
       fetch(`${url}propositions/id?token=${user.token}&id=${proposition}`)
         .then((response) => response.json())
         .then((data) => {
-          setNom(data.propo.lastName || "");
-          setPrenom(data.propo.firstName || "");
+          setAvatar(data?.propo?.avatar);
+          setNom(data.propo.firstName || "");
+          setPrenom(data.propo.lastName || "");
           setDay(data.propo.day || "");
           setHours(data.propo.propoStart || "");
           setEnfant(String(data.propo.kids ?? ""));
@@ -276,9 +285,10 @@ export default function PropositionScreen({ navigation, route }) {
       <SafeAreaView style={styles.avatarContainer}>
         <Image
           style={styles.avatar}
-          source={require("../assets/babysitter2.png")}
+          source={{uri: avatar}}
         />
-        <Text style={styles.avatarName}>{prenom || "Prenom"}</Text>
+        {/* Nom prénom inversé sur les clés */}
+        <Text style={styles.avatarName}>{nom} {prenom}</Text>
       </SafeAreaView>
 
       {isParent ? (
@@ -349,7 +359,7 @@ export default function PropositionScreen({ navigation, route }) {
               width={"90%"}
             />
             <Input
-              name="Commenaire"
+              name="Commentaire"
               setText={setComment}
               text={comment}
               width={"90%"}
