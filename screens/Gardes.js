@@ -32,7 +32,7 @@ const computeBilling = (elapsedMs, hourlyRate) => {
 
 export default function GardeScreen({ navigation, route }) {
   const { profil } = useUser();
-  const {infoGarde} =route.params
+  const {infoGarde} =route.params||('')
   const token = useSelector((state) => state.user.value.token);
 
   const userColor = profil === 'parent' ? '#98C2E6' : '#88E19D';
