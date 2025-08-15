@@ -88,7 +88,7 @@ export default function ContactsScreen({ navigation }) {
             // MODIF : Juste fait des variables réutilisable !
             const convId = conv?._id || conv?.id || i; // key unique : priorité à _id, sinon index(i)
             const baby = conv?.idUserBabysitter ?? {}; // CONTACT = babysitter
-
+            
             return (
                 // MODIF : Uniquement sur les click
               <Conversation

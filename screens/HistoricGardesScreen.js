@@ -12,6 +12,9 @@ import { useUser } from '../contexts/UserContext';
 import { useEffect, useState } from 'react';
 import {url} from '../App';
 import { useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
+import {url} from '../App';
+import { useSelector } from 'react-redux';
 
 const gardParentFake = [
     {
@@ -76,8 +79,8 @@ useEffect(()=>{
     fetch(`${url}gardes/new/id?token=${user.token}&id=${user.id}`)
     .then(response=>response.json())
     .then(data=>{
-        
-        const garde = data.garde.map((g, i)=>{console.log(g)
+
+        const garde = data.garde.map((g, i)=>{
             if(profil === 'parent'){
                     return <UserCard
                     key={i}
@@ -103,7 +106,7 @@ useEffect(()=>{
                         navigation.navigate('Garde', {from: 'Contacts', profil, infoGarde: g})
                     }
                     />
-                }           
+                }
                 })
                 setGardes(garde)
             })
@@ -119,10 +122,10 @@ return (
             <Text style={styles.screenTitle}>Gardes</Text>
         </View>
 
-        <View>
-            {Gardes}
-        </View>
-    </SafeAreaView>
+    <View>
+        {Gardes}
+    </View>
+</SafeAreaView>
 );
 }
 

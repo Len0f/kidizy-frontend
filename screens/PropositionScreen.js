@@ -46,6 +46,9 @@ export default function PropositionScreen({ navigation, route }) {
   const [hours, setHours] = useState("");
   const [enfant, setEnfant] = useState("");
   const [comment, setComment] = useState("");
+  const [lat, setLat]=useState('');
+  const [lon, setLon]=useState('')
+ 
 
   // Ids pour créer la conversation après acceptation
   const [parentId, setParentId] = useState(user.id || "");
@@ -71,7 +74,12 @@ export default function PropositionScreen({ navigation, route }) {
   // ----------------- PARENT : préremplir depuis route.params
   useEffect(() => {
     if (!isParent) return;
-
+    fetch(`${url}users/me/${user.token}`)
+        .then(response=>response.json())
+        .then(data=>{
+            setLat(data.user.location.lat)
+            setLon(data.user.location.lon)
+        })
     setNom(lastNameParam || "");
     setPrenom(firstNameParam || "");
     setDay(dayParam || "");
@@ -107,6 +115,9 @@ export default function PropositionScreen({ navigation, route }) {
           setHours(data.propo.propoStart || "");
           setEnfant(String(data.propo.kids ?? ""));
           setComment(data.propo.comment || "");
+          setLat(data.propo.idUserParent.location.lat);
+          setLon(data.propo.idUserParent.location.lon)
+          console.log(data.propo.idUserParent.location.lat)
 
           // ids utiles pour ChatScreen si besoin
           setParentId(
@@ -148,7 +159,7 @@ export default function PropositionScreen({ navigation, route }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           token: user.token,
-          idUserParent: parentId,
+          idUserParent: user.id,
           idUserBabysitter: user.selectedBabysitterId,
           firstName: prenom,
           lastName: nom,
@@ -347,18 +358,18 @@ export default function PropositionScreen({ navigation, route }) {
 
           <View style={styles.mapContainer}>
             <MapView
-              initialRegion={{
-                latitude: 44.8643352091005,
-                longitude: -0.5760245233606299,
-                latitudeDelta: 0.0022,
-                longitudeDelta: 0.0021,
+              region={{
+                latitude: parseFloat(lat),
+                longitude: parseFloat(lon),
+                latitudeDelta: 0.002,
+                longitudeDelta: 0.002,
               }}
               style={styles.map}
             >
               <Marker
                 coordinate={{
-                  latitude: 44.8643352091005,
-                  longitude: -0.5760245233606299,
+                  latitude: parseFloat(lat),
+                  longitude: parseFloat(lon),
                 }}
                 title={prenom}
               />
@@ -418,9 +429,9 @@ export default function PropositionScreen({ navigation, route }) {
 
           <View style={styles.mapContainer}>
             <MapView
-              initialRegion={{
-                latitude: 44.8643352091005,
-                longitude: -0.5760245233606299,
+              region={{
+                latitude: 15.000,
+                longitude: 47.06,
                 latitudeDelta: 0.0022,
                 longitudeDelta: 0.0021,
               }}
@@ -428,8 +439,8 @@ export default function PropositionScreen({ navigation, route }) {
             >
               <Marker
                 coordinate={{
-                  latitude: 44.8643352091005,
-                  longitude: -0.5760245233606299,
+                  latitude: 15.0000,
+                  longitude: 12.0000,
                 }}
                 title={prenom || ""}
               />
