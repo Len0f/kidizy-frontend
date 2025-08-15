@@ -46,8 +46,8 @@ export default function PropositionScreen({ navigation, route }) {
   const [hours, setHours] = useState("");
   const [enfant, setEnfant] = useState("");
   const [comment, setComment] = useState("");
-  const [lat, setLat]=useState('');
-  const [lon, setLon]=useState('')
+  const [lat, setLat]=useState(0);
+  const [lon, setLon]=useState(0)
   const [avatar, setAvatar] = useState('');
   const [nomUser, setNomUser] = useState('');
   const [prenomUser, setPrenomUser] = useState('');
