@@ -31,8 +31,13 @@ export default function DashboardScreen({ navigation, route }) {
         navigation.navigate('Contacts', {profil: 'parent'})
     }
     const clickNextGuard = ()=>{
-        navigation.navigate('Garde')
+        if (nextGarde) {
+            navigation.navigate('Garde', { from: 'Dashboard', infoGarde: nextGarde });
+        } else {
+            navigation.navigate('HistoricGardes');
+        }
     }
+
     const clickHours = ()=>{
         navigation.navigate('Calendar')
     }
@@ -73,7 +78,7 @@ export default function DashboardScreen({ navigation, route }) {
         }
         
             // AJOUT : prochaine garde
-            fetch(`${url}babysits/next/by-token?token=${user.token}&userId=${user.id}&profil=${profil}`)
+            fetch(`${url}gardes/next/by-token?token=${user.token}&userId=${user.id}&profil=${profil}`)
             .then((r) => r.json())
             .then((d) => setNextGarde(d.babysit || null))
             .catch(() => setNextGarde(null));
