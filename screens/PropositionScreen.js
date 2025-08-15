@@ -359,8 +359,8 @@ export default function PropositionScreen({ navigation, route }) {
           <View style={styles.mapContainer}>
             <MapView
               region={{
-                latitude: 40,
-                longitude: 39,
+                latitude: parseFloat(lat),
+                longitude: parseFloat(lon),
                 latitudeDelta: 0.002,
                 longitudeDelta: 0.002,
               }}
@@ -368,8 +368,8 @@ export default function PropositionScreen({ navigation, route }) {
             >
               <Marker
                 coordinate={{
-                  latitude: 40,
-                  longitude: 39,
+                  latitude: parseFloat(lat),
+                  longitude: parseFloat(lon),
                 }}
                 title={prenom}
               />
@@ -431,7 +431,7 @@ export default function PropositionScreen({ navigation, route }) {
             <MapView
               region={{
                 latitude: parseFloat(lat),
-                longitude: parseFloat(lat),
+                longitude: parseFloat(lon),
                 latitudeDelta: 0.0022,
                 longitudeDelta: 0.0021,
               }}
