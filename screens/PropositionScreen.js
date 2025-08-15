@@ -8,7 +8,9 @@ import {
   ScrollView,
   Platform,
   Alert,
+  Pressable
 } from "react-native";
+import DateTimePicker from '@react-native-community/datetimepicker';
 import ReturnBtn from "../components/returnBtn";
 import InfoBtn from "../components/infoBtn";
 import MainBtn from "../components/mainBtn";
@@ -46,6 +48,9 @@ export default function PropositionScreen({ navigation, route }) {
   const [comment, setComment] = useState("");
   const [lat, setLat]=useState('');
   const [lon, setLon]=useState('')
+  const [avatar, setAvatar] = useState('');
+  const [nomUser, setNomUser] = useState('');
+  const [prenomUser, setPrenomUser] = useState('');
  
 
   // Ids pour créer la conversation après acceptation
@@ -56,17 +61,34 @@ export default function PropositionScreen({ navigation, route }) {
 
   const [loading, setLoading] = useState(false);
 
+  // AJOUT 14/08 : Pour gérer les dates.
+  const [dayDate, setDayDate]   = useState(new Date());
+  const [timeDate, setTimeDate] = useState(new Date());
+  const [showDay, setShowDay]   = useState(false);
+  const [showTime, setShowTime] = useState(false);
+
+  const pad = (n)=>String(n).padStart(2,'0');
+  const toYYYYMMDD = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  const fmtHeure   = d => {
+    const h = pad(d.getHours()), m = pad(d.getMinutes());
+    return m === '00' ? `${h}h` : `${h}h${m}`;
+  };
+
   // ----------------- PARENT : préremplir depuis route.params
   useEffect(() => {
     if (!isParent) return;
     fetch(`${url}users/me/${user.token}`)
-        .then(response=>response.json())
-        .then(data=>{
-            setLat(data.user.location.lat)
-            setLon(data.user.location.lon)
-        })
-    setNom(lastNameParam || "");
-    setPrenom(firstNameParam || "");
+    .then(response=>response.json())
+    .then(data=>{
+      setAvatar(data.user.avatar);
+      setNomUser(data.user.firstName);
+      setPrenomUser(data.user.lastName);
+      setLat(data.user.location.lat);
+      setLon(data.user.location.lon);
+    })
+    // clé nom prénom inversé : non corrigé pour éviter les oublies et bugs (trop de changement pour un truc qui marche). 
+    setNom(firstNameParam || "");
+    setPrenom(lastNameParam || "");
     setDay(dayParam || "");
     setHours(hoursParam || "");
     setEnfant(String(kidsParam ?? ""));
@@ -76,6 +98,7 @@ export default function PropositionScreen({ navigation, route }) {
       (prev) => prev || babysitterFromParams || user.selectedBabysitterId || ""
     );
   }, [
+    avatar,
     isParent,
     firstNameParam,
     lastNameParam,
@@ -94,15 +117,16 @@ export default function PropositionScreen({ navigation, route }) {
       fetch(`${url}propositions/id?token=${user.token}&id=${proposition}`)
         .then((response) => response.json())
         .then((data) => {
-          setNom(data.propo.lastName || "");
-          setPrenom(data.propo.firstName || "");
+          setAvatar(data?.propo?.avatar);
+          setNom(data.propo.firstName || "");
+          setPrenom(data.propo.lastName || "");
           setDay(data.propo.day || "");
           setHours(data.propo.propoStart || "");
           setEnfant(String(data.propo.kids ?? ""));
           setComment(data.propo.comment || "");
           setLat(data.propo.idUserParent.location.lat);
           setLon(data.propo.idUserParent.location.lon)
-          console.log(data.propo.idUserParent.location.lat)
+          
 
           // ids utiles pour ChatScreen si besoin
           setParentId(
@@ -126,9 +150,18 @@ export default function PropositionScreen({ navigation, route }) {
   };
 
   // ------------------ PARENT : Créer une proposition.
+  
   const createProposition = async () => {
     try {
       setLoading(true);
+      
+      // Pour envoyer la date dans la bdd au bon format.
+      const dayToSend = (() => {
+        const d = day ? new Date(day) : new Date(dayDate);
+        d.setHours(0,0,0,0);
+        return d;
+      })();
+      const timeToSend = hours || fmtHeure(timeDate);
 
       const newProp = await fetch(`${url}propositions`, {
         method: "POST",
@@ -140,9 +173,12 @@ export default function PropositionScreen({ navigation, route }) {
           firstName: prenom,
           lastName: nom,
           kids: Number.isNaN(Number(enfant)) ? enfant : Number(enfant),
-          day,
-          propoStart: hours,
-          propoEnd: hours,
+          // day,
+          // propoStart: hours,
+          // propoEnd: hours,
+          day: dayToSend,
+          propoStart: timeToSend,
+          propoEnd: timeToSend,
           updatedAt: new Date(),
           comment,
         }),
@@ -249,9 +285,10 @@ export default function PropositionScreen({ navigation, route }) {
       <SafeAreaView style={styles.avatarContainer}>
         <Image
           style={styles.avatar}
-          source={require("../assets/babysitter2.png")}
+          source={{uri: avatar}}
         />
-        <Text style={styles.avatarName}>{prenom || "Prenom"}</Text>
+        {/* Nom prénom inversé sur les clés */}
+        <Text style={styles.avatarName}>{nom} {prenom}</Text>
       </SafeAreaView>
 
       {isParent ? (
@@ -260,8 +297,61 @@ export default function PropositionScreen({ navigation, route }) {
           <View style={styles.mainContent}>
             <Input name="Prenom" setText={setNom} text={nom} width={"43%"} />
             <Input name="Nom" setText={setPrenom} text={prenom} width={"43%"} />
-            <Input name="Jour" setText={setDay} text={day} width={"43%"} />
-            <Input name="Heure" setText={setHours} text={hours} width={"43%"} />
+
+            {/* INPUT DATE */}
+            {/* <Input name="Jour" setText={setDay} text={day} width={"43%"} />
+            <Input name="Heure" setText={setHours} text={hours} width={"43%"} /> */}
+
+            {/* -- FAUX INPUT "Jour" en pleine largeur -- */}
+            <Pressable onPress={() => setShowDay(true)} style={styles.fakeInput}>
+              <Text style={styles.fakeLabel}>Jour</Text>
+              <Text style={styles.fakeValue}>
+                {day ? toYYYYMMDD(new Date(day)) : toYYYYMMDD(dayDate)}
+              </Text>
+            </Pressable>
+
+            {/* -- FAUX INPUT "Heure" en pleine largeur -- */}
+            <Pressable onPress={() => setShowTime(true)} style={styles.fakeInput}>
+              <Text style={styles.fakeLabel}>Heure</Text>
+              <Text style={styles.fakeValue}>
+                {hours || fmtHeure(timeDate)}
+              </Text>
+            </Pressable>
+
+            {showDay && (
+              <DateTimePicker
+                value={day ? new Date(day) : dayDate}
+                mode="date"
+                display="default"
+                onChange={(event, selected) => {
+                  // sur Android, le picker se ferme tout seul
+                  if (Platform.OS === 'android') setShowDay(false);
+                  if (selected) {
+                    setDayDate(selected);
+                    setDay(selected.toISOString()); // on garde une valeur ISO propre
+                  }
+                }}
+              />
+            )}
+
+            {showTime && (
+              <DateTimePicker
+                value={timeDate}
+                mode="time"
+                is24Hour
+                minuteInterval={5}
+                display="default"
+                onChange={(event, selected) => {
+                  if (Platform.OS === 'android') setShowTime(false);
+                  if (selected) {
+                    setTimeDate(selected);
+                    setHours(fmtHeure(selected)); // "HHh" ou "HHhMM"
+                  }
+                }}
+              />
+            )}
+
+
             <Input
               name="Nombre d'enfant"
               setText={setEnfant}
@@ -269,7 +359,7 @@ export default function PropositionScreen({ navigation, route }) {
               width={"90%"}
             />
             <Input
-              name="Commenaire"
+              name="Commentaire"
               setText={setComment}
               text={comment}
               width={"90%"}
@@ -350,8 +440,8 @@ export default function PropositionScreen({ navigation, route }) {
           <View style={styles.mapContainer}>
             <MapView
               region={{
-                latitude: 15.000,
-                longitude: 47.06,
+                latitude: parseFloat(lat),
+                longitude: parseFloat(lon),
                 latitudeDelta: 0.0022,
                 longitudeDelta: 0.0021,
               }}
@@ -359,8 +449,8 @@ export default function PropositionScreen({ navigation, route }) {
             >
               <Marker
                 coordinate={{
-                  latitude: 15.0000,
-                  longitude: 12.0000,
+                  latitude: parseFloat(lat),
+                  longitude: parseFloat(lon),
                 }}
                 title={prenom || ""}
               />
@@ -451,4 +541,29 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     alignItems: "center",
   },
+
+  // AJOUT pour les Input Dates
+  fakeInput: {
+  width: '85%',
+  height: 52,
+  backgroundColor: '#EBE6DA',
+  borderRadius: 12,
+  alignSelf: 'center',
+  justifyContent: 'center',
+  paddingHorizontal: 14,
+  marginTop: 20,
+  },
+
+fakeLabel: {
+  position: 'absolute',
+  top: -10,
+  left: 14,
+  fontSize: 12,
+  color: '#8A8A8A',
+},
+fakeValue: {
+  fontSize: 16,
+  color: '#323232',
+}
+ 
 });
