@@ -26,7 +26,7 @@ export default function SearchCard(props){
                     <Text style={styles.stars}>
                       {"★".repeat(Math.floor(props.rating))}{"☆".repeat(5 - Math.floor(props.rating))}
                     </Text>
-                    {props.distance && <Text style={styles.distance}>{props.distance} km</Text>}
+                    {props.distance ? <Text style={styles.distance}>{props.distance} km</Text> : null}
                   </View>
                 </View>
             </View>

@@ -11,24 +11,40 @@ import {url} from '../App';
 export default function ProfilBookScreen({ navigation, route }) {
     
     const [userInfo, setUserInfo] = useState(null)
-    const user = useSelector((state)=>state.user.value)
     const { profil } = useUser();
-    const { idUser } = route.params || {};
-
+    const { userId } = route.params || {};
+    const user = useSelector((state) => state.user.value);
+    
+    const [enfant,setEnfant] = useState('')
     let userColor;
+    
     if(profil==='parent'){
         userColor='#98C2E6'
         useEffect(()=>{
         fetch(`${url}users/id/${user.selectedBabysitterId}`)
         .then(response=>response.json())
-        .then(data=>{ console.log('datauser',data)
-            setUserInfo(data)                
+        .then(data=>{ 
+            setUserInfo(data)
         })
     },[])
     }else{
         userColor='#88E19D'
+        useEffect(()=>{
+    fetch(`${url}users/id/${userId}`)
+    .then(response=>response.json())
+    .then(data=>{ console.log('datauser',data)
+        setUserInfo(data) 
+        let allEnfant = ''
+    for (let i = 0; i<data.user.parentInfos.kids.length; i++) {
+        allEnfant +=' ' + data.user.parentInfos.kids[i].firstName
     }
- 
+    setEnfant(allEnfant)  
+                 
+    })
+},[])
+        
+    }
+
     //gestion des boutons de navigation
     const returnScreen = ()=>{
         navigation.navigate('TabNavigator')
@@ -41,6 +57,7 @@ export default function ProfilBookScreen({ navigation, route }) {
         navigation.navigate('Proposition')
     }
 
+    
     // let avis = <><View style={styles.avis}>
     //                 <View style={styles.avisHeader}>
     //                     <View style={styles.avisEditor}>
@@ -87,10 +104,10 @@ export default function ProfilBookScreen({ navigation, route }) {
 
                     <ScrollView>
                         <View style={styles.avatarContainer}>    
-                            <Image style={styles.avatar}/>
+                            <Image style={styles.avatar} source={{uri:userInfo.user.avatar}}/>
                             <View style={styles.userInfos}>
                                 <View style={styles.userNameOld}>
-                                    <Text style={styles.firstName}>cqqs</Text>
+                                    <Text style={styles.firstName}>{userInfo.user.firstName}</Text>
                                 </View>
                                 <View style={styles.userPriceDistance}>
                                     <View style={styles.locationPrice}>
@@ -115,9 +132,9 @@ export default function ProfilBookScreen({ navigation, route }) {
                     
 
                         <View style={styles.mainContent}>
-                            {/* <TextInfo style={styles.textInfo} userStyle={{color:userColor}} title={"Enfant(s) à garder"} textContent={infoenfant} />
-                            <TextInfo style={styles.textInfo} userStyle={{color:userColor}} title={"Informations complémentaires"} textContent={""}/>
-                            <TextInfo style={styles.textInfo} userStyle={{color:userColor}} title={"Avis"} textContent={avis}/> */}
+                            <TextInfo style={styles.textInfo} userStyle={{color:userColor}} title={"Enfant(s) à garder"} textContent={enfant} />
+                            <TextInfo style={styles.textInfo} userStyle={{color:userColor}} title={"Informations complémentaires"} />
+                            <TextInfo style={styles.textInfo} userStyle={{color:userColor}} title={"Avis"} />
                         </View>
                     </ScrollView>  
 

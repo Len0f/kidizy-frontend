@@ -21,9 +21,9 @@ export default function Input(props) {
 
     return (
       <View style={styles.container} width={props.width}>
-        {actif && <View style={styles.containLabel}>
+        {actif ? <View style={styles.containLabel}>
         <Text style={[styles.label, props.userStyle]} >{props.name}</Text>
-      </View>}
+      </View> : null}
         <TextInput style={styles.textInput} height={props.height}
           onFocus={()=>handleClick()}
           onBlur={()=>handleClick()}
