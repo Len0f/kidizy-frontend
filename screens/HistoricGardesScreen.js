@@ -12,9 +12,6 @@ import { useUser } from '../contexts/UserContext';
 import { useEffect, useState } from 'react';
 import {url} from '../App';
 import { useSelector } from 'react-redux';
-import { useEffect, useState } from 'react';
-import {url} from '../App';
-import { useSelector } from 'react-redux';
 
 const gardParentFake = [
     {
