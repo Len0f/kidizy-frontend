@@ -32,7 +32,7 @@ const computeBilling = (elapsedMs, hourlyRate) => {
 
 export default function GardeScreen({ navigation, route }) {
   const { profil } = useUser();
-  const {infoGarde} =route.params||('')
+  const infoGarde = route?.params?.infoGarde || null;
   const token = useSelector((state) => state.user.value.token);
 
   const userColor = profil === 'parent' ? '#98C2E6' : '#88E19D';
@@ -156,6 +156,19 @@ navigation.navigate('Notation', {
     else if (from === 'HistoricGardes') navigation.navigate('HistoricGardes');
     else navigation.goBack();
   };
+
+  if (!infoGarde) {
+  return (
+    <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.btnReturnContainer}>
+        <ReturnBtn style={styles.returnBtn} returnScreen={() => navigation.goBack()} />
+      </SafeAreaView>
+      <View style={styles.screenTitleContainer}>
+        <Text style={styles.screenTitle}>Aucune info de garde</Text>
+      </View>
+    </SafeAreaView>
+  );
+}
 
   return (
     <SafeAreaView style={styles.container}>
