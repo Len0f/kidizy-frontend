@@ -37,8 +37,8 @@ export default function InscriptionScreen({ navigation }) {
         .then ((dataUser) => {
             if(dataUser.result) {
                 dispatch(updateInfo({
-                    token:dataUser.token,
-                    id: dataUser._id
+                    token:dataUser.info.token,
+                    id: dataUser.info.id
                 }))
                 navigation.navigate('SelectProfil');
             } else {
