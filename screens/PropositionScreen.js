@@ -8,9 +8,9 @@ import {
   ScrollView,
   Platform,
   Alert,
-  Pressable
+  Pressable,
 } from "react-native";
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePicker from "@react-native-community/datetimepicker";
 import ReturnBtn from "../components/returnBtn";
 import InfoBtn from "../components/infoBtn";
 import MainBtn from "../components/mainBtn";
@@ -28,6 +28,7 @@ export default function PropositionScreen({ navigation, route }) {
   const isParent = profil === "parent";
   const isBabysitter = profil === "babysitter";
 
+  // Paramètres éventuels reçus par navigation (pré-remplissage côté parent / id côté babysitter)
   const {
     proposition, // pour les baby (lecture)
     firstName: firstNameParam, // pour parent
@@ -36,24 +37,23 @@ export default function PropositionScreen({ navigation, route }) {
     hours: hoursParam,
     kids: kidsParam,
     comment: commentParam,
-    idUserBabysitter: babysitterFromParams, // utile côté parent
+    idUserBabysitter: babysitterFromParams, // id babysitter côté parent
   } = route?.params || {};
 
-  // Etat d'affichages/édition
+  // États du formulaire / affichage
   const [nom, setNom] = useState("");
   const [prenom, setPrenom] = useState("");
   const [day, setDay] = useState("");
   const [hours, setHours] = useState("");
   const [enfant, setEnfant] = useState("");
   const [comment, setComment] = useState("");
-  const [lat, setLat]=useState(0);
-  const [lon, setLon]=useState(0)
-  const [avatar, setAvatar] = useState('');
-  const [nomUser, setNomUser] = useState('');
-  const [prenomUser, setPrenomUser] = useState('');
- 
+  const [lat, setLat] = useState(0);
+  const [lon, setLon] = useState(0);
+  const [avatar, setAvatar] = useState("");
+  const [nomUser, setNomUser] = useState("");
+  const [prenomUser, setPrenomUser] = useState("");
 
-  // Ids pour créer la conversation après acceptation
+  // Ids pour créer la conversation/garde après acceptation
   const [parentId, setParentId] = useState(user.id || "");
   const [babysitterId, setBabysitterId] = useState(
     babysitterFromParams || user.selectedBabysitterId || ""
@@ -61,32 +61,36 @@ export default function PropositionScreen({ navigation, route }) {
 
   const [loading, setLoading] = useState(false);
 
-  // AJOUT 14/08 : Pour gérer les dates.
-  const [dayDate, setDayDate]   = useState(new Date());
+  // Pour gérer les dates.
+  const [dayDate, setDayDate] = useState(new Date());
   const [timeDate, setTimeDate] = useState(new Date());
-  const [showDay, setShowDay]   = useState(false);
+  const [showDay, setShowDay] = useState(false);
   const [showTime, setShowTime] = useState(false);
 
-  const pad = (n)=>String(n).padStart(2,'0');
-  const toYYYYMMDD = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-  const fmtHeure   = d => {
-    const h = pad(d.getHours()), m = pad(d.getMinutes());
-    return m === '00' ? `${h}h` : `${h}h${m}`;
+  // Helpers d’affichage
+  const pad = (n) => String(n).padStart(2, "0");
+  const toYYYYMMDD = (d) =>
+    `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  const fmtHeure = (d) => {
+    const h = pad(d.getHours()),
+      m = pad(d.getMinutes());
+    return m === "00" ? `${h}h` : `${h}h${m}`;
   };
 
   // ----------------- PARENT : préremplir depuis route.params
   useEffect(() => {
     if (!isParent) return;
+    // On prend l’avatar + adresse du parent pour placer le marker sur la carte.
     fetch(`${url}users/me/${user.token}`)
-    .then(response=>response.json())
-    .then(data=>{
-      setAvatar(data.user.avatar);
-      setNomUser(data.user.firstName);
-      setPrenomUser(data.user.lastName);
-      setLat(data.user.location.lat);
-      setLon(data.user.location.lon);
-    })
-    // clé nom prénom inversé : non corrigé pour éviter les oublies et bugs (trop de changement pour un truc qui marche). 
+      .then((response) => response.json())
+      .then((data) => {
+        setAvatar(data.user.avatar);
+        setNomUser(data.user.firstName);
+        setPrenomUser(data.user.lastName);
+        setLat(data.user.location.lat);
+        setLon(data.user.location.lon);
+      });
+    // NB : nom/prénom inversés dans les clés des params, conservé tel quel pour ne pas casser le flux existant.
     setNom(firstNameParam || "");
     setPrenom(lastNameParam || "");
     setDay(dayParam || "");
@@ -125,8 +129,7 @@ export default function PropositionScreen({ navigation, route }) {
           setEnfant(String(data.propo.kids ?? ""));
           setComment(data.propo.comment || "");
           setLat(data.propo.idUserParent.location.lat);
-          setLon(data.propo.idUserParent.location.lon)
-          
+          setLon(data.propo.idUserParent.location.lon);
 
           // ids utiles pour ChatScreen si besoin
           setParentId(
@@ -134,8 +137,8 @@ export default function PropositionScreen({ navigation, route }) {
           );
           setBabysitterId(
             data.propo.idUserBabysitter?._id ||
-            data.propo.idUserBabysitter ||
-            babysitterId
+              data.propo.idUserBabysitter ||
+              babysitterId
           );
         });
     }
@@ -150,15 +153,14 @@ export default function PropositionScreen({ navigation, route }) {
   };
 
   // ------------------ PARENT : Créer une proposition.
-  
   const createProposition = async () => {
     try {
       setLoading(true);
-      
+
       // Pour envoyer la date dans la bdd au bon format.
       const dayToSend = (() => {
         const d = day ? new Date(day) : new Date(dayDate);
-        d.setHours(0,0,0,0);
+        d.setHours(0, 0, 0, 0);
         return d;
       })();
       const timeToSend = hours || fmtHeure(timeDate);
@@ -170,12 +172,9 @@ export default function PropositionScreen({ navigation, route }) {
           token: user.token,
           idUserParent: user.id,
           idUserBabysitter: user.selectedBabysitterId,
-          firstName: prenom,
+          firstName: prenom, // cohérent avec le code existant (nom/prénom inversés)
           lastName: nom,
           kids: Number.isNaN(Number(enfant)) ? enfant : Number(enfant),
-          // day,
-          // propoStart: hours,
-          // propoEnd: hours,
           day: dayToSend,
           propoStart: timeToSend,
           propoEnd: timeToSend,
@@ -202,50 +201,53 @@ export default function PropositionScreen({ navigation, route }) {
   };
 
   // ------------------ BABYSITTER : MISE A JOUR DE LA PROPOSITION : ACCEPTED
+  // 1) Maj statut -> ACCEPTED
+  // 2) Création de la conversation
+  // 3) Déclaration de la garde (endpoint dédié)
+  // 4) Retour dashboard
   const accept = async () => {
-    
-   const accepted = await fetch(`${url}propositions/id`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          token: user.token,
-          id: proposition,
-          status: "ACCEPTED",
-        })
-      });
-      const acceptRes= await accepted.json()
-      
-      if (acceptRes.result){
-        fetch(`${url}conversations`, {
-      method: "POST",
+    const accepted = await fetch(`${url}propositions/id`, {
+      method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         token: user.token,
-        idUserParent: parentId,
-        idUserBabysitter: user.id,
-        updatedAt: new Date(),
-      })
-    })
-        fetch(`${url}gardes/new`,{
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
+        id: proposition,
+        status: "ACCEPTED",
+      }),
+    });
+    const acceptRes = await accepted.json();
+
+    if (acceptRes.result) {
+      fetch(`${url}conversations`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          token: user.token,
+          idUserParent: parentId,
+          idUserBabysitter: user.id,
+          updatedAt: new Date(),
+        }),
+      });
+      fetch(`${url}gardes/new`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
           token: user.token,
           idUserParent: parentId,
           idUserBabysitter: user.id,
           proposition,
           updatedAt: new Date(),
-      }),
-      })
-      navigation.navigate('Dashboard')
-      }
+        }),
+      });
+      navigation.navigate("Dashboard");
     }
-      // On marque la proposition comme acceptée
-      
-       
-  
+  };
+  // On marque la proposition comme acceptée
 
   // ------------------ BABYSITTER : MISE A JOUR DE LA PROPOSITION : REFUSED + SUPPRESSION
+  // 1) Maj statut -> REFUSED
+  // 2) Suppression (autorisé côté backend uniquement si REFUSED)
+  // 3) Retour contacts
   const refuse = async () => {
     if (!proposition) returnScreen();
 
@@ -283,12 +285,11 @@ export default function PropositionScreen({ navigation, route }) {
       </SafeAreaView>
 
       <SafeAreaView style={styles.avatarContainer}>
-        <Image
-          style={styles.avatar}
-          source={{uri: avatar}}
-        />
+        <Image style={styles.avatar} source={{ uri: avatar }} />
         {/* Nom prénom inversé sur les clés */}
-        <Text style={styles.avatarName}>{nom} {prenom}</Text>
+        <Text style={styles.avatarName}>
+          {nom} {prenom}
+        </Text>
       </SafeAreaView>
 
       {isParent ? (
@@ -303,7 +304,10 @@ export default function PropositionScreen({ navigation, route }) {
             <Input name="Heure" setText={setHours} text={hours} width={"43%"} /> */}
 
             {/* -- FAUX INPUT "Jour" en pleine largeur -- */}
-            <Pressable onPress={() => setShowDay(true)} style={styles.fakeInput}>
+            <Pressable
+              onPress={() => setShowDay(true)}
+              style={styles.fakeInput}
+            >
               <Text style={styles.fakeLabel}>Jour</Text>
               <Text style={styles.fakeValue}>
                 {day ? toYYYYMMDD(new Date(day)) : toYYYYMMDD(dayDate)}
@@ -311,7 +315,10 @@ export default function PropositionScreen({ navigation, route }) {
             </Pressable>
 
             {/* -- FAUX INPUT "Heure" en pleine largeur -- */}
-            <Pressable onPress={() => setShowTime(true)} style={styles.fakeInput}>
+            <Pressable
+              onPress={() => setShowTime(true)}
+              style={styles.fakeInput}
+            >
               <Text style={styles.fakeLabel}>Heure</Text>
               <Text style={styles.fakeValue}>
                 {hours || fmtHeure(timeDate)}
@@ -325,7 +332,7 @@ export default function PropositionScreen({ navigation, route }) {
                 display="default"
                 onChange={(event, selected) => {
                   // sur Android, le picker se ferme tout seul
-                  if (Platform.OS === 'android') setShowDay(false);
+                  if (Platform.OS === "android") setShowDay(false);
                   if (selected) {
                     setDayDate(selected);
                     setDay(selected.toISOString()); // on garde une valeur ISO propre
@@ -342,7 +349,7 @@ export default function PropositionScreen({ navigation, route }) {
                 minuteInterval={5}
                 display="default"
                 onChange={(event, selected) => {
-                  if (Platform.OS === 'android') setShowTime(false);
+                  if (Platform.OS === "android") setShowTime(false);
                   if (selected) {
                     setTimeDate(selected);
                     setHours(fmtHeure(selected)); // "HHh" ou "HHhMM"
@@ -350,7 +357,6 @@ export default function PropositionScreen({ navigation, route }) {
                 }}
               />
             )}
-
 
             <Input
               name="Nombre d'enfant"
@@ -544,26 +550,25 @@ const styles = StyleSheet.create({
 
   // AJOUT pour les Input Dates
   fakeInput: {
-  width: '85%',
-  height: 52,
-  backgroundColor: '#EBE6DA',
-  borderRadius: 12,
-  alignSelf: 'center',
-  justifyContent: 'center',
-  paddingHorizontal: 14,
-  marginTop: 20,
+    width: "85%",
+    height: 52,
+    backgroundColor: "#EBE6DA",
+    borderRadius: 12,
+    alignSelf: "center",
+    justifyContent: "center",
+    paddingHorizontal: 14,
+    marginTop: 20,
   },
 
-fakeLabel: {
-  position: 'absolute',
-  top: -10,
-  left: 14,
-  fontSize: 12,
-  color: '#8A8A8A',
-},
-fakeValue: {
-  fontSize: 16,
-  color: '#323232',
-}
- 
+  fakeLabel: {
+    position: "absolute",
+    top: -10,
+    left: 14,
+    fontSize: 12,
+    color: "#8A8A8A",
+  },
+  fakeValue: {
+    fontSize: 16,
+    color: "#323232",
+  },
 });

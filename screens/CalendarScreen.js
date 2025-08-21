@@ -1,35 +1,42 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
-import { useUser } from '../contexts/UserContext';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Platform, KeyboardAvoidingView, Alert, Image } from 'react-native';
-import { url } from '../App'; // Import de l'URL API
+import { useState } from "react";
+import { useSelector } from "react-redux";
+import { useUser } from "../contexts/UserContext";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  TextInput,
+  Platform,
+  KeyboardAvoidingView,
+  Alert,
+  Image,
+} from "react-native";
+import { url } from "../App"; // Import de l'URL API
 
+// Jours de la semaine disponibles dans le formulaire
 const daysOfWeek = [
-  'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'
+  "Lundi",
+  "Mardi",
+  "Mercredi",
+  "Jeudi",
+  "Vendredi",
+  "Samedi",
+  "Dimanche",
 ];
 
-const defaultStart = '00h';
-const defaultEnd = '00h';
+// Valeurs par défaut pour les heures
+const defaultStart = "00h";
+const defaultEnd = "00h";
 
 export default function CalendarScreen() {
-  const { profil } = useUser();
-  const token = useSelector(state => state.user.value.token);
-  const role = useSelector(state => state.user.value.role); 
+  const { profil } = useUser(); // On récupère le type de profil depuis le context (parent ou babysitter)
+  const token = useSelector((state) => state.user.value.token); // Token de l’utilisateur connecté
 
-
-  // if (role !== 'BABYSITTER') {
-  //   return (
-  //     <View style={styles.blockedContainer}>
-  //       <Image style={styles.logo} source={require('../assets/KidizyLogo.png')} />
-  //       <Text style={styles.blockedText}>
-  //         Accès réservé aux babysitters !
-  //       </Text>
-  //     </View>
-  //   );
-  // }
-
+  // State pour gérer les jours et disponibilités
   const [days, setDays] = useState(
-    daysOfWeek.map(day => ({
+    daysOfWeek.map((day) => ({
       day,
       checked: false,
       startHour: defaultStart,
@@ -39,26 +46,28 @@ export default function CalendarScreen() {
 
   const [loading, setLoading] = useState(false);
 
-  const handleCheck = idx => {
-    setDays(prev =>
+  // Coche/décoche un jour
+  const handleCheck = (idx) => {
+    setDays((prev) =>
       prev.map((item, i) =>
         i === idx ? { ...item, checked: !item.checked } : item
       )
     );
   };
 
+  // Change l'heure (début ou fin) d’un jour sélectionné
   const handleHourChange = (idx, type, value) => {
-    setDays(prev =>
-      prev.map((item, i) =>
-        i === idx ? { ...item, [type]: value } : item
-      )
+    setDays((prev) =>
+      prev.map((item, i) => (i === idx ? { ...item, [type]: value } : item))
     );
   };
 
+  // Soumission des disponibilités à l’API
   const handleSubmit = async () => {
+    // On récupère uniquement les jours cochés
     const dispo = days
-      .filter(d => d.checked)
-      .map(d => ({
+      .filter((d) => d.checked)
+      .map((d) => ({
         day: d.day,
         startHour: d.startHour,
         endHour: d.endHour,
@@ -76,13 +85,14 @@ export default function CalendarScreen() {
 
     setLoading(true);
 
+    // Envoi à l’API jour par jour
     let error = null;
     for (let d of dispo) {
       try {
         const response = await fetch(`${url}gardes/${token}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(d)
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(d),
         });
         const data = await response.json();
         if (!data.result) {
@@ -101,190 +111,220 @@ export default function CalendarScreen() {
       Alert.alert("Erreur", error);
     } else {
       Alert.alert("Bravo", "Disponibilités enregistrées !");
-      setDays(daysOfWeek.map(day => ({
-        day,
-        checked: false,
-        startHour: defaultStart,
-        endHour: defaultEnd,
-      })));
+      // On réinitialise le formulaire
+      setDays(
+        daysOfWeek.map((day) => ({
+          day,
+          checked: false,
+          startHour: defaultStart,
+          endHour: defaultEnd,
+        }))
+      );
     }
   };
 
   return (
     <>
-    {profil === 'parent' ? (
-      <View style={styles.blockedContainer}>
-        <Image style={styles.logo} source={require('../assets/KidizyLogo.png')} />
-        <Text style={styles.blockedText}>
-          Accès réservé aux babysitters !
-        </Text>
-      </View>
-     ) : (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"}>
-      <ScrollView contentContainerStyle={styles.container}>
-        <Image style={styles.logo} source={require('../assets/KidizyLogo.png')} />
-        <Text style={styles.title}>Saisie tes disponibilités de la semaine</Text>
-        <View style={styles.form}>
-          {days.map((item, idx) => (
-            <View key={item.day} style={styles.row}>
-              <TouchableOpacity
-                style={styles.checkbox}
-                onPress={() => handleCheck(idx)}
-              >
-                <View style={item.checked ? styles.checkedBox : styles.uncheckedBox}>
-                  {item.checked && <View style={styles.innerCheck} />}
-                </View>
-                <Text style={[styles.day, item.checked && styles.checkedDay]}>{item.day}</Text>
-              </TouchableOpacity>
-              <View style={styles.hourBlock}>
-                <Text style={styles.hourLabel}>De</Text>
-                <TextInput
-                  style={styles.hourInput}
-                  value={item.startHour}
-                  editable={item.checked}
-                  onChangeText={val => handleHourChange(idx, "startHour", val)}
-                />
-                <Text style={styles.hourLabel}>à</Text>
-                <TextInput
-                  style={styles.hourInput}
-                  value={item.endHour}
-                  editable={item.checked}
-                  onChangeText={val => handleHourChange(idx, "endHour", val)}
-                />
-              
-              </View>
-            </View>
-          ))}
+      {profil === "parent" ? (
+        <View style={styles.blockedContainer}>
+          <Image
+            style={styles.logo}
+            source={require("../assets/KidizyLogo.png")}
+          />
+          <Text style={styles.blockedText}>
+            Accès réservé aux babysitters !
+          </Text>
         </View>
-        <TouchableOpacity style={styles.submitBtn} onPress={handleSubmit} disabled={loading}>
-          <Text style={styles.submitText}>{loading ? "Envoi..." : "Soumettre"}</Text>
-        </TouchableOpacity>
-      </ScrollView>
-    </KeyboardAvoidingView>
+      ) : (
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
+          <ScrollView contentContainerStyle={styles.container}>
+            <Image
+              style={styles.logo}
+              source={require("../assets/KidizyLogo.png")}
+            />
+            <Text style={styles.title}>
+              Saisie tes disponibilités de la semaine
+            </Text>
+            <View style={styles.form}>
+              {days.map((item, idx) => (
+                <View key={item.day} style={styles.row}>
+                  <TouchableOpacity
+                    style={styles.checkbox}
+                    onPress={() => handleCheck(idx)}
+                  >
+                    <View
+                      style={
+                        item.checked ? styles.checkedBox : styles.uncheckedBox
+                      }
+                    >
+                      {item.checked && <View style={styles.innerCheck} />}
+                    </View>
+                    <Text
+                      style={[styles.day, item.checked && styles.checkedDay]}
+                    >
+                      {item.day}
+                    </Text>
+                  </TouchableOpacity>
+                  <View style={styles.hourBlock}>
+                    <Text style={styles.hourLabel}>De</Text>
+                    <TextInput
+                      style={styles.hourInput}
+                      value={item.startHour}
+                      editable={item.checked}
+                      onChangeText={(val) =>
+                        handleHourChange(idx, "startHour", val)
+                      }
+                    />
+                    <Text style={styles.hourLabel}>à</Text>
+                    <TextInput
+                      style={styles.hourInput}
+                      value={item.endHour}
+                      editable={item.checked}
+                      onChangeText={(val) =>
+                        handleHourChange(idx, "endHour", val)
+                      }
+                    />
+                  </View>
+                </View>
+              ))}
+            </View>
+            <TouchableOpacity
+              style={styles.submitBtn}
+              onPress={handleSubmit}
+              disabled={loading}
+            >
+              <Text style={styles.submitText}>
+                {loading ? "Envoi..." : "Soumettre"}
+              </Text>
+            </TouchableOpacity>
+          </ScrollView>
+        </KeyboardAvoidingView>
       )}
-      </>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#FFFBF0',
-    alignItems: 'center',
+    backgroundColor: "#FFFBF0",
+    alignItems: "center",
     paddingVertical: 30,
-    flexGrow: 1
+    flexGrow: 1,
   },
   blockedContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#FFFBF0'
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#FFFBF0",
   },
   blockedText: {
     fontSize: 18,
-    color: '#D14E72',
-    fontWeight: 'bold',
-    textAlign: 'center',
-    paddingHorizontal: 20
+    color: "#D14E72",
+    fontWeight: "bold",
+    textAlign: "center",
+    paddingHorizontal: 20,
   },
   logo: {
     flex: 0.1,
-    width: '90%',
-    objectFit: 'contain'
+    width: "90%",
+    objectFit: "contain",
   },
   title: {
     fontSize: 20,
-    fontWeight: 'bold',
-    color: '#010101ff',
+    fontWeight: "bold",
+    color: "#010101ff",
     marginBottom: 10,
-    marginTop: 1
-
+    marginTop: 1,
   },
   form: {
-    width: '80%',
+    width: "80%",
     marginBottom: 20,
   },
   row: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginVertical: 6,
-    backgroundColor: 'rgba(0,0,0,0.01)',
+    backgroundColor: "rgba(0,0,0,0.01)",
     borderRadius: 8,
-    paddingVertical: 3
+    paddingVertical: 3,
   },
   checkbox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: 100
+    flexDirection: "row",
+    alignItems: "center",
+    width: 100,
   },
   uncheckedBox: {
     width: 22,
     height: 22,
     borderWidth: 2,
-    borderColor: '#020202ff',
+    borderColor: "#020202ff",
     borderRadius: 5,
-    backgroundColor: '#FFF',
+    backgroundColor: "#FFF",
     marginRight: 10,
-    justifyContent: 'center',
-    alignItems: 'center'
+    justifyContent: "center",
+    alignItems: "center",
   },
   checkedBox: {
     width: 22,
     height: 22,
     borderWidth: 2,
-    borderColor: '#88E19D',
+    borderColor: "#88E19D",
     borderRadius: 5,
-    backgroundColor: '#88E19D',
+    backgroundColor: "#88E19D",
     marginRight: 10,
-    justifyContent: 'center',
-    alignItems: 'center'
+    justifyContent: "center",
+    alignItems: "center",
   },
   innerCheck: {
     width: 12,
     height: 12,
-    backgroundColor: '#FFF',
-    borderRadius: 3
+    backgroundColor: "#FFF",
+    borderRadius: 3,
   },
   day: {
     fontSize: 15,
-    color: '#888'
+    color: "#888",
   },
   checkedDay: {
-    color: '#88E19D',
-    fontWeight: 'bold'
+    color: "#88E19D",
+    fontWeight: "bold",
   },
   hourBlock: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
+    flexDirection: "row",
+    alignItems: "flex-end",
     marginLeft: 95,
-    gap: 2
+    gap: 2,
   },
   hourLabel: {
     fontSize: 14,
     marginHorizontal: 2,
-    color: '#C3C3C3'
+    color: "#C3C3C3",
   },
   hourInput: {
-    backgroundColor: '#FFF',
+    backgroundColor: "#FFF",
     borderRadius: 6,
     borderWidth: 1,
-    borderColor: '#EBE6DA',
+    borderColor: "#EBE6DA",
     paddingHorizontal: 8,
-    paddingVertical: Platform.OS === 'ios' ? 6 : 2,
+    paddingVertical: Platform.OS === "ios" ? 6 : 2,
     width: 40,
-    textAlign: 'center',
-    color: '#353535',
+    textAlign: "center",
+    color: "#353535",
   },
   submitBtn: {
-    backgroundColor: '#88E19D',
-    alignItems: 'center',
+    backgroundColor: "#88E19D",
+    alignItems: "center",
     borderRadius: 8,
     padding: 15,
-    width: '80%'
+    width: "80%",
   },
   submitText: {
-    color: 'black',
+    color: "black",
     fontSize: 20,
-    fontWeight: 'bold',
-    textAlign: 'center'
-  }
+    fontWeight: "bold",
+    textAlign: "center",
+  },
 });

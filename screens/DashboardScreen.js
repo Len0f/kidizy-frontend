@@ -1,182 +1,220 @@
-import { Button, StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
-import { useUser } from '../contexts/UserContext';
-import NextGuardComponent from '../components/nextGuardComponent'
-import GuardComponent from '../components/guardComponent';
+import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
+import { useUser } from "../contexts/UserContext";
+import NextGuardComponent from "../components/nextGuardComponent";
+import GuardComponent from "../components/guardComponent";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import { useCallback, useEffect, useState} from 'react';
-import { useSelector } from 'react-redux';
-import { useFocusEffect } from '@react-navigation/native';
-import {url} from '../App';
+import { useCallback, useState } from "react";
+import { useSelector } from "react-redux";
+import { useFocusEffect } from "@react-navigation/native";
+import { url } from "../App";
 
 export default function DashboardScreen({ navigation, route }) {
-    const user = useSelector((state) => state.user.value);
-    const [avatar, setAvatar] = useState('')
-    const [nextGarde, setNextGarde] = useState(null)
-    const [noReadMessage, setNoReadMessage] = useState([])
-    const { profil } = useUser();
-    
+  const user = useSelector((state) => state.user.value);
+  const [avatar, setAvatar] = useState("");
+  const [nextGarde, setNextGarde] = useState(null);
+  const [noReadMessage, setNoReadMessage] = useState([]);
+  const { profil } = useUser();
 
-    let userColor;
-    if(profil==='parent'){
-        userColor='#98C2E6'
-    }else{
-        userColor='#88E19D'
+  let userColor;
+  if (profil === "parent") {
+    userColor = "#98C2E6";
+  } else {
+    userColor = "#88E19D";
+  }
+
+  // ----------------- NAVIGATION
+  // Ouvre vers l’historique des gardes
+  const clickGuard = () => {
+    navigation.navigate("HistoricGardes");
+  };
+
+  // Ouvre vers la messagerie (liste des contacts)
+  const clickMessages = () => {
+    navigation.navigate("Contacts", { profil: "parent" });
+  };
+
+  // Ouvre vers la prochaine garde si disponible, sinon vers l’historique
+  const clickNextGuard = () => {
+    if (nextGarde) {
+      navigation.navigate("Garde", { from: "Dashboard", infoGarde: nextGarde });
+    } else {
+      navigation.navigate("HistoricGardes");
     }
+  };
 
+  // Ouvre vers le calendrier des disponibilités
+  const clickHours = () => {
+    navigation.navigate("Calendar");
+  };
 
-    const clickGuard = ()=>{
-        navigation.navigate('HistoricGardes')
-    }
-     const clickMessages = ()=>{
-        navigation.navigate('Contacts', {profil: 'parent'})
-    }
-    const clickNextGuard = ()=>{
-        if (nextGarde) {
-            navigation.navigate('Garde', { from: 'Dashboard', infoGarde: nextGarde });
-        } else {
-            navigation.navigate('HistoricGardes');
-        }
-    }
+  // ----------------- AFFICHAGES
+  // Mise en forme lisible de la "prochaine garde"
+  const formatNextGuard = (b) => {
+    if (!b?.proposition?.day) return "Aucune garde planifiée";
+    const d = new Date(b.proposition.day);
+    const pad = (n) => String(n).padStart(2, "0");
+    const dateStr = `${pad(d.getDate())}/${pad(
+      d.getMonth() + 1
+    )}/${d.getFullYear()}`;
 
-    const clickHours = ()=>{
-        navigation.navigate('Calendar')
-    }
+    // Si une heure de proposition existe (propoStart), on l’affiche telle quelle (ex: "12h30")
+    const h = b.proposition.propoStart;
+    if (h && typeof h === "string") return `${dateStr} à ${h}`;
 
-    // Affichage de prochaines dates.
-    const formatNextGuard = (b) => {
-        if (!b?.proposition?.day) return "Aucune garde planifiée";
-        const d = new Date(b.proposition.day);
-        const pad = (n) => String(n).padStart(2, "0");
-        const dateStr = `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}`;
-        
-        // si on a une heure de proposition (ex: "12h" ou "12h30"), on l'utilise
-        const h = b.proposition.propoStart;
-        if (h && typeof h === "string") return `${dateStr} à ${h}`;
-        
-        // fallback sur l'heure de la date si jamais
-        const timeStr = `${pad(d.getHours())}h${d.getMinutes() ? pad(d.getMinutes()) : ""}`;
-        return `${dateStr} à ${timeStr}`;
-    };
+    // Sinon fallback sur l’heure de l’objet Date
+    const timeStr = `${pad(d.getHours())}h${
+      d.getMinutes() ? pad(d.getMinutes()) : ""
+    }`;
+    return `${dateStr} à ${timeStr}`;
+  };
 
+  // Recuperation de ses propres données grace au token présent dans le reducer
+  useFocusEffect(
+    useCallback(() => {
+      //Récupération des infos du user connecté (avatar)
+      fetch(`${url}users/me/${user.token}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setAvatar(data.user.avatar);
+        });
+      if (profil === "babysitter") {
+        // Côté babysitter : récupère les propositions en statut PENDING pour afficher un compteur "Messages"
+        fetch(`${url}propositions?token=${user.token}&id=${user.id}`)
+          .then((response) => response.json())
+          .then((data) => {
+            const filter = data.filteredPropositions.filter((proposition) =>
+              ["PENDING"].includes(proposition.isAccepted)
+            );
+            setNoReadMessage([...noReadMessage, ...filter]);
+          });
+      }
 
-        //recuperation de ses propres données grace au token présent dans le reducer
-        useFocusEffect(useCallback(()=>{
-            fetch(`${url}users/me/${user.token}`)
-            .then(response=>response.json())
-            .then(data=>{
-                setAvatar(data.user.avatar)
-            })
-            if(profil === 'babysitter'){
-                fetch(`${url}propositions?token=${user.token}&id=${user.id}`)
-            .then(response=>response.json())
-            .then(data=>{
-                const filter = data.filteredPropositions.filter(proposition => 
-                    ["PENDING"].includes(proposition.isAccepted)
-                );
-                setNoReadMessage([...noReadMessage,...filter])
-            })
-        }
-        
-            // AJOUT : prochaine garde
-            fetch(`${url}gardes/next/by-token?token=${user.token}&userId=${user.id}&profil=${profil}`)
-            .then((r) => r.json())
-            .then((d) => setNextGarde(d.babysit || null))
-            .catch(() => setNextGarde(null));
-        }, [user.token, user.id, profil])
-);
-    //},[]))
+      // Prochaine garde (parent ou babysitter)
+      fetch(
+        `${url}gardes/next/by-token?token=${user.token}&userId=${user.id}&profil=${profil}`
+      )
+        .then((r) => r.json())
+        .then((d) => setNextGarde(d.babysit || null))
+        .catch(() => setNextGarde(null));
+    }, [user.token, user.id, profil])
+  );
 
+  return (
+    <View style={styles.container}>
+      <Image style={styles.logo} source={require("../assets/KidizyLogo.png")} />
+      <View style={styles.screenTitleContainer}>
+        <Text style={styles.screenTitle}>Votre tableau de bord :</Text>
+      </View>
+      <View style={styles.content}>
+        <GuardComponent
+          click={clickGuard}
+          title={"Gardes"}
+          colorCount={userColor}
+          guardStyle={{ width: "43%", borderColor: userColor }}
+          count={0}
+        />
 
-    return (
-        <View style={styles.container}>
-            <Image style={styles.logo}source={require('../assets/KidizyLogo.png')} />
-            <View style={styles.screenTitleContainer}>
-                <Text style={styles.screenTitle}>Votre tableau de bord :</Text>
-            </View>
-            <View style={styles.content}>
-                    <GuardComponent click={clickGuard}title={'Gardes'} colorCount={userColor}guardStyle={{width:'43%', borderColor:userColor}} count={0}/>
-                    <GuardComponent click={clickMessages} title={'Messages'} colorCount={userColor} guardStyle={{width:'43%', borderColor:userColor}} count={noReadMessage.length}/>
-                    {/* <NextGuardComponent click={clickNextGuard}title={'Prochaine garde'} content={'DD/MM/YYYY à XXhXX'}guardStyle={{width:'91%', borderColor:userColor}} dateStyle={{backgroundColor:userColor}}/> */}
-                    <NextGuardComponent
-                        click={clickNextGuard}
-                        title={'Prochaine garde'}
-                        content={formatNextGuard(nextGarde)}
-                        guardStyle={{width:'91%', borderColor:userColor}}
-                        dateStyle={{backgroundColor:userColor}}
-                    />
-                </View>
+        <GuardComponent
+          click={clickMessages}
+          title={"Messages"}
+          colorCount={userColor}
+          guardStyle={{ width: "43%", borderColor: userColor }}
+          count={noReadMessage.length}
+        />
 
+        <NextGuardComponent
+          click={clickNextGuard}
+          title={"Prochaine garde"}
+          content={formatNextGuard(nextGarde)}
+          guardStyle={{ width: "91%", borderColor: userColor }}
+          dateStyle={{ backgroundColor: userColor }}
+        />
+      </View>
 
-            {profil === 'parent' ? (
-                <>
-                <View>
-                    <TouchableOpacity style={styles.avatarContainer} onPress={()=>navigation.navigate('ProfilUser')}>
-                        <Image style={styles.avatar} source={{uri:avatar}}/>
-                        <FontAwesome style={styles.update}name="gear" size={12} color={'#323232'}/>
-                    </TouchableOpacity>     
-                </View>  
-                </>
-            ) : (
-                <>
-                <View style={styles.content}>        
-                    <NextGuardComponent click={clickHours}title={'XXhXX'} content={'travaillées cette semaine'} guardStyle={{width:'91%', borderColor:userColor}} dateStyle={{backgroundColor:'transparent'}}/>
-                </View>     
-                </>
-            )}
-        </View>
-    );
+      {profil === "parent" ? (
+        <>
+          <View>
+            <TouchableOpacity
+              style={styles.avatarContainer}
+              onPress={() => navigation.navigate("ProfilUser")}
+            >
+              <Image style={styles.avatar} source={{ uri: avatar }} />
+              <FontAwesome
+                style={styles.update}
+                name="gear"
+                size={12}
+                color={"#323232"}
+              />
+            </TouchableOpacity>
+          </View>
+        </>
+      ) : (
+        <>
+          <View style={styles.content}>
+            <NextGuardComponent
+              click={clickHours}
+              title={"XXhXX"}
+              content={"travaillées cette semaine"}
+              guardStyle={{ width: "91%", borderColor: userColor }}
+              dateStyle={{ backgroundColor: "transparent" }}
+            />
+          </View>
+        </>
+      )}
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#FFFBF0',
-        alignItems: 'center',
-    },
-    logo:{
-        marginTop:40,
-        height:'10%',
-        width:'80%',
-        objectFit:'contain'
-    },
-    screenTitleContainer:{
-        marginVertical:50,
-        justifyContent:'center'
-    },
-    screenTitle:{
-        fontFamily:'Montserrat',
-        fontSize:28,
-        fontWeight:'700'
-    },
-    content:{
-        flexDirection:'row',
-        flexWrap:'wrap',
-        justifyContent:'center'
-    },
-    avatar:{
-        borderWidth:5,
-        width:150,
-        height:150,
-        borderRadius:100,
-        borderColor:'#98C2E6'
+  container: {
+    flex: 1,
+    backgroundColor: "#FFFBF0",
+    alignItems: "center",
   },
-  
-  avatarContainer:{
-    width:150,
-    height:150,
-    borderRadius:100,
-    position:'relative',
+  logo: {
+    marginTop: 40,
+    height: "10%",
+    width: "80%",
+    objectFit: "contain",
+  },
+  screenTitleContainer: {
+    marginVertical: 50,
+    justifyContent: "center",
+  },
+  screenTitle: {
+    fontFamily: "Montserrat",
+    fontSize: 28,
+    fontWeight: "700",
+  },
+  content: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+  },
+  avatar: {
+    borderWidth: 5,
+    width: 150,
+    height: 150,
+    borderRadius: 100,
+    borderColor: "#98C2E6",
+  },
+
+  avatarContainer: {
+    width: 150,
+    height: 150,
+    borderRadius: 100,
+    position: "relative",
     //generation des ombres
     shadowColor: "#263238",
-    shadowOffset: {width: 0,height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
   },
-  update:{
-    position:'absolute',
-    right:'47%',
-    bottom:'3%',
-    color: '#FFFBF0'
-  }
-})
+  update: {
+    position: "absolute",
+    right: "47%",
+    bottom: "3%",
+    color: "#FFFBF0",
+  },
+});
