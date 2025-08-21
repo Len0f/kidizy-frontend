@@ -1,19 +1,19 @@
-import * as React from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet, Text } from "react-native";
+
+// Composant TextInfo : sert à afficher une information statique
+// avec un label (titre) au-dessus et une zone de texte non modifiable.
 
 export default function TextInfo(props) {
-  
-  
-    return (
+  return (
     <View style={styles.container} width={props.width}>
-        <View style={styles.containLabel}>
-            <Text style={[styles.label, props.userStyle]} >{props.title}</Text>
-        </View>
-        <View style={styles.containerText}>
-            <Text style={styles.text}>{props.textContent}</Text>
-        </View>
+      <View style={styles.containLabel}>
+        <Text style={[styles.label, props.userStyle]}>{props.title}</Text>
+      </View>
+      <View style={styles.containerText}>
+        <Text style={styles.text}>{props.textContent}</Text>
+      </View>
     </View>
-    )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -21,17 +21,17 @@ const styles = StyleSheet.create({
     margin: 10,
     padding: 0,
     alignItems: "flex-start",
-    justifyContent: 'center',
+    justifyContent: "center",
     position: "relative",
   },
   text: {
-    fontFamily:'Montserrat',
-    padding:10,
-    fontSize:16,
-    color:'#656565ff'
+    fontFamily: "Montserrat",
+    padding: 10,
+    fontSize: 16,
+    color: "#656565ff",
   },
   label: {
-    height:20,
+    height: 20,
     width: "100%",
     textAlign: "left",
     margin: 5,
@@ -39,28 +39,25 @@ const styles = StyleSheet.create({
     zIndex: 1,
     fontWeight: "bold",
     color: "#9FC6E7",
-    fontFamily:'Montserrat'
+    fontFamily: "Montserrat",
   },
   containLabel: {
-    padding:0,
-    margin:0,
+    padding: 0,
+    margin: 0,
     backgroundColor: "#FFFBF0",
     borderRadius: 50,
     position: "absolute",
     top: -15,
     left: 15,
     zIndex: 1,
-
   },
   containerText: {
     padding: 10,
-    alignItems: 'felx-start',
-    justifyContent: 'center',
-    height: 'auto',
+    alignItems: "felx-start",
+    justifyContent: "center",
+    height: "auto",
     width: "100%",
     borderRadius: 10,
     backgroundColor: "#EBE6DA",
-    
   },
 });
-
