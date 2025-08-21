@@ -1,13 +1,13 @@
 {
-	"folders": [
-		{
-			"name": "Nouveau dossier",
-			"path": ".."
-		},
-		{
-			"name": "components",
-			"path": "../../Kidizy/components"
-		}
-	],
-	"settings": {}
+  "folders": [
+    {
+      "name": "Nouveau dossier",
+      "path": ".."
+    },
+    {
+      "name": "components",
+      "path": "../../Kidizy/components"
+    }
+  ],
+  "settings": {}
 }
