@@ -18,7 +18,7 @@ import { url } from "../App"; // Import the API URL from App.js
 export default function ConnectionScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [mdp, setMdp] = useState("");
-  const { setProfil, setUser } = useUser();
+  const { setProfil } = useUser();
 
   // Dispatch Redux pour mettre à jour le store utilisateur
   const dispatch = useDispatch();
