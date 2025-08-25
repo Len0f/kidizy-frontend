@@ -13,7 +13,7 @@ import { useState, useEffect } from "react";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Input from "../components/InputLarge";
 import MainBtn from "../components/mainBtn";
-import { url } from "../App";
+import { API_URL } from "../api/config";
 import { useSelector } from "react-redux";
 
 // ----------- Utilitaires de formatage
@@ -67,7 +67,7 @@ export default function NotationScreen({ navigation, route }) {
 
   // ----------------- Envoi au backend
   const handleSubmit = () => {
-    fetch(`${url}gardes/${infoGarde._id}/rating`, {
+    fetch(`${API_URL}gardes/${infoGarde._id}/rating`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

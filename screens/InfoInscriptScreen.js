@@ -18,7 +18,7 @@ import MainBtn from "../components/mainBtn";
 import FranceConnectBtn from "../components/franceConnectBtn";
 import ReturnBtn from "../components/returnBtn";
 import { useSelector } from "react-redux";
-import { url } from "../App";
+import { API_URL } from "../api/config";
 export default function InfoInscriptScreen({ navigation }) {
   // --------- Contexte / état global
   const { profil } = useUser();
@@ -164,7 +164,7 @@ export default function InfoInscriptScreen({ navigation }) {
       });
 
       // Upload -> backend -> Cloudinary -> URL
-      const res = await fetch(`${url}users/upload`, {
+      const res = await fetch(`${API_URL}users/upload`, {
         method: "POST",
         body: form,
       });
@@ -216,7 +216,7 @@ export default function InfoInscriptScreen({ navigation }) {
     };
 
     try {
-      const sendinfo = await fetch(`${url}users`, {
+      const sendinfo = await fetch(`${API_URL}users`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

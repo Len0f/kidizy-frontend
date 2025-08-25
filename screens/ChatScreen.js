@@ -16,7 +16,7 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import ReturnBtn from "../components/returnBtn";
 import Pusher from "pusher-js/react-native";
 import Message from "../components/Message";
-import { url as BACKEND_ADDRESS } from "../App";
+import { API_URL } from "../api/config";
 
 // Config Pusher (clé + cluster)
 const pusher = new Pusher("92055fe186a81018cec0", { cluster: "eu" });
@@ -53,7 +53,7 @@ export default function ChatScreen({ navigation, route }) {
 
     // Récupération des anciens messages depuis l’API
     fetch(
-      `${BACKEND_ADDRESS}messages?token=${user.token}&conversationId=${conversation}`
+      `${API_URL}messages?token=${user.token}&conversationId=${conversation}`
     )
       .then((res) => res.json())
       .then((data) => {
@@ -63,9 +63,7 @@ export default function ChatScreen({ navigation, route }) {
       .catch((err) => console.error("Erreur récupération messages:", err));
 
     // Récupération des infos du contact (nom, prénom, avatar)
-    fetch(
-      `${BACKEND_ADDRESS}conversations/id?token=${user.token}&id=${conversation}`
-    )
+    fetch(`${API_URL}conversations/id?token=${user.token}&id=${conversation}`)
       .then((response) => response.json())
       .then((user) => {
         if (profil === "babysitter") {
@@ -102,7 +100,7 @@ export default function ChatScreen({ navigation, route }) {
       conversation: conversation, // doublon -> gardé pour backend
     };
 
-    fetch(`${BACKEND_ADDRESS}messages`, {
+    fetch(`${API_URL}messages`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),

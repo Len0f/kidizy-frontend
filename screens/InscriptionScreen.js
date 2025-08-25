@@ -12,7 +12,7 @@ import Input from "../components/Input";
 import SignBtn from "../components/signBtn";
 import { updateInfo } from "../reducers/user";
 import { useDispatch } from "react-redux";
-import { url } from "../App";
+import { API_URL } from "../api/config";
 
 export default function InscriptionScreen({ navigation }) {
   const [email, setEmail] = useState("");
@@ -32,7 +32,7 @@ export default function InscriptionScreen({ navigation }) {
     }
 
     // Appel API backend -> création de compte
-    fetch(`${url}users/signup`, {
+    fetch(`${API_URL}users/signup`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

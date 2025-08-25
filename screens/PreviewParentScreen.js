@@ -15,7 +15,7 @@ import MapView, { Marker } from "react-native-maps";
 import { useEffect, useState } from "react";
 import { useUser } from "../contexts/UserContext";
 import { useSelector } from "react-redux";
-import { url } from "../App"; // Import the API URL from App.js
+import { API_URL } from "../api/config";
 
 export default function PreviewParentScreen({ navigation, route }) {
   const user = useSelector((state) => state.user.value);
@@ -34,7 +34,7 @@ export default function PreviewParentScreen({ navigation, route }) {
   // --- Chargement des données si profil = babysitter
   useEffect(() => {
     if (profil === "babysitter") {
-      fetch(`${url}propositions/id?token=${user.token}&id=${proposition}`)
+      fetch(`${API_URL}propositions/id?token=${user.token}&id=${proposition}`)
         .then((response) => response.json())
         .then((data) => {
           setNom(data.propo.lastName);
@@ -59,7 +59,7 @@ export default function PreviewParentScreen({ navigation, route }) {
   // --- Accepter la proposition
   const accept = async () => {
     // Création d’une proposition validée
-    const newProp = await fetch(`${url}propositions`, {
+    const newProp = await fetch(`${API_URL}propositions`, {
       method: "POST",
 
       headers: { "Content-Type": "application/json" },
@@ -82,7 +82,7 @@ export default function PreviewParentScreen({ navigation, route }) {
 
     if (res.result) {
       // Si acceptée, création d’une conversation liée
-      const newConversation = await fetch(`${url}conversations`, {
+      const newConversation = await fetch(`${API_URL}conversations`, {
         method: "POST",
 
         headers: { "Content-Type": "application/json" },

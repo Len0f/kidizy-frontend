@@ -6,7 +6,7 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { useCallback, useState } from "react";
 import { useSelector } from "react-redux";
 import { useFocusEffect } from "@react-navigation/native";
-import { url } from "../App";
+import { API_URL } from "../api/config";
 
 export default function DashboardScreen({ navigation, route }) {
   const user = useSelector((state) => state.user.value);
@@ -72,14 +72,14 @@ export default function DashboardScreen({ navigation, route }) {
   useFocusEffect(
     useCallback(() => {
       //Récupération des infos du user connecté (avatar)
-      fetch(`${url}users/me/${user.token}`)
+      fetch(`${API_URL}users/me/${user.token}`)
         .then((response) => response.json())
         .then((data) => {
           setAvatar(data.user.avatar);
         });
       if (profil === "babysitter") {
         // Côté babysitter : récupère les propositions en statut PENDING pour afficher un compteur "Messages"
-        fetch(`${url}propositions?token=${user.token}&id=${user.id}`)
+        fetch(`${API_URL}propositions?token=${user.token}&id=${user.id}`)
           .then((response) => response.json())
           .then((data) => {
             const filter = data.filteredPropositions.filter((proposition) =>
@@ -91,7 +91,7 @@ export default function DashboardScreen({ navigation, route }) {
 
       // Prochaine garde (parent ou babysitter)
       fetch(
-        `${url}gardes/next/by-token?token=${user.token}&userId=${user.id}&profil=${profil}`
+        `${API_URL}gardes/next/by-token?token=${user.token}&userId=${user.id}&profil=${profil}`
       )
         .then((r) => r.json())
         .then((d) => setNextGarde(d.babysit || null))

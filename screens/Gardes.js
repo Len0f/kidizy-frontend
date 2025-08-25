@@ -12,7 +12,7 @@ import MapView, { Marker } from "react-native-maps";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useUser } from "../contexts/UserContext";
 import { useSelector } from "react-redux";
-import { url } from "../App";
+import { API_URL } from "../api/config";
 
 // ----------------- HELPERS
 // const formatCurrency = (n) => {
@@ -120,7 +120,7 @@ export default function GardeScreen({ navigation, route }) {
     const fetchMe = async () => {
       if (!token) return;
       try {
-        const r = await fetch(`${url}users/me/${token}`);
+        const r = await fetch(`${API_URL}users/me/${token}`);
         const j = await r.json();
         const loc = j?.user?.location;
         if (mounted && loc && (loc.lat || loc.lon)) {

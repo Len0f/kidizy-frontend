@@ -20,7 +20,7 @@ import InputLarge from "../components/InputLarge";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import FranceConnectBtn from "../components/franceConnectBtn";
 import { useSelector } from "react-redux";
-import { url } from "../App";
+import { API_URL } from "../api/config";
 import * as ImagePicker from "expo-image-picker";
 
 export default function ProfilScreen({ navigation }) {
@@ -60,7 +60,7 @@ export default function ProfilScreen({ navigation }) {
   // ---- useEffect : chargement du profil utilisateur depuis l’API backend
   useEffect(() => {
     if (!userToken) return;
-    fetch(`${url}users/me/${userToken}`)
+    fetch(`${API_URL}users/me/${userToken}`)
       .then((response) => response.json())
       .then((data) => {
         const u = data?.user;
@@ -216,7 +216,7 @@ export default function ProfilScreen({ navigation }) {
       });
 
       // Envoi vers l’endpoint d’upload (backend -> Cloudinary)
-      const res = await fetch(`${url}users/upload`, {
+      const res = await fetch(`${API_URL}users/upload`, {
         method: "POST",
         body: form,
       });
@@ -266,7 +266,7 @@ export default function ProfilScreen({ navigation }) {
     };
 
     try {
-      const sendinfo = await fetch(`${url}users`, {
+      const sendinfo = await fetch(`${API_URL}users`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

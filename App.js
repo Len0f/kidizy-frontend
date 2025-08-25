@@ -15,10 +15,6 @@ import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import user from "./reducers/user";
 
-// Récupération dynamique de l’URL API
-import { getDevApiUrl } from "./utils/constants";
-export const url = getDevApiUrl();
-
 const store = configureStore({
   reducer: { user },
 });

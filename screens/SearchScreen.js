@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
 import SearchCard from "../components/searchCard";
 import FilterBar from "../components/filterBar";
-import { url } from "../App";
+import { API_URL } from "../api/config";
 import { selectedId } from "../reducers/user";
 
 export default function SearchScreen() {
@@ -25,7 +25,7 @@ export default function SearchScreen() {
     if (!token) return; // pas de token -> rien à faire
 
     const fetchParentLocation = async () => {
-      const res = await fetch(`${url}users/me/${token}`);
+      const res = await fetch(`${API_URL}users/me/${token}`);
       const json = await res.json();
 
       if (
@@ -79,7 +79,7 @@ export default function SearchScreen() {
 
     if (sortFilter) params.set("sort", sortFilter);
 
-    return `${url}users/babysitters?${params.toString()}`; // Construction de l'URL.
+    return `${API_URL}users/babysitters?${params.toString()}`; // Construction de l'URL.
   }, [
     // Dépendances qui permet de recharger l'URL que si le filtre change.
     noteFilter,

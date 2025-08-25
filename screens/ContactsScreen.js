@@ -12,7 +12,7 @@ import Conversation from "../components/conversation";
 import { useSelector } from "react-redux";
 import { useCallback, useEffect, useState } from "react";
 import { useFocusEffect } from "@react-navigation/native";
-import { url } from "../App";
+import { API_URL } from "../api/config";
 
 export default function ContactsScreen({ navigation }) {
   const { profil } = useUser();
@@ -67,7 +67,7 @@ export default function ContactsScreen({ navigation }) {
 
     // --------------- PARENT : chats ouverts (contacts = babysitters)
     if (profil === "parent") {
-      fetch(`${url}conversations?token=${user.token}&id=${user.id}`)
+      fetch(`${API_URL}conversations?token=${user.token}&id=${user.id}`)
         .then((response) => {
           if (!response.ok) throw new Error(`HTTP ${response.status}`);
           return response.json();
@@ -110,13 +110,13 @@ export default function ContactsScreen({ navigation }) {
       // --------------- BABYSITTER : chats ouverts + propositions (contacts = parents)
       Promise.all([
         // Permet de faire 2 fetchs en parallèle.
-        fetch(`${url}conversations?token=${user.token}&id=${user.id}`).then(
+        fetch(`${API_URL}conversations?token=${user.token}&id=${user.id}`).then(
           (response) => {
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             return response.json();
           }
         ),
-        fetch(`${url}propositions?token=${user.token}&id=${user.id}`).then(
+        fetch(`${API_URL}propositions?token=${user.token}&id=${user.id}`).then(
           (response) => {
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             return response.json();

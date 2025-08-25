@@ -3,7 +3,7 @@ import { useUser } from "../contexts/UserContext";
 import MainBtn from "../components/mainBtn";
 import ReturnBtn from "../components/returnBtn";
 import { useSelector } from "react-redux";
-import { url } from "../App"; // Import the API URL from App.js
+import { API_URL } from "../api/config";
 
 export default function SelectProfilScreen({ navigation }) {
   const { setProfil } = useUser();
@@ -15,7 +15,7 @@ export default function SelectProfilScreen({ navigation }) {
 
   // --- Choix babysitter : envoie rôle -> API, met à jour le contexte, redirige vers InfoInscript
   const NAVbabysitter = async () => {
-    const response = await fetch(`${url}users/role`, {
+    const response = await fetch(`${API_URL}users/role`, {
       method: "PUT",
 
       headers: { "Content-Type": "application/json" },
@@ -31,7 +31,7 @@ export default function SelectProfilScreen({ navigation }) {
 
   // --- Choix parent : même logique mais rôle PARENT
   const NAVparent = async () => {
-    const response = await fetch(`${url}users/role`, {
+    const response = await fetch(`${API_URL}users/role`, {
       method: "PUT",
 
       headers: { "Content-Type": "application/json" },

@@ -13,7 +13,7 @@ import TextInfo from "../components/TextInfo";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import { url } from "../App";
+import { API_URL } from "../api/config";
 
 export default function ProfilBookScreen({ navigation, route }) {
   const [userInfo, setUserInfo] = useState(null);
@@ -30,7 +30,7 @@ export default function ProfilBookScreen({ navigation, route }) {
 
     useEffect(() => {
       // Récupère les infos du babysitter sélectionné depuis la BDD
-      fetch(`${url}users/id/${user.selectedBabysitterId}`)
+      fetch(`${API_URL}users/id/${user.selectedBabysitterId}`)
         .then((response) => response.json())
         .then((data) => {
           setUserInfo(data); // On stocke les infos du babysitter
@@ -42,7 +42,7 @@ export default function ProfilBookScreen({ navigation, route }) {
 
     useEffect(() => {
       // Récupère les infos du parent (dont les enfants)
-      fetch(`${url}users/id/${userId}`)
+      fetch(`${API_URL}users/id/${userId}`)
         .then((response) => response.json())
         .then((data) => {
           setUserInfo(data);

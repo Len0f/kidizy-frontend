@@ -13,7 +13,7 @@ import Input from "../components/Input";
 import SignBtn from "../components/signBtn";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { url } from "../App"; // Import the API URL from App.js
+import { API_URL } from "../api/config";
 
 export default function ConnectionScreen({ navigation }) {
   const [email, setEmail] = useState("");
@@ -25,7 +25,7 @@ export default function ConnectionScreen({ navigation }) {
 
   // ----------------- CONNEXION
   const connection = () => {
-    fetch(`${url}users/signin`, {
+    fetch(`${API_URL}users/signin`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password: mdp }),

@@ -20,7 +20,7 @@ import MapView, { Marker } from "react-native-maps";
 import { useEffect, useState } from "react";
 import { useUser } from "../contexts/UserContext";
 import { useSelector } from "react-redux";
-import { url } from "../App"; // Import the API URL from App.js
+import { API_URL } from "../api/config";
 
 export default function PropositionScreen({ navigation, route }) {
   const user = useSelector((state) => state.user.value);
@@ -81,7 +81,7 @@ export default function PropositionScreen({ navigation, route }) {
   useEffect(() => {
     if (!isParent) return;
     // On prend l’avatar + adresse du parent pour placer le marker sur la carte.
-    fetch(`${url}users/me/${user.token}`)
+    fetch(`${API_URL}users/me/${user.token}`)
       .then((response) => response.json())
       .then((data) => {
         setAvatar(data.user.avatar);
@@ -118,7 +118,7 @@ export default function PropositionScreen({ navigation, route }) {
   // ------------------ BABYSITTER : Chargement de la proposition existante.
   useEffect(() => {
     if (isBabysitter && proposition) {
-      fetch(`${url}propositions/id?token=${user.token}&id=${proposition}`)
+      fetch(`${API_URL}propositions/id?token=${user.token}&id=${proposition}`)
         .then((response) => response.json())
         .then((data) => {
           setAvatar(data?.propo?.avatar);
@@ -165,7 +165,7 @@ export default function PropositionScreen({ navigation, route }) {
       })();
       const timeToSend = hours || fmtHeure(timeDate);
 
-      const newProp = await fetch(`${url}propositions`, {
+      const newProp = await fetch(`${API_URL}propositions`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -206,7 +206,7 @@ export default function PropositionScreen({ navigation, route }) {
   // 3) Déclaration de la garde (endpoint dédié)
   // 4) Retour dashboard
   const accept = async () => {
-    const accepted = await fetch(`${url}propositions/id`, {
+    const accepted = await fetch(`${API_URL}propositions/id`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -218,7 +218,7 @@ export default function PropositionScreen({ navigation, route }) {
     const acceptRes = await accepted.json();
 
     if (acceptRes.result) {
-      fetch(`${url}conversations`, {
+      fetch(`${API_URL}conversations`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -228,7 +228,7 @@ export default function PropositionScreen({ navigation, route }) {
           updatedAt: new Date(),
         }),
       });
-      fetch(`${url}gardes/new`, {
+      fetch(`${API_URL}gardes/new`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -254,7 +254,7 @@ export default function PropositionScreen({ navigation, route }) {
     setLoading(true);
 
     // Mise à jour du status
-    await fetch(`${url}propositions/id`, {
+    await fetch(`${API_URL}propositions/id`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -265,7 +265,7 @@ export default function PropositionScreen({ navigation, route }) {
     });
 
     // Suppression
-    await fetch(`${url}propositions/${proposition}`, { method: "DELETE" });
+    await fetch(`${API_URL}propositions/${proposition}`, { method: "DELETE" });
 
     setLoading(false);
     returnScreen();

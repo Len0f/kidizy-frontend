@@ -3,7 +3,7 @@ import UserCard from "../components/userCard";
 import { useNavigation } from "@react-navigation/native";
 import { useUser } from "../contexts/UserContext";
 import { useEffect, useState } from "react";
-import { url } from "../App";
+import { API_URL } from "../api/config";
 import { useSelector } from "react-redux";
 
 export default function HistoricGardesScreen() {
@@ -18,7 +18,7 @@ export default function HistoricGardesScreen() {
 
   // Chargement des gardes depuis l’API (une fois au montage)
   useEffect(() => {
-    fetch(`${url}gardes/new/id?token=${user.token}&id=${user.id}`)
+    fetch(`${API_URL}gardes/new/id?token=${user.token}&id=${user.id}`)
       .then((response) => response.json())
       .then((data) => {
         // On transforme chaque garde en composant <UserCard />

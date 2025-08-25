@@ -13,7 +13,7 @@ import {
   Alert,
   Image,
 } from "react-native";
-import { url } from "../App"; // Import de l'URL API
+import { API_URL } from "../api/config";
 
 // Jours de la semaine disponibles dans le formulaire
 const daysOfWeek = [
@@ -89,7 +89,7 @@ export default function CalendarScreen() {
     let error = null;
     for (let d of dispo) {
       try {
-        const response = await fetch(`${url}gardes/${token}`, {
+        const response = await fetch(`${API_URL}gardes/${token}`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(d),
