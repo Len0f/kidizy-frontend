@@ -271,10 +271,6 @@ export default function PropositionScreen({ navigation, route }) {
     returnScreen();
   };
 
-  // Test bug APK
-  const latNum = Number.isFinite(Number(lat)) ? Number(lat) : null;
-  const lonNum = Number.isFinite(Number(lon)) ? Number(lon) : null;
-
   return (
     <KeyboardAvoidingView
       style={styles.container}
@@ -377,27 +373,23 @@ export default function PropositionScreen({ navigation, route }) {
           </View>
 
           <View style={styles.mapContainer}>
-            {latNum !== null &&
-              lonNum !== null &&
-              false && ( // <- mets false pour désactiver rapidement
-                <MapView
-                  region={{
-                    latitude: parseFloat(lat),
-                    longitude: parseFloat(lon),
-                    latitudeDelta: 0.002,
-                    longitudeDelta: 0.002,
-                  }}
-                  style={styles.map}
-                >
-                  <Marker
-                    coordinate={{
-                      latitude: parseFloat(lat),
-                      longitude: parseFloat(lon),
-                    }}
-                    title={prenom}
-                  />
-                </MapView>
-              )}
+            <MapView
+              region={{
+                latitude: parseFloat(lat),
+                longitude: parseFloat(lon),
+                latitudeDelta: 0.002,
+                longitudeDelta: 0.002,
+              }}
+              style={styles.map}
+            >
+              <Marker
+                coordinate={{
+                  latitude: parseFloat(lat),
+                  longitude: parseFloat(lon),
+                }}
+                title={prenom}
+              />
+            </MapView>
           </View>
 
           <View style={styles.buttons}>
