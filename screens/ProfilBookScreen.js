@@ -24,36 +24,34 @@ export default function ProfilBookScreen({ navigation, route }) {
   const [enfant, setEnfant] = useState("");
   const userColor = profil === "parent" ? "#98C2E6" : "#88E19D";
 
-  // --- Si c’est un parent connecté → il consulte un babysitter
-  if (profil === "parent") {
-    useEffect(() => {
-      // Récupère les infos du babysitter sélectionné depuis la BDD
-      fetch(`${API_URL}users/id/${user.selectedBabysitterId}`)
-        .then((response) => response.json())
-        .then((data) => {
-          setUserInfo(data); // On stocke les infos du babysitter
-        });
-    }, []);
-  } else {
-    // --- Si c’est un babysitter connecté → il consulte un parent
-    userColor = "#88E19D";
+  // Petite correction : Avant on mettait les hooks dans un if/else → React plantait.
+  // Avec if/else, les hooks (useEffect) n’étaient pas toujours appelés dans le même ordre donc faisaient planter l'appli'.
 
-    useEffect(() => {
-      // Récupère les infos du parent (dont les enfants)
-      fetch(`${API_URL}users/id/${userId}`)
-        .then((response) => response.json())
-        .then((data) => {
-          setUserInfo(data);
+  // --- Effet pour le parent (toujours déclaré mais on sort si pas concerné)
+  useEffect(() => {
+    if (profil !== "parent") return; // si pas parent, on fait rien
+    fetch(`${url}users/id/${user.selectedBabysitterId}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setUserInfo(data); // on stocke les infos du babysitter
+      });
+  }, [profil, user.selectedBabysitterId]);
 
-          // Concatène les prénoms des enfants en une seule chaîne
-          let allEnfant = "";
-          for (let i = 0; i < data.user.parentInfos.kids.length; i++) {
-            allEnfant += " " + data.user.parentInfos.kids[i].firstName;
-          }
-          setEnfant(allEnfant);
-        });
-    }, []);
-  }
+  // --- Effet pour le babysitter (idem)
+  useEffect(() => {
+    if (profil !== "babysitter") return; // si pas babysitter, on fait rien
+    fetch(`${url}users/id/${userId}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setUserInfo(data);
+        // on concatène les prénoms des enfants
+        let allEnfant = "";
+        for (let i = 0; i < data.user.parentInfos.kids.length; i++) {
+          allEnfant += " " + data.user.parentInfos.kids[i].firstName;
+        }
+        setEnfant(allEnfant);
+      });
+  }, [profil, userId]);
 
   // --- Fonctions de navigation
   const returnScreen = () => {
