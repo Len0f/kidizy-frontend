@@ -373,25 +373,23 @@ export default function PropositionScreen({ navigation, route }) {
           </View>
 
           <View style={styles.mapContainer}>
-            {latNum !== null && lonNum !== null && false && (
-              <MapView
-                region={{
+            <MapView
+              region={{
+                latitude: parseFloat(lat),
+                longitude: parseFloat(lon),
+                latitudeDelta: 0.002,
+                longitudeDelta: 0.002,
+              }}
+              style={styles.map}
+            >
+              <Marker
+                coordinate={{
                   latitude: parseFloat(lat),
                   longitude: parseFloat(lon),
-                  latitudeDelta: 0.002,
-                  longitudeDelta: 0.002,
                 }}
-                style={styles.map}
-              >
-                <Marker
-                  coordinate={{
-                    latitude: parseFloat(lat),
-                    longitude: parseFloat(lon),
-                  }}
-                  title={prenom}
-                />
-              </MapView>
-            )}
+                title={prenom}
+              />
+            </MapView>
           </View>
 
           <View style={styles.buttons}>
@@ -446,25 +444,23 @@ export default function PropositionScreen({ navigation, route }) {
           </View>
 
           <View style={styles.mapContainer}>
-            {latNum !== null && lonNum !== null && false && (
-              <MapView
-                region={{
+            <MapView
+              region={{
+                latitude: parseFloat(lat),
+                longitude: parseFloat(lon),
+                latitudeDelta: 0.0022,
+                longitudeDelta: 0.0021,
+              }}
+              style={styles.map}
+            >
+              <Marker
+                coordinate={{
                   latitude: parseFloat(lat),
                   longitude: parseFloat(lon),
-                  latitudeDelta: 0.0022,
-                  longitudeDelta: 0.0021,
                 }}
-                style={styles.map}
-              >
-                <Marker
-                  coordinate={{
-                    latitude: parseFloat(lat),
-                    longitude: parseFloat(lon),
-                  }}
-                  title={prenom || ""}
-                />
-              </MapView>
-            )}
+                title={prenom || ""}
+              />
+            </MapView>
           </View>
 
           <View style={[styles.buttons, { gap: 12, paddingHorizontal: 20 }]}>
