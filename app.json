@@ -1,6 +1,5 @@
 {
   "expo": {
-    
     "name": "kidizy",
     "slug": "kidizy",
     "version": "1.0.0",
@@ -12,7 +11,6 @@
       "image": "./assets/KidizyLogo.png",
       "resizeMode": "cover",
       "backgroundColor": "#ffffff"
-      
     },
     "ios": {
       "supportsTablet": true
@@ -22,16 +20,19 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.carolinev.kidizy"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-       "plugins": [
+    "plugins": [
       [
         "expo-font",
         {
-          "fonts": ["./assets/fonts/Montserrat-VariableFont_wght.ttf"],
+          "fonts": [
+            "./assets/fonts/Montserrat-VariableFont_wght.ttf"
+          ],
           "android": {
             "fonts": [
               {
@@ -47,6 +48,18 @@
           }
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "25eeb626-2595-4215-bf22-3531146319f3"
+      }
+    },
+    "owner": "carolinev",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/25eeb626-2595-4215-bf22-3531146319f3"
+    }
   }
 }
