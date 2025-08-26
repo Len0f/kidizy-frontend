@@ -22,12 +22,10 @@ export default function ProfilBookScreen({ navigation, route }) {
   const user = useSelector((state) => state.user.value);
 
   const [enfant, setEnfant] = useState("");
-  let userColor;
+  const userColor = profil === "parent" ? "#98C2E6" : "#88E19D";
 
   // --- Si c’est un parent connecté → il consulte un babysitter
   if (profil === "parent") {
-    userColor = "#98C2E6";
-
     useEffect(() => {
       // Récupère les infos du babysitter sélectionné depuis la BDD
       fetch(`${API_URL}users/id/${user.selectedBabysitterId}`)
